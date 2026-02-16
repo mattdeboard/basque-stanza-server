@@ -76,3 +76,13 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - Always add a language indicator to triple-backtick code blocks. If there is no specific language, use `code` as default.
 - Always write markdown in accordance with markdownlint configuration.
 - Always visually align Markdown tables
+
+### Python Environments
+
+- Use `uv` for all dependency management and execution.
+  - Add dependencies: `uv add <package>`
+  - Remove dependencies: `uv remove <package>`
+  - Run code: `uv run <script-name>.py`
+  - Never use `pip` or `pip-tools`
+- Always ensure the virtual env is active before e.g. installing/removing deps, running code, etc.
+  - The command to activate the virtual env is `source <project_dir>/.venv/bin/activate`
