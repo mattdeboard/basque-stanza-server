@@ -4,71 +4,10 @@ import logging
 
 from Itzuli import Itzuli
 from itzuli_stanza_mcp.nlp import create_pipeline, process_input, LanguageCode
+from itzuli_stanza_mcp.i18n import LANGUAGE_NAMES, OUTPUT_LABELS
 
 logger = logging.getLogger("itzuli-stanza-services")
 
-LANGUAGE_NAMES = {
-    "en": {
-        "eu": "Basque",
-        "es": "Spanish", 
-        "en": "English",
-        "fr": "French",
-    },
-    "eu": {
-        "eu": "euskera",
-        "es": "gaztelania",
-        "en": "ingelesa",
-        "fr": "frantsesa",
-    },
-    "es": {
-        "eu": "vasco",
-        "es": "español",
-        "en": "inglés", 
-        "fr": "francés",
-    },
-    "fr": {
-        "eu": "basque",
-        "es": "espagnol",
-        "en": "anglais",
-        "fr": "français",
-    },
-}
-
-# Localized output labels
-OUTPUT_LABELS = {
-    "en": {
-        "source": "Source",
-        "translation": "Translation", 
-        "analysis_header": "Morphological Analysis",
-        "word": "Word",
-        "lemma": "Lemma",
-        "features": "Features"
-    },
-    "eu": {
-        "source": "Jatorria",
-        "translation": "Itzulpena",
-        "analysis_header": "Analisi Morfologikoa", 
-        "word": "Hitza",
-        "lemma": "Lema",
-        "features": "Ezaugarriak"
-    },
-    "es": {
-        "source": "Origen",
-        "translation": "Traducción",
-        "analysis_header": "Análisis Morfológico",
-        "word": "Palabra",
-        "lemma": "Lema", 
-        "features": "Características"
-    },
-    "fr": {
-        "source": "Source",
-        "translation": "Traduction",
-        "analysis_header": "Analyse Morphologique",
-        "word": "Mot",
-        "lemma": "Lemme",
-        "features": "Caractéristiques"
-    }
-}
 
 # Module-level lazy-loaded singletons
 def get_stanza_pipeline():

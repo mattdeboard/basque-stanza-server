@@ -8,6 +8,7 @@ from mcp.server.fastmcp.exceptions import ToolError
 
 from itzuli_stanza_mcp import services
 from itzuli_stanza_mcp.nlp import LanguageCode
+from itzuli_stanza_mcp.i18n import LANGUAGE_NAMES
 
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "info").upper()
 logging.basicConfig(level=getattr(logging, LOG_LEVEL, logging.INFO), stream=sys.stderr)
@@ -62,8 +63,8 @@ def send_feedback(translation_id: str, correction: str, evaluation: int) -> str:
 
 
 def _register_prompt(from_lang: str, to_lang: str) -> None:
-    from_name = services.LANGUAGE_NAMES["en"][from_lang]
-    to_name = services.LANGUAGE_NAMES["en"][to_lang]
+    from_name = LANGUAGE_NAMES["en"][from_lang]
+    to_name = LANGUAGE_NAMES["en"][to_lang]
 
     @mcp.prompt(
         name=f"{from_lang}@{to_lang}",
