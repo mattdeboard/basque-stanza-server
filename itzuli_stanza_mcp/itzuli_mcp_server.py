@@ -62,8 +62,8 @@ def send_feedback(translation_id: str, correction: str, evaluation: int) -> str:
 
 
 def _register_prompt(from_lang: str, to_lang: str) -> None:
-    from_name = services.LANGUAGE_NAMES[from_lang]
-    to_name = services.LANGUAGE_NAMES[to_lang]
+    from_name = services.LANGUAGE_NAMES["en"][from_lang]
+    to_name = services.LANGUAGE_NAMES["en"][to_lang]
 
     @mcp.prompt(
         name=f"{from_lang}@{to_lang}",
