@@ -12,29 +12,35 @@ logger = logging.getLogger("itzuli-stanza-services")
 # Module-level lazy-loaded singletons
 def get_stanza_pipeline():
     """Get or create Stanza pipeline (cached)."""
-    if not hasattr(get_stanza_pipeline, '_pipeline'):
+    if not hasattr(get_stanza_pipeline, "_pipeline"):
         get_stanza_pipeline._pipeline = create_pipeline()
     return get_stanza_pipeline._pipeline
 
 
-def translate_with_analysis(api_key: str, text: str, source_language: LanguageCode, target_language: LanguageCode, output_language: LanguageCode = "en") -> str:
+def translate_with_analysis(
+    api_key: str,
+    text: str,
+    source_language: LanguageCode,
+    target_language: LanguageCode,
+    output_language: LanguageCode = "en",
+) -> str:
     """Translate text and provide morphological analysis of Basque text with localized output."""
     # Get translation from Itzuli
     itzuli_client = Itzuli(api_key)
     translation_data = itzuli_client.getTranslation(text, source_language, target_language)
     translated_text = translation_data.get("translation", "")
-    
+
     # Determine which text to analyze (always analyze Basque text)
     basque_text = text if source_language == "eu" else translated_text
-    
+
     # Perform morphological analysis
     stanza_pipeline = get_stanza_pipeline()
     rows = process_input(stanza_pipeline, basque_text, output_language)
-    
+
     # Get localized labels and language names
     labels = OUTPUT_LABELS.get(output_language, OUTPUT_LABELS["en"])
     language_names = LANGUAGE_NAMES.get(output_language, LANGUAGE_NAMES["en"])
-    
+
     # Format output with 100-column limit
     output_lines = []
     output_lines.append(f"{labels['source']}: {text} ({language_names[source_language]})")
@@ -43,22 +49,22 @@ def translate_with_analysis(api_key: str, text: str, source_language: LanguageCo
     output_lines.append(f"{labels['analysis_header']}:")
     output_lines.append(f"| {labels['word']} | {labels['lemma']} | {labels['features']} |")
     output_lines.append("|------|-------|----------|")
-    
+
     for word, lemma, feats in rows:
         feats_display = feats if feats else "—"
-        
+
         # Calculate current row width
         row_base = f"| {word} | {lemma} | "
         row_end = " |"
         available_width = 100 - len(row_base) - len(row_end)
-        
+
         # Wrap features if needed
         if len(feats_display) > available_width:
             # Split features on commas and wrap
             parts = feats_display.split(", ")
             wrapped_lines = []
             current_line = ""
-            
+
             for part in parts:
                 if current_line == "":
                     current_line = part
@@ -67,10 +73,10 @@ def translate_with_analysis(api_key: str, text: str, source_language: LanguageCo
                 else:
                     wrapped_lines.append(current_line)
                     current_line = part
-            
+
             if current_line:
                 wrapped_lines.append(current_line)
-            
+
             # Add first line
             output_lines.append(f"| {word} | {lemma} | {wrapped_lines[0]} |")
             # Add continuation lines
@@ -78,7 +84,7 @@ def translate_with_analysis(api_key: str, text: str, source_language: LanguageCo
                 output_lines.append(f"|      |       | {line} |")
         else:
             output_lines.append(f"| {word} | {lemma} | {feats_display} |")
-    
+
     return "\n".join(output_lines)
 
 

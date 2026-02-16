@@ -4,15 +4,16 @@ from unittest.mock import patch
 import pytest
 from mcp.server.fastmcp.exceptions import ToolError
 
-from itzuli_stanza_mcp import itzuli_mcp_server
 from itzuli_stanza_mcp.itzuli_mcp_server import translate, get_quota, send_feedback
 
 
 class TestTranslate:
     def test_returns_translated_text_on_success(self):
-        mock_response = {"translatedText": "Hola!", "id": "translation-123"}
 
-        with patch("itzuli_stanza_mcp.services.translate_with_analysis", return_value="Source: Kaixo! (euskera)\nTranslation: Hola! (español)\n\nMorphological Analysis:\n| Word | Lemma | Features |\n|------|-------|----------|\n| Hola | (hola) | — |"):
+        with patch(
+            "itzuli_stanza_mcp.services.translate_with_analysis",
+            return_value="Source: Kaixo! (euskera)\nTranslation: Hola! (español)\n\nMorphological Analysis:\n| Word | Lemma | Features |\n|------|-------|----------|\n| Hola | (hola) | — |",
+        ):
             result = translate("Kaixo!", "eu", "es")
 
         assert "Kaixo!" in result

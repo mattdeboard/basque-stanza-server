@@ -22,7 +22,9 @@ mcp = FastMCP("itzuli-mcp")
 
 
 @mcp.tool()
-def translate(text: str, source_language: LanguageCode, target_language: LanguageCode, output_language: LanguageCode = "en") -> str:
+def translate(
+    text: str, source_language: LanguageCode, target_language: LanguageCode, output_language: LanguageCode = "en"
+) -> str:
     """Translate text to or from Basque with morphological analysis. Basque must be either the source or target language. Supported pairs: eu<->es, eu<->en, eu<->fr. Output can be localized to 'en', 'eu', 'es', or 'fr'."""
     if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
         return f"Unsupported language. Supported: {', '.join(SUPPORTED_LANGUAGES)}"

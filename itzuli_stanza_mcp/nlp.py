@@ -15,7 +15,9 @@ def rows_to_dicts(rows: List[Tuple[str, str, str]]) -> List[dict]:
     return [{"word": word, "lemma": lemma, "feats": feats} for word, lemma, feats in rows]
 
 
-def process_input(pipeline: stanza.Pipeline, input_text: str, language: LanguageCode = "en") -> List[Tuple[str, str, str]]:
+def process_input(
+    pipeline: stanza.Pipeline, input_text: str, language: LanguageCode = "en"
+) -> List[Tuple[str, str, str]]:
     doc = pipeline(input_text)
     rows = []
     friendly_feats = FRIENDLY_FEATS.get(language, FRIENDLY_FEATS["en"])
