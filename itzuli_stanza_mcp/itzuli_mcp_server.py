@@ -20,8 +20,8 @@ mcp = FastMCP("itzuli-mcp")
 
 
 @mcp.tool()
-def translate(text: str, source_language: str, target_language: str) -> str:
-    """Translate text to or from Basque with morphological analysis. Basque must be either the source or target language. Supported pairs: eu<->es, eu<->en, eu<->fr."""
+def translate(text: str, source_language: str, target_language: str, output_language: str = "en") -> str:
+    """Translate text to or from Basque with morphological analysis. Basque must be either the source or target language. Supported pairs: eu<->es, eu<->en, eu<->fr. Output can be localized to 'en', 'eu', 'es', or 'fr'."""
     if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
         return f"Unsupported language. Supported: {', '.join(SUPPORTED_LANGUAGES)}"
 
@@ -30,7 +30,7 @@ def translate(text: str, source_language: str, target_language: str) -> str:
 
     logger.debug("translate request: %s -> %s, text=%s", source_language, target_language, text)
     try:
-        result = services.translate_with_analysis(api_key, text, source_language, target_language)
+        result = services.translate_with_analysis(api_key, text, source_language, target_language, output_language)
         return result
     except Exception as e:
         raise ToolError(f"Translation with analysis failed: {e}") from e

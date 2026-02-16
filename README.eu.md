@@ -43,7 +43,7 @@ ITZULI_API_KEY=zure-gakoa uv run python -m itzuli_stanza_mcp.itzuli_mcp_server
 
 ### Tresnak
 
-- **translate** — Itzuli API ofiziala erabiliz euskerara edo euskeratik testua itzuli. Onartutako bikoteak: eu<->es, eu<->en, eu<->fr.
+- **translate** — Itzuli API ofiziala erabiliz euskerara edo euskeratik testua itzuli. Onartutako bikoteak: eu<->es, eu<->en, eu<->fr. Aukerako `output_language` parametroak 'en', 'eu', 'es', 'fr' onartzen ditu taula goiburuen lokalizaziorako.
 - **get_quota** — Uneko API erabilera kuota egiaztatu.
 - **send_feedback** — Aurreko itzulpen baterako zuzentzaile edo ebaluazioa bidali.
 
@@ -52,16 +52,17 @@ ITZULI_API_KEY=zure-gakoa uv run python -m itzuli_stanza_mcp.itzuli_mcp_server
 Analisi morfologiko automatikoa duen itzulpena:
 
 ```text
-Source: No conozco las canciones vascas (Spanish)
-Translation: Ez ditut ezagutzen euskal abestiak (Basque)
+Jatorria: No conozco las canciones vascas (Spanish)
+Itzulpena: Ez ditut ezagutzen euskal abestiak (Basque)
 
-Morphological Analysis:
-| Word      | Lemma     | Features                                                       |
-| --------- | --------- | -------------------------------------------------------------- |
-| Ez        | (ez)      | negation                                                       |
-| ditut     | (ukan)    | indicative mood, plural obj, singular sub, 3per obj (it/them), |
-|           |           | 1per sub (I), conjugated                                       |
-| ezagutzen | (ezagutu) | habitual/ongoing                                               |
-| euskal    | (euskal)  | combining prefix                                               |
-| abestiak  | (abesti)  | absolutive (sub/obj), definite (the), plural                   |
+Analisi Morfologikoa:
+| Hitza     | Lema      | Ezaugarriak                                             |
+| --------- | --------- | ------------------------------------------------------- |
+| Ez        | (ez)      | ezeztapena                                              |
+| ditut     | (ukan)    | adierazpen modua, objektu plurala, subjektu singularra, |
+|           |           | 3. pertsona obj (hura/haiek), 1. pertsona subj (nik),   |
+|           |           | aditz jokatua                                           |
+| ezagutzen | (ezagutu) | ohikoa/jarraian                                         |
+| euskal    | (euskal)  | konbinazio aurrizkia                                    |
+| abestiak  | (abesti)  | absolutiboa (nor), mugatu (-a/-ak), plurala             |
 ```

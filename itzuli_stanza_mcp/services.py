@@ -14,6 +14,42 @@ LANGUAGE_NAMES = {
     "fr": "French",
 }
 
+# Localized output labels
+OUTPUT_LABELS = {
+    "en": {
+        "source": "Source",
+        "translation": "Translation", 
+        "analysis_header": "Morphological Analysis",
+        "word": "Word",
+        "lemma": "Lemma",
+        "features": "Features"
+    },
+    "eu": {
+        "source": "Jatorria",
+        "translation": "Itzulpena",
+        "analysis_header": "Analisi Morfologikoa", 
+        "word": "Hitza",
+        "lemma": "Lema",
+        "features": "Ezaugarriak"
+    },
+    "es": {
+        "source": "Origen",
+        "translation": "Traducción",
+        "analysis_header": "Análisis Morfológico",
+        "word": "Palabra",
+        "lemma": "Lema", 
+        "features": "Características"
+    },
+    "fr": {
+        "source": "Source",
+        "translation": "Traduction",
+        "analysis_header": "Analyse Morphologique",
+        "word": "Mot",
+        "lemma": "Lemme",
+        "features": "Caractéristiques"
+    }
+}
+
 # Module-level lazy-loaded singletons
 def get_stanza_pipeline():
     """Get or create Stanza pipeline (cached)."""
@@ -22,8 +58,8 @@ def get_stanza_pipeline():
     return get_stanza_pipeline._pipeline
 
 
-def translate_with_analysis(api_key: str, text: str, source_language: str, target_language: str) -> str:
-    """Translate text and provide morphological analysis of Basque text."""
+def translate_with_analysis(api_key: str, text: str, source_language: str, target_language: str, output_language: str = "en") -> str:
+    """Translate text and provide morphological analysis of Basque text with localized output."""
     # Get translation from Itzuli
     itzuli_client = Itzuli(api_key)
     translation_data = itzuli_client.getTranslation(text, source_language, target_language)
@@ -34,15 +70,18 @@ def translate_with_analysis(api_key: str, text: str, source_language: str, targe
     
     # Perform morphological analysis
     stanza_pipeline = get_stanza_pipeline()
-    rows = process_input(stanza_pipeline, basque_text)
+    rows = process_input(stanza_pipeline, basque_text, output_language)
+    
+    # Get localized labels
+    labels = OUTPUT_LABELS.get(output_language, OUTPUT_LABELS["en"])
     
     # Format output with 100-column limit
     output_lines = []
-    output_lines.append(f"Source: {text} ({LANGUAGE_NAMES[source_language]})")
-    output_lines.append(f"Translation: {translated_text} ({LANGUAGE_NAMES[target_language]})")
+    output_lines.append(f"{labels['source']}: {text} ({LANGUAGE_NAMES[source_language]})")
+    output_lines.append(f"{labels['translation']}: {translated_text} ({LANGUAGE_NAMES[target_language]})")
     output_lines.append("")
-    output_lines.append("Morphological Analysis:")
-    output_lines.append("| Word | Lemma | Features |")
+    output_lines.append(f"{labels['analysis_header']}:")
+    output_lines.append(f"| {labels['word']} | {labels['lemma']} | {labels['features']} |")
     output_lines.append("|------|-------|----------|")
     
     for word, lemma, feats in rows:
