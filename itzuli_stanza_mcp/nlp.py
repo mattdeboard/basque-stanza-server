@@ -1,4 +1,8 @@
+from typing import List, Tuple, Literal
+
 import stanza
+
+LanguageCode = Literal["eu", "en", "es", "fr"]
 
 FRIENDLY_FEATS = {
     "en": {
@@ -62,15 +66,15 @@ FRIENDLY_FEATS = {
 QUIRKS = {"en": {"euskal": "combining prefix"}, "eu": {"euskal": "konbinazio aurrizkia"}}
 
 
-def create_pipeline():
+def create_pipeline() -> stanza.Pipeline:
     return stanza.Pipeline("eu", download_method=stanza.DownloadMethod.REUSE_RESOURCES, processors="tokenize,pos,lemma")
 
 
-def rows_to_dicts(rows):
+def rows_to_dicts(rows: List[Tuple[str, str, str]]) -> List[dict]:
     return [{"word": word, "lemma": lemma, "feats": feats} for word, lemma, feats in rows]
 
 
-def process_input(pipeline, input_text, language="en"):
+def process_input(pipeline: stanza.Pipeline, input_text: str, language: LanguageCode = "en") -> List[Tuple[str, str, str]]:
     doc = pipeline(input_text)
     rows = []
     friendly_feats = FRIENDLY_FEATS.get(language, FRIENDLY_FEATS["en"])
@@ -92,7 +96,7 @@ def process_input(pipeline, input_text, language="en"):
     return rows
 
 
-def print_table(rows):
+def print_table(rows: List[Tuple[str, str, str]]) -> None:
     word_width = max(len(r[0]) for r in rows)
     lemma_width = max(len(r[1]) for r in rows)
     for word, lemma, feats in rows:
@@ -102,7 +106,7 @@ def print_table(rows):
         print(line)
 
 
-def print_json(rows):
+def print_json(rows: List[Tuple[str, str, str]]) -> None:
     import json
 
     print(json.dumps(rows_to_dicts(rows), ensure_ascii=False, indent=2))

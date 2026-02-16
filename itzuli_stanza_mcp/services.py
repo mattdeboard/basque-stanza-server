@@ -3,7 +3,7 @@
 import logging
 
 from Itzuli import Itzuli
-from itzuli_stanza_mcp.nlp import create_pipeline, process_input
+from itzuli_stanza_mcp.nlp import create_pipeline, process_input, LanguageCode
 
 logger = logging.getLogger("itzuli-stanza-services")
 
@@ -58,7 +58,7 @@ def get_stanza_pipeline():
     return get_stanza_pipeline._pipeline
 
 
-def translate_with_analysis(api_key: str, text: str, source_language: str, target_language: str, output_language: str = "en") -> str:
+def translate_with_analysis(api_key: str, text: str, source_language: LanguageCode, target_language: LanguageCode, output_language: LanguageCode = "en") -> str:
     """Translate text and provide morphological analysis of Basque text with localized output."""
     # Get translation from Itzuli
     itzuli_client = Itzuli(api_key)
@@ -122,13 +122,13 @@ def translate_with_analysis(api_key: str, text: str, source_language: str, targe
     return "\n".join(output_lines)
 
 
-def get_quota(api_key: str):
+def get_quota(api_key: str) -> dict:
     """Check API quota using Itzuli client."""
     itzuli_client = Itzuli(api_key)
     return itzuli_client.getQuota()
 
 
-def send_feedback(api_key: str, translation_id: str, correction: str, evaluation: int):
+def send_feedback(api_key: str, translation_id: str, correction: str, evaluation: int) -> dict:
     """Send feedback using Itzuli client."""
     itzuli_client = Itzuli(api_key)
     return itzuli_client.sendFeedback(translation_id, correction, evaluation)
