@@ -1,13 +1,20 @@
-# basque-stanza-server
+# itzuli-stanza-mcp
 
-A Flask web server that provides Basque language morphological analysis using [Stanza](https://stanfordnlp.github.io/stanza/). It tokenizes Basque text and returns per-word glossing data (lemma, grammatical features) as JSON.
+Basque morphological analysis via [Stanza](https://stanfordnlp.github.io/stanza/) and Basque translation via the [Itzuli](https://www.euskadi.eus/itzuli/) API, packaged as an MCP server.
 
-Intended for use as a backend for the [itzuli-mcp](https://github.com/mattdeboard/itzuli-mcp) MCP server.
+## Project structure
 
-## Usage
+```
+itzuli_stanza_mcp/
+  app.py                 # Flask server for Stanza morphological analysis
+  nlp.py                 # Stanza pipeline and text processing
+  itzuli_mcp_server.py   # MCP server for Itzuli translation
+```
+
+## Stanza server
 
 ```bash
-uv run python main.py
+uv run python -m itzuli_stanza_mcp.app
 ```
 
 The server runs on port 5001.
@@ -31,3 +38,17 @@ Response:
   {"word": "abestiak", "lemma": "(abesti)", "feats": "absolutive (sub/obj), definite (the), plural"}
 ]
 ```
+
+## MCP server (Itzuli)
+
+Requires the `ITZULI_API_KEY` environment variable. Runs over stdio transport.
+
+```bash
+ITZULI_API_KEY=your-key uv run python -m itzuli_stanza_mcp.itzuli_mcp_server
+```
+
+### Tools
+
+- **translate** — Translate text to or from Basque. Supported pairs: eu<->es, eu<->en, eu<->fr.
+- **get_quota** — Check current API usage quota.
+- **send_feedback** — Submit a correction or evaluation for a previous translation.
