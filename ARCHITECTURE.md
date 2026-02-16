@@ -4,14 +4,14 @@ This document provides a comprehensive overview of the itzuli-stanza-mcp project
 
 ## Project Overview
 
-A dual-service system combining Basque morphological analysis via Stanford's Stanza library with Basque translation capabilities through the Itzuli API. The project provides both a Flask HTTP server and an MCP (Model Context Protocol) server for different integration scenarios.
+A Basque language processing system that combines translation capabilities from the Itzuli API with detailed morphological analysis via Stanford's Stanza library. The system provides an MCP (Model Context Protocol) server for AI assistant integration, delivering both translation and linguistic analysis in a single unified interface.
 
 ## Project Structure
 
 ```code
 itzuli_stanza_mcp/
-├── app.py                 # Flask HTTP server for Stanza morphological analysis
-├── itzuli_mcp_server.py   # MCP server for Itzuli translation services
+├── itzuli_mcp_server.py   # MCP server providing translation with morphological analysis
+├── services.py            # Service layer coordinating Itzuli and Stanza
 ├── nlp.py                 # Stanza pipeline configuration and text processing logic
 └── __init__.py
 tests/
@@ -24,20 +24,20 @@ CLAUDE.md                  # Development guidelines
 
 ## Core Components
 
-### 1. Stanza Analysis Service (`app.py`)
-
-- **Technology**: Flask web framework
-- **Purpose**: HTTP API for Basque morphological analysis
-- **Port**: 5001
-- **Endpoint**: `POST /stanza`
-- **Dependencies**: `nlp.py` for processing pipeline
-
-### 2. Itzuli Translation Service (`itzuli_mcp_server.py`)
+### 1. Translation Service (`itzuli_mcp_server.py`)
 
 - **Technology**: MCP (Model Context Protocol) server with FastMCP
-- **Purpose**: Translation tools for AI assistants
+- **Purpose**: Combined translation and morphological analysis for AI assistants
 - **Transport**: stdio
 - **Authentication**: Requires `ITZULI_API_KEY` environment variable
+- **Dependencies**: `services.py` for coordinated processing
+
+### 2. Service Coordination Layer (`services.py`)
+
+- **Purpose**: Functional layer coordinating Itzuli and Stanza services
+- **Pattern**: Pure functions with lazy-loaded Stanza pipeline caching
+- **Functions**: `translate_with_analysis`, `get_quota`, `send_feedback`
+- **Design**: No global state, clean separation of concerns
 
 ### 3. NLP Processing Module (`nlp.py`)
 
@@ -46,42 +46,33 @@ CLAUDE.md                  # Development guidelines
 - **Pipeline**: tokenize, POS tagging, lemmatization
 - **Features**: Friendly feature mapping for linguistic annotations
 
-## High-Level System Diagram
+## System Architecture
 
 ```code
-┌─────────────────┐    ┌──────────────────┐
-│   HTTP Client   │───▶│  Flask Server    │
-│                 │    │  (port 5001)     │
-└─────────────────┘    └──────────────────┘
-                               │
-                               ▼
-                       ┌──────────────────┐
-                       │   Stanza NLP     │
-                       │   Pipeline       │
-                       └──────────────────┘
-
 ┌─────────────────┐    ┌──────────────────┐    ┌──────────────────┐
-│  MCP Client     │───▶│  MCP Server      │───▶│  Itzuli API      │
-│  (AI Assistant) │    │  (stdio)         │    │  (External)      │
+│  MCP Client     │───▶│  MCP Server      │───▶│  Services Layer  │
+│  (AI Assistant) │    │    (stdio)       │    │ (coordination)   │
 └─────────────────┘    └──────────────────┘    └──────────────────┘
+                                                        │
+                              ┌─────────────────────────┼─────────────────────────┐
+                              ▼                         ▼                         ▼
+                   ┌──────────────────┐       ┌──────────────────┐       ┌──────────────────┐
+                   │  Itzuli API      │       │ Stanza Pipeline  │       │ Output Formatter │
+                   │ (Translation)    │       │   (Analysis)     │       │ (Markdown Table) │
+                   └──────────────────┘       └──────────────────┘       └──────────────────┘
 ```
 
 ## Data Flow
 
-### Stanza Analysis Flow
-
-1. Client sends POST request with Basque text
-2. Flask server extracts text from JSON payload
-3. Text processed through Stanza pipeline (tokenize → POS → lemma)
-4. Linguistic features mapped to human-friendly descriptions
-5. Results returned as JSON array of word analysis
-
-### Itzuli Translation Flow
+### Translation Flow
 
 1. MCP client invokes translation tool
 2. Server validates language pair (must include Basque)
-3. Request sent to Itzuli API with authentication
-4. Translation result returned as JSON
+3. Services layer calls Itzuli API for translation
+4. Services layer determines Basque text (source or translated)
+5. Services layer processes Basque text through Stanza pipeline
+6. Services layer formats combined output with source, translation, and analysis table
+7. Formatted result returned to MCP client
 
 ## External Integrations
 
@@ -110,7 +101,7 @@ CLAUDE.md                  # Development guidelines
 
 ### Dependencies
 
-- **Core**: Flask, Stanza, Itzuli, MCP
+- **Core**: Stanza, Itzuli, MCP
 - **Development**: pytest, ruff, anyio
 - **Python Version**: ≥3.10
 
@@ -128,12 +119,6 @@ CLAUDE.md                  # Development guidelines
 
 ## Deployment
 
-### Stanza Server
-
-```bash
-uv run python -m itzuli_stanza_mcp.app
-```
-
 ### MCP Server
 
 ```bash
@@ -145,8 +130,7 @@ ITZULI_API_KEY=your-key uv run python -m itzuli_stanza_mcp.itzuli_mcp_server
 - Consider adding batch processing for multiple texts
 - Potential caching layer for frequently analyzed text
 - Additional language pairs if Itzuli API expands support
-- WebSocket support for real-time analysis
-- Authentication layer for Flask server if deployed publicly
+- Separate tools for translation-only vs analysis-only workflows
 
 ## Glossary
 

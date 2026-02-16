@@ -17,46 +17,14 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for full details on project structure.
 
 ```code
 itzuli_stanza_mcp/
-  app.py                 # Flask server for Stanza morphological analysis
+  itzuli_mcp_server.py   # MCP server providing translation with morphological analysis
+  services.py            # Service layer coordinating Itzuli and Stanza
   nlp.py                 # Stanza pipeline and text processing
-  itzuli_mcp_server.py   # MCP server for Itzuli translation
-```
-
-## Stanza Morphological Analysis Server
-
-Provides detailed grammatical analysis of Basque text through a Flask HTTP API using Stanford's [Stanza neural pipeline](https://stanfordnlp.github.io/stanza/neural_pipeline.html). The pipeline is configured with tokenization, parts-of-speech (POS), and lemmatization processors.
-
-```bash
-uv run python -m itzuli_stanza_mcp.app
-```
-
-The server runs on port 5001.
-
-### `POST /stanza`
-
-Analyze Basque text to extract lemmas, parts of speech, and grammatical features:
-
-```bash
-curl -X POST http://localhost:5001/stanza \
-  -H "Content-Type: application/json" \
-  -d '{"text": "Ez ditut ezagutzen euskal abestiak"}'
-```
-
-Response includes word-by-word morphological breakdown:
-
-```json
-[
-  {"word": "Ez", "lemma": "(ez)", "feats": "negation"},
-  {"word": "ditut", "lemma": "(ukan)", "feats": "indicative mood, plural obj, singular sub, 3per obj (it/them), 1per sub (I), conjugated"},
-  {"word": "ezagutzen", "lemma": "(ezagutu)", "feats": "habitual/ongoing"},
-  {"word": "euskal", "lemma": "(euskal)", "feats": "combining prefix"},
-  {"word": "abestiak", "lemma": "(abesti)", "feats": "absolutive (sub/obj), definite (the), plural"}
-]
 ```
 
 ## Itzuli Translation MCP Server
 
-Provides access to the official Basque government translation service through the Model Context Protocol. Itzuli serves as the authoritative source for high-quality Basque translations, which can be enriched with morphological analysis from the Stanza server.
+Provides translation and morphological analysis through the Model Context Protocol. Each translation automatically includes detailed grammatical analysis of the Basque text using Stanford's [Stanza neural pipeline](https://stanfordnlp.github.io/stanza/neural_pipeline.html).
 
 ### API Key Setup
 
@@ -77,10 +45,20 @@ ITZULI_API_KEY=your-key uv run python -m itzuli_stanza_mcp.itzuli_mcp_server
 - **get_quota** — Check current API usage quota.
 - **send_feedback** — Submit a correction or evaluation for a previous translation.
 
-### Combined Workflow
+### Example Output
 
-For comprehensive Basque language processing:
+Translation with automatic morphological analysis:
 
-1. Use Itzuli to translate text to/from Basque
-2. Use Stanza to analyze the Basque text for detailed grammatical insights
-3. Combine results for enriched linguistic understanding
+```text
+Source: I don't know Basque songs (English)
+Translation: Ez ditut ezagutzen euskal abestiak (Basque)
+
+Morphological Analysis:
+| Word | Lemma | Features |
+|------|-------|----------|
+| Ez | (ez) | negation |
+| ditut | (ukan) | indicative mood, plural obj, singular sub, 3per obj (it/them), 1per sub (I), conjugated |
+| ezagutzen | (ezagutu) | habitual/ongoing |
+| euskal | (euskal) | combining prefix |
+| abestiak | (abesti) | absolutive (sub/obj), definite (the), plural |
+```
