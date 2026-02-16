@@ -1,4 +1,4 @@
-# stanza-server
+# basque-stanza-server
 
 A Flask web server that provides Basque language morphological analysis using [Stanza](https://stanfordnlp.github.io/stanza/). It tokenizes Basque text and returns per-word glossing data (lemma, grammatical features) as JSON.
 
