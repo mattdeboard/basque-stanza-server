@@ -47,6 +47,36 @@ ITZULI_API_KEY=zure-gakoa uv run python -m itzuli_stanza_mcp.itzuli_mcp_server
 - **get_quota** — Uneko API erabilera kuota egiaztatu.
 - **send_feedback** — Aurreko itzulpen baterako zuzentzaile edo ebaluazioa bidali.
 
+### AI Laguntzaileekin Erabilera
+
+AI laguntzaileekin lan egitean MCP zerbitzari honetara sarbidea dutenean, irteera hizkuntzaren hobespenak zaindu ahal dituzu modu askotan:
+
+**Itzulpen gonbiteekin irteera hizkuntzaren hobespena erabiliz:**
+
+```text
+@en@eu Hello, mesedez itzuli hau euskerara eta erakutsi analisia euskeraz
+```
+
+**Euskal irteerarako argibide zuzena:**
+
+```text
+Itzuli "Hello" ingelesetik euskerara output_language="eu" erabiliz analisi taulak euskal goiburuak erakuts ditzan
+```
+
+**Saiorako hizkuntza hobespena ezarriz:**
+
+```text
+Elkarrizketa honetako itzulpen guztietarako, mesedez erabili output_language="eu" analisi morfologikoa euskeraz erakusteko
+```
+
+**Tresna erabilera zuzenaren zehaztapena:**
+
+```python
+translate(text="Kaixo", source_language="eu", target_language="en", output_language="eu")
+```
+
+`output_language` parametroak analisi morfologikoaren taula goiburu eta etiketen hizkuntza kontrolatzen du, ez itzulpenaren norabidea.
+
 ### Irteeraren adibidea
 
 Analisi morfologiko automatikoa duen itzulpena:

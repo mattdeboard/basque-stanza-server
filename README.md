@@ -47,6 +47,36 @@ ITZULI_API_KEY=your-key uv run python -m itzuli_stanza_mcp.itzuli_mcp_server
 - **get_quota** — Check current API usage quota.
 - **send_feedback** — Submit a correction or evaluation for a previous translation.
 
+### Usage with AI Assistants
+
+When working with AI assistants that have access to this MCP server, you can specify output language preferences in several ways:
+
+**Using translation prompts with output language preference:**
+
+```text
+@eu@en Hello, please translate this to Basque and show analysis in Basque
+```
+
+**Explicit instruction for Basque output:**
+
+```text
+Translate "Hello" from English to Basque using output_language="eu" so the analysis table uses Basque headers
+```
+
+**Setting language preference for the session:**
+
+```text
+For all translations in this conversation, please use output_language="eu" to show morphological analysis in Basque
+```
+
+**Direct tool usage specification:**
+
+```python
+translate(text="Hello", source_language="en", target_language="eu", output_language="eu")
+```
+
+The `output_language` parameter controls the language of table headers and labels in the morphological analysis, not the translation direction.
+
 ### Example Output
 
 Translation with automatic morphological analysis:
