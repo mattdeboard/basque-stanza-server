@@ -3,7 +3,7 @@
 LANGUAGE_NAMES = {
     "en": {
         "eu": "Basque",
-        "es": "Spanish", 
+        "es": "Spanish",
         "en": "English",
         "fr": "French",
     },
@@ -16,7 +16,7 @@ LANGUAGE_NAMES = {
     "es": {
         "eu": "vasco",
         "es": "español",
-        "en": "inglés", 
+        "en": "inglés",
         "fr": "francés",
     },
     "fr": {
@@ -30,27 +30,27 @@ LANGUAGE_NAMES = {
 OUTPUT_LABELS = {
     "en": {
         "source": "Source",
-        "translation": "Translation", 
+        "translation": "Translation",
         "analysis_header": "Morphological Analysis",
         "word": "Word",
         "lemma": "Lemma",
-        "features": "Features"
+        "features": "Features",
     },
     "eu": {
         "source": "Jatorria",
         "translation": "Itzulpena",
-        "analysis_header": "Analisi Morfologikoa", 
+        "analysis_header": "Analisi Morfologikoa",
         "word": "Hitza",
         "lemma": "Lema",
-        "features": "Ezaugarriak"
+        "features": "Ezaugarriak",
     },
     "es": {
         "source": "Origen",
         "translation": "Traducción",
         "analysis_header": "Análisis Morfológico",
         "word": "Palabra",
-        "lemma": "Lema", 
-        "features": "Características"
+        "lemma": "Lema",
+        "features": "Características",
     },
     "fr": {
         "source": "Source",
@@ -58,8 +58,8 @@ OUTPUT_LABELS = {
         "analysis_header": "Analyse Morphologique",
         "word": "Mot",
         "lemma": "Lemme",
-        "features": "Caractéristiques"
-    }
+        "features": "Caractéristiques",
+    },
 }
 
 FRIENDLY_FEATS = {
@@ -177,9 +177,13 @@ FRIENDLY_FEATS = {
     },
 }
 
+### This dict contains entries for words that are incorrectly classified by
+# Stanza. For example, "euskal" is classified as a noun, but it is actually
+# a combining prefix, kind of like "cyber" in English. It's not its own word,
+# per se, but rather a modifier that's applied to other nouns.
 QUIRKS = {
-    "en": {"euskal": "combining prefix"}, 
+    "en": {"euskal": "combining prefix"},
     "eu": {"euskal": "konbinazio aurrizkia"},
     "es": {"euskal": "prefijo combinatorio"},
-    "fr": {"euskal": "préfixe de combinaison"}
+    "fr": {"euskal": "préfixe de combinaison"},
 }
