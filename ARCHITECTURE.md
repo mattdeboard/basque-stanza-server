@@ -1,5 +1,7 @@
 # Architecture Documentation
 
+[🇺🇸 English](ARCHITECTURE.md) | [🔴⚪🟢 Euskera](ARCHITECTURE.eu.md)
+
 This document provides a comprehensive overview of the itzuli-stanza-mcp project architecture.
 
 ## Project Overview
