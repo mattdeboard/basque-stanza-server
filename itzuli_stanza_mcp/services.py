@@ -8,10 +8,30 @@ from itzuli_stanza_mcp.nlp import create_pipeline, process_input, LanguageCode
 logger = logging.getLogger("itzuli-stanza-services")
 
 LANGUAGE_NAMES = {
-    "eu": "Basque",
-    "es": "Spanish", 
-    "en": "English",
-    "fr": "French",
+    "en": {
+        "eu": "Basque",
+        "es": "Spanish", 
+        "en": "English",
+        "fr": "French",
+    },
+    "eu": {
+        "eu": "euskera",
+        "es": "gaztelania",
+        "en": "ingelesa",
+        "fr": "frantsesa",
+    },
+    "es": {
+        "eu": "vasco",
+        "es": "español",
+        "en": "inglés", 
+        "fr": "francés",
+    },
+    "fr": {
+        "eu": "basque",
+        "es": "espagnol",
+        "en": "anglais",
+        "fr": "français",
+    },
 }
 
 # Localized output labels
@@ -72,13 +92,14 @@ def translate_with_analysis(api_key: str, text: str, source_language: LanguageCo
     stanza_pipeline = get_stanza_pipeline()
     rows = process_input(stanza_pipeline, basque_text, output_language)
     
-    # Get localized labels
+    # Get localized labels and language names
     labels = OUTPUT_LABELS.get(output_language, OUTPUT_LABELS["en"])
+    language_names = LANGUAGE_NAMES.get(output_language, LANGUAGE_NAMES["en"])
     
     # Format output with 100-column limit
     output_lines = []
-    output_lines.append(f"{labels['source']}: {text} ({LANGUAGE_NAMES[source_language]})")
-    output_lines.append(f"{labels['translation']}: {translated_text} ({LANGUAGE_NAMES[target_language]})")
+    output_lines.append(f"{labels['source']}: {text} ({language_names[source_language]})")
+    output_lines.append(f"{labels['translation']}: {translated_text} ({language_names[target_language]})")
     output_lines.append("")
     output_lines.append(f"{labels['analysis_header']}:")
     output_lines.append(f"| {labels['word']} | {labels['lemma']} | {labels['features']} |")
