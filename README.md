@@ -1,5 +1,7 @@
 # itzuli-stanza-mcp
 
+[🇺🇸 English](README.md) | [🔴⚪🟢 Euskera](README.eu.md)
+
 Basque language processing toolkit that combines translation capabilities from the [Itzuli](https://www.euskadi.eus/itzuli/) API with detailed morphological analysis via [Stanza](https://stanfordnlp.github.io/stanza/). The system provides both translation services and enriched linguistic analysis, packaged as HTTP and MCP servers.
 
 ## Overview
