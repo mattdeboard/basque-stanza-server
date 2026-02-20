@@ -2320,6 +2320,7 @@ dependencies = [
     { name = "ipython", version = "9.10.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "itzuli" },
     { name = "mcp" },
+    { name = "pydantic" },
     { name = "python-dotenv" },
     { name = "stanza" },
 ]
@@ -2339,6 +2340,7 @@ requires-dist = [
     { name = "ipython", specifier = ">=8.18.1" },
     { name = "itzuli", specifier = ">=1.1.0" },
     { name = "mcp", specifier = ">=1.26.0" },
+    { name = "pydantic", specifier = ">=2.12.5" },
     { name = "python-dotenv", specifier = ">=1.2.1" },
     { name = "stanza", specifier = ">=1.11.0" },
 ]
