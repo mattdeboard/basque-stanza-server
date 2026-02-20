@@ -26,3 +26,8 @@ dev = [
     "pytest-cov>=7.0.0",
     "ruff>=0.15.1",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "--ignore-glob=*_manual.py"

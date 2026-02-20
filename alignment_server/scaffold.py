@@ -1,5 +1,6 @@
 """Scaffold generator for alignment data from dual analysis output."""
 
+import json
 from pathlib import Path
 from typing import List
 
