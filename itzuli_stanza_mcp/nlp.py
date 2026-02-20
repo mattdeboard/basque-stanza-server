@@ -5,7 +5,7 @@ import stanza
 from itzuli_stanza_mcp.types import AnalysisRow
 
 
-def create_pipeline() -> stanza.Pipeline:
+def create_basque_pipeline() -> stanza.Pipeline:
     return stanza.Pipeline("eu", download_method=stanza.DownloadMethod.REUSE_RESOURCES, processors="tokenize,pos,lemma")
 
 
