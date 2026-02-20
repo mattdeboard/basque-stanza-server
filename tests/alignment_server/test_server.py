@@ -142,104 +142,6 @@ class TestAnalyzeEndpoint:
         # The sentence_id is only used in /analyze-and-scaffold, not /analyze
 
 
-class TestScaffoldEndpoint:
-    @patch("alignment_server.server.create_scaffold_from_dual_analysis")
-    def test_generate_scaffold_success(self, mock_create_scaffold, client, mock_alignment_data):
-        mock_create_scaffold.return_value = mock_alignment_data
-
-        request_data = {
-            "source_analysis": [
-                {"word": "Kaixo", "lemma": "kaixo", "upos": "INTJ", "feats": ""},
-                {"word": "mundua", "lemma": "mundu", "upos": "NOUN", "feats": "Case=Abs|Definite=Def|Number=Sing"},
-            ],
-            "target_analysis": [
-                {"word": "Hello", "lemma": "hello", "upos": "INTJ", "feats": ""},
-                {"word": "world", "lemma": "world", "upos": "NOUN", "feats": "Number=Sing"},
-            ],
-            "source_text": "Kaixo mundua",
-            "target_text": "Hello world",
-            "source_lang": "eu",
-            "target_lang": "en",
-            "sentence_id": "test-001",
-        }
-
-        response = client.post("/scaffold", json=request_data)
-
-        assert response.status_code == 200
-        data = response.json()
-
-        # Verify the scaffold structure
-        assert "sentences" in data
-        assert len(data["sentences"]) == 1
-
-        sentence = data["sentences"][0]
-        assert sentence["id"] == "test-001"
-        assert sentence["source"]["lang"] == "eu"
-        assert sentence["target"]["lang"] == "en"
-
-        # Verify mock was called with correct AnalysisRow objects
-        mock_create_scaffold.assert_called_once()
-        call_args = mock_create_scaffold.call_args
-
-        source_rows = call_args.kwargs["source_analysis"]
-        target_rows = call_args.kwargs["target_analysis"]
-
-        assert len(source_rows) == 2
-        assert len(target_rows) == 2
-        assert isinstance(source_rows[0], AnalysisRow)
-        assert isinstance(target_rows[0], AnalysisRow)
-        assert source_rows[0].word == "Kaixo"
-        assert target_rows[0].word == "Hello"
-
-    @patch("alignment_server.server.create_scaffold_from_dual_analysis")
-    def test_generate_scaffold_error(self, mock_create_scaffold, client):
-        mock_create_scaffold.side_effect = Exception("Scaffold creation failed")
-
-        request_data = {
-            "source_analysis": [{"word": "test", "lemma": "test", "upos": "NOUN", "feats": ""}],
-            "target_analysis": [{"word": "test", "lemma": "test", "upos": "NOUN", "feats": ""}],
-            "source_text": "test",
-            "target_text": "test",
-            "source_lang": "eu",
-            "target_lang": "en",
-            "sentence_id": "test-001",
-        }
-
-        response = client.post("/scaffold", json=request_data)
-
-        assert response.status_code == 500
-        assert "Scaffold generation failed: Scaffold creation failed" in response.json()["detail"]
-
-    def test_generate_scaffold_invalid_request(self, client):
-        # Missing required fields
-        request_data = {"source_text": "test"}
-
-        response = client.post("/scaffold", json=request_data)
-
-        assert response.status_code == 422  # Validation error
-
-    @patch("alignment_server.server.create_scaffold_from_dual_analysis")
-    def test_generate_scaffold_with_default_sentence_id(self, mock_create_scaffold, client, mock_alignment_data):
-        mock_create_scaffold.return_value = mock_alignment_data
-
-        request_data = {
-            "source_analysis": [{"word": "test", "lemma": "test", "upos": "NOUN", "feats": ""}],
-            "target_analysis": [{"word": "test", "lemma": "test", "upos": "NOUN", "feats": ""}],
-            "source_text": "test",
-            "target_text": "test",
-            "source_lang": "eu",
-            "target_lang": "en",
-            # No sentence_id provided, should default to "default"
-        }
-
-        response = client.post("/scaffold", json=request_data)
-
-        assert response.status_code == 200
-
-        # Verify default sentence_id was used
-        call_args = mock_create_scaffold.call_args
-        assert call_args.kwargs["sentence_id"] == "default"
-
 
 class TestAnalyzeAndScaffoldEndpoint:
     @patch.dict(os.environ, {"ITZULI_API_KEY": "test-key"})
@@ -380,32 +282,6 @@ class TestModelValidation:
         assert len(response.source_analysis) == 1
         assert isinstance(response.source_analysis[0], AnalysisRow)
 
-    def test_scaffold_request_model_validation(self):
-        from alignment_server.server import ScaffoldRequest
-
-        # Valid request
-        valid_request = ScaffoldRequest(
-            source_analysis=[{"word": "Kaixo", "lemma": "kaixo", "upos": "INTJ", "feats": ""}],
-            target_analysis=[{"word": "Hello", "lemma": "hello", "upos": "INTJ", "feats": ""}],
-            source_text="Kaixo",
-            target_text="Hello",
-            source_lang="eu",
-            target_lang="en",
-            sentence_id="test-001",
-        )
-        assert valid_request.source_text == "Kaixo"
-        assert valid_request.sentence_id == "test-001"
-
-        # Request with default sentence_id
-        default_request = ScaffoldRequest(
-            source_analysis=[{"word": "Kaixo", "lemma": "kaixo", "upos": "INTJ", "feats": ""}],
-            target_analysis=[{"word": "Hello", "lemma": "hello", "upos": "INTJ", "feats": ""}],
-            source_text="Kaixo",
-            target_text="Hello",
-            source_lang="eu",
-            target_lang="en",
-        )
-        assert default_request.sentence_id == "default"
 
 
 class TestAppConfiguration:
@@ -485,24 +361,6 @@ class TestErrorHandling:
             assert response.status_code == 500
             mock_logger.error.assert_called_once_with("Analysis failed: Test error")
 
-    @patch("alignment_server.server.create_scaffold_from_dual_analysis")
-    def test_scaffold_logs_error_on_failure(self, mock_create_scaffold, client):
-        mock_create_scaffold.side_effect = Exception("Test error")
-
-        request_data = {
-            "source_analysis": [{"word": "test", "lemma": "test", "upos": "NOUN", "feats": ""}],
-            "target_analysis": [{"word": "test", "lemma": "test", "upos": "NOUN", "feats": ""}],
-            "source_text": "test",
-            "target_text": "test",
-            "source_lang": "eu",
-            "target_lang": "en",
-        }
-
-        with patch("alignment_server.server.logger") as mock_logger:
-            response = client.post("/scaffold", json=request_data)
-
-            assert response.status_code == 500
-            mock_logger.error.assert_called_once_with("Scaffold generation failed: Test error")
 
     @patch.dict(os.environ, {"ITZULI_API_KEY": "test-key"})
     @patch("alignment_server.server.create_scaffold_from_dual_analysis")
@@ -536,27 +394,6 @@ class TestEdgeCases:
         data = response.json()
         assert data["source_analysis"][0]["feats"] == ""
 
-    @patch("alignment_server.server.create_scaffold_from_dual_analysis")
-    def test_scaffold_with_empty_analysis_lists(self, mock_create_scaffold, client, mock_alignment_data):
-        mock_create_scaffold.return_value = mock_alignment_data
-
-        request_data = {
-            "source_analysis": [],
-            "target_analysis": [],
-            "source_text": "",
-            "target_text": "",
-            "source_lang": "eu",
-            "target_lang": "en",
-        }
-
-        response = client.post("/scaffold", json=request_data)
-
-        assert response.status_code == 200
-
-        # Verify empty lists were passed correctly
-        call_args = mock_create_scaffold.call_args
-        assert len(call_args.kwargs["source_analysis"]) == 0
-        assert len(call_args.kwargs["target_analysis"]) == 0
 
 
 class TestResponseSchemas:

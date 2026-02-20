@@ -2,7 +2,7 @@
 
 import logging
 import os
-from typing import Dict, List
+from typing import List
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
@@ -43,15 +43,6 @@ class AnalysisResponse(BaseModel):
     target_analysis: List[AnalysisRow]
 
 
-class ScaffoldRequest(BaseModel):
-    """Request model for scaffold generation."""
-    source_analysis: List[Dict[str, str]]
-    target_analysis: List[Dict[str, str]]
-    source_text: str
-    target_text: str
-    source_lang: LanguageCode
-    target_lang: LanguageCode
-    sentence_id: str = "default"
 
 
 @app.get("/health")
@@ -93,50 +84,6 @@ async def analyze_texts(request: AnalysisRequest):
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
 
-@app.post("/scaffold", response_model=AlignmentData)
-async def generate_scaffold(request: ScaffoldRequest):
-    """
-    Generate alignment scaffold from dual analysis data.
-    
-    Takes analysis results and produces alignment scaffold for annotation.
-    """
-    try:
-        # Convert dictionaries back to AnalysisRow objects
-        source_rows = [
-            AnalysisRow(
-                word=item["word"],
-                lemma=item["lemma"],
-                upos=item["upos"],
-                feats=item["feats"]
-            )
-            for item in request.source_analysis
-        ]
-        
-        target_rows = [
-            AnalysisRow(
-                word=item["word"],
-                lemma=item["lemma"],
-                upos=item["upos"],
-                feats=item["feats"]
-            )
-            for item in request.target_analysis
-        ]
-        
-        alignment_data = create_scaffold_from_dual_analysis(
-            source_analysis=source_rows,
-            target_analysis=target_rows,
-            source_lang=request.source_lang,
-            target_lang=request.target_lang,
-            source_text=request.source_text,
-            target_text=request.target_text,
-            sentence_id=request.sentence_id
-        )
-        
-        return alignment_data
-        
-    except Exception as e:
-        logger.error(f"Scaffold generation failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Scaffold generation failed: {str(e)}")
 
 
 @app.post("/analyze-and-scaffold", response_model=AlignmentData)
