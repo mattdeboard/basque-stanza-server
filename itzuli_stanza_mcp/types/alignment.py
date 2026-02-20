@@ -26,21 +26,6 @@ class LayerType(str, Enum):
     FEATURES = "features"
 
 
-class Morpheme(BaseModel):
-    """A sub-word morpheme within an agglutinative target token.
-
-    Used for Basque tokens where suffixes carry grammatical meaning,
-    e.g. "lagunari" → [lagun (friend), -a (DEF), -ri (DAT)]
-
-    The `id` is used as a ribbon endpoint target. Convention: parent
-    token id + letter suffix, e.g. "t1a", "t1b", "t1c".
-    """
-
-    id: str
-    form: str
-    gloss: str
-
-
 class Token(BaseModel):
     """A single token (word) in either source or target sentence.
 
@@ -57,7 +42,6 @@ class Token(BaseModel):
     lemma: str
     pos: str
     features: list[str] = Field(default_factory=list)
-    morphemes: list[Morpheme] = Field(default_factory=list)
 
 
 class TokenizedSentence(BaseModel):
