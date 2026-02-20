@@ -2,8 +2,7 @@
 
 import json
 from typing import List, Tuple
-from itzuli_stanza_mcp.workflow import TranslationResult
-from itzuli_stanza_mcp.nlp import LanguageCode
+from itzuli_stanza_mcp.types import TranslationResult, LanguageCode
 from itzuli_stanza_mcp.i18n import LANGUAGE_NAMES, OUTPUT_LABELS, FRIENDLY_FEATS, FRIENDLY_UPOS, QUIRKS
 
 

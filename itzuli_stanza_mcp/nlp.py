@@ -1,15 +1,15 @@
-from typing import List, Tuple, Literal
+from typing import List, Tuple
 
 import stanza
 
-LanguageCode = Literal["eu", "en", "es", "fr"]
+from itzuli_stanza_mcp.types import AnalysisRow
 
 
 def create_pipeline() -> stanza.Pipeline:
     return stanza.Pipeline("eu", download_method=stanza.DownloadMethod.REUSE_RESOURCES, processors="tokenize,pos,lemma")
 
 
-def process_raw_analysis(pipeline: stanza.Pipeline, input_text: str) -> List[Tuple[str, str, str, str]]:
+def process_raw_analysis(pipeline: stanza.Pipeline, input_text: str) -> List[AnalysisRow]:
     """Process text with Stanza and return raw analysis data."""
     doc = pipeline(input_text)
     rows = []
@@ -18,7 +18,7 @@ def process_raw_analysis(pipeline: stanza.Pipeline, input_text: str) -> List[Tup
         for word in sent.words:
             # Return raw Stanza data: word text, lemma, UPOS, features
             feats = word.feats if word.feats else ""
-            rows.append((word.text, word.lemma, word.upos, feats))
+            rows.append(AnalysisRow(word.text, word.lemma, word.upos, feats))
 
     return rows
 

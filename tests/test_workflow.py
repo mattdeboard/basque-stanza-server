@@ -1,11 +1,7 @@
 from unittest.mock import Mock, patch
 
-from itzuli_stanza_mcp.workflow import (
-    AnalysisRow,
-    TranslationResult,
-    process_translation_with_analysis,
-    get_cached_stanza_pipeline,
-)
+from itzuli_stanza_mcp.workflow import process_translation_with_analysis, get_cached_stanza_pipeline
+from itzuli_stanza_mcp.types import AnalysisRow, TranslationResult
 
 
 class TestAnalysisRow:
@@ -48,7 +44,7 @@ class TestProcessTranslationWithAnalysis:
         mock_itzuli_class.return_value = mock_itzuli
         mock_itzuli.getTranslation.return_value = {"translated_text": "Hello!", "id": "trans-123"}
 
-        mock_process_raw_analysis.return_value = [("Kaixo", "kaixo", "INTJ", "Animacy=Inan")]
+        mock_process_raw_analysis.return_value = [AnalysisRow("Kaixo", "kaixo", "INTJ", "Animacy=Inan")]
 
         result = process_translation_with_analysis(
             api_key="test-key", text="Kaixo!", source_language="eu", target_language="en"
@@ -73,7 +69,7 @@ class TestProcessTranslationWithAnalysis:
         mock_itzuli_class.return_value = mock_itzuli
         mock_itzuli.getTranslation.return_value = {"translated_text": "Kaixo!", "id": "trans-456"}
 
-        mock_process_raw_analysis.return_value = [("Kaixo", "kaixo", "INTJ", "Animacy=Inan")]
+        mock_process_raw_analysis.return_value = [AnalysisRow("Kaixo", "kaixo", "INTJ", "Animacy=Inan")]
 
         result = process_translation_with_analysis(
             api_key="test-key", text="Hello!", source_language="en", target_language="eu"

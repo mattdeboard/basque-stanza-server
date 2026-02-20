@@ -3,7 +3,7 @@
 import logging
 
 from Itzuli import Itzuli
-from itzuli_stanza_mcp.nlp import LanguageCode
+from itzuli_stanza_mcp.types import LanguageCode
 from itzuli_stanza_mcp.workflow import process_translation_with_analysis
 from itzuli_stanza_mcp.formatters import format_as_markdown_table
 
