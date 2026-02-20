@@ -5,7 +5,7 @@ from typing import List
 import logging
 
 from Itzuli import Itzuli
-from itzuli_stanza_mcp.nlp import create_pipeline, process_input, LanguageCode
+from itzuli_stanza_mcp.nlp import create_pipeline, process_raw_analysis, LanguageCode
 
 logger = logging.getLogger("itzuli-stanza-pipeline")
 
@@ -68,11 +68,11 @@ def process_translation_with_analysis(
     # Determine which text to analyze (always analyze Basque text)
     basque_text = text if source_language == "eu" else translated_text
 
-    # Perform morphological analysis
+    # Perform morphological analysis (raw Stanza output)
     stanza_pipeline = get_cached_stanza_pipeline()
-    analysis_tuples = process_input(stanza_pipeline, basque_text, output_language)
+    raw_analysis = process_raw_analysis(stanza_pipeline, basque_text)
     analysis_rows = [
-        AnalysisRow(word=word, lemma=lemma, upos=upos, feats=feats) for word, lemma, upos, feats in analysis_tuples
+        AnalysisRow(word=word, lemma=lemma, upos=upos, feats=feats) for word, lemma, upos, feats in raw_analysis
     ]
 
     return TranslationResult(
