@@ -742,6 +742,50 @@ wheels = [
 ]
 
 [[package]]
+name = "itzuli-nlp"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "dependencies" },
+    { name = "fastmcp" },
+    { name = "ipython", version = "8.38.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "ipython", version = "9.10.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "itzuli" },
+    { name = "mcp" },
+    { name = "pydantic" },
+    { name = "python-dotenv" },
+    { name = "stanza" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "anyio" },
+    { name = "pytest" },
+    { name = "pytest-anyio" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "dependencies", specifier = ">=7.7.1" },
+    { name = "fastmcp", specifier = ">=2.14.5" },
+    { name = "ipython", specifier = ">=8.18.1" },
+    { name = "itzuli", specifier = ">=1.1.0" },
+    { name = "mcp", specifier = ">=1.26.0" },
+    { name = "pydantic", specifier = ">=2.12.5" },
+    { name = "python-dotenv", specifier = ">=1.2.1" },
+    { name = "stanza", specifier = ">=1.11.0" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "anyio", specifier = ">=4.12.1" },
+    { name = "pytest", specifier = ">=9.0.2" },
+    { name = "pytest-anyio", specifier = ">=0.0.0" },
+    { name = "ruff", specifier = ">=0.15.1" },
+]
+
+[[package]]
 name = "jaraco-classes"
 version = "3.4.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2307,50 +2351,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/07/e5/acd22862a75f424d98bb690fec9ab292da6e797cab367fa8fa451c547637/stanza-1.11.0.tar.gz", hash = "sha256:42ba9d4752e74c4e1e6fc2ca96e98bb8fa194049782cc35fde2a5118fd5f75ab", size = 1484551, upload-time = "2025-10-05T06:44:03.665Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e0/47/c6f8dd24ca100f6c260209b27be4d2e0ae68f13d4b2b4b1b343876c9e765/stanza-1.11.0-py3-none-any.whl", hash = "sha256:3a0bcf24830e32e88f6d0cff1e757661e53ed1b60149fa7f72211d61c6dab063", size = 1706081, upload-time = "2025-10-05T06:43:59.247Z" },
-]
-
-[[package]]
-name = "stanza-server"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "dependencies" },
-    { name = "fastmcp" },
-    { name = "ipython", version = "8.38.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
-    { name = "ipython", version = "9.10.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
-    { name = "itzuli" },
-    { name = "mcp" },
-    { name = "pydantic" },
-    { name = "python-dotenv" },
-    { name = "stanza" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "anyio" },
-    { name = "pytest" },
-    { name = "pytest-anyio" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "dependencies", specifier = ">=7.7.1" },
-    { name = "fastmcp", specifier = ">=2.14.5" },
-    { name = "ipython", specifier = ">=8.18.1" },
-    { name = "itzuli", specifier = ">=1.1.0" },
-    { name = "mcp", specifier = ">=1.26.0" },
-    { name = "pydantic", specifier = ">=2.12.5" },
-    { name = "python-dotenv", specifier = ">=1.2.1" },
-    { name = "stanza", specifier = ">=1.11.0" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "anyio", specifier = ">=4.12.1" },
-    { name = "pytest", specifier = ">=9.0.2" },
-    { name = "pytest-anyio", specifier = ">=0.0.0" },
-    { name = "ruff", specifier = ">=0.15.1" },
 ]
 
 [[package]]

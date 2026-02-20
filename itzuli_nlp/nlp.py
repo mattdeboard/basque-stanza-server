@@ -2,7 +2,7 @@ from typing import List, Tuple
 
 import stanza
 
-from itzuli_stanza_mcp.types import AnalysisRow, LanguageCode
+from itzuli_nlp.types import AnalysisRow, LanguageCode
 
 
 def create_pipeline(language: LanguageCode = "eu") -> stanza.Pipeline:
