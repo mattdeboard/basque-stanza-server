@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { motion } from 'framer-motion'
 import type { SentencePair, Alignment } from '../types/alignment'
 
 interface TokenPosition {
@@ -37,7 +36,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
         // Calculate position relative to ribbon space instead of main container
         const ribbonSpace = containerRef.current?.querySelector('.ribbon-space') as HTMLElement
         const ribbonRect = ribbonSpace?.getBoundingClientRect()
-        const tokenCenterX = ribbonRect 
+        const tokenCenterX = ribbonRect
           ? rect.left - ribbonRect.left + rect.width / 2
           : rect.left - containerRect.left + rect.width / 2
         newSourcePositions.push({
@@ -60,7 +59,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
         // Calculate position relative to ribbon space instead of main container
         const ribbonSpace = containerRef.current?.querySelector('.ribbon-space') as HTMLElement
         const ribbonRect = ribbonSpace?.getBoundingClientRect()
-        const tokenCenterX = ribbonRect 
+        const tokenCenterX = ribbonRect
           ? rect.left - ribbonRect.left + rect.width / 2
           : rect.left - containerRect.left + rect.width / 2
         newTargetPositions.push({
@@ -133,26 +132,15 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
 
     const ribbonRect = ribbonSpace.getBoundingClientRect()
 
-    // Get the main container rect for proper coordinate conversion
-    const containerRect = containerRef.current.getBoundingClientRect()
-
     // Use the stored positions directly - they're already calculated as centers
-    const sourceX = alignmentSourcePositions.length === 1 
+    const sourceX = alignmentSourcePositions.length === 1
       ? alignmentSourcePositions[0].x
       : (Math.min(...alignmentSourcePositions.map(pos => pos.x)) +
          Math.max(...alignmentSourcePositions.map(pos => pos.x))) / 2
     const targetX = alignmentTargetPositions.length === 1
-      ? alignmentTargetPositions[0].x  
+      ? alignmentTargetPositions[0].x
       : (Math.min(...alignmentTargetPositions.map(pos => pos.x)) +
          Math.max(...alignmentTargetPositions.map(pos => pos.x))) / 2
-
-    console.log(`Ribbon ${index} positioning:`, {
-      alignment: alignment.label,
-      sourceTokens: alignmentSourcePositions.map(p => ({id: p.id, x: p.x})),
-      targetTokens: alignmentTargetPositions.map(p => ({id: p.id, x: p.x})),
-      calculatedSourceX: sourceX,
-      calculatedTargetX: targetX
-    })
 
     // Connection points
     const sourceDotX = sourceX
