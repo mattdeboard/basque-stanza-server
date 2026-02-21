@@ -18,6 +18,15 @@ export function useAlignmentData(config?: DataSourceConfig): UseAlignmentDataRes
   const effectiveConfig = config ?? getDataSourceConfig()
 
   const loadData = useCallback(async () => {
+    // Skip loading if fixtures are disabled and we're trying to use API mode
+    // (since there's no /sentences endpoint on the backend)
+    if (!effectiveConfig.useFixtures) {
+      setData({ sentences: [] })
+      setLoading(false)
+      setError(null)
+      return
+    }
+
     try {
       setLoading(true)
       setError(null)
