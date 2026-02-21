@@ -6,12 +6,13 @@ from typing import List
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from ..core.types import AnalysisRow, LanguageCode
 from tools.dual_analysis import analyze_both_texts
 from .scaffold import create_scaffold_from_dual_analysis
-from .types import AlignmentData
+from .types import AlignmentData, SentencePair
 
 load_dotenv()
 
@@ -22,6 +23,15 @@ app = FastAPI(
     title="Alignment Server",
     description="HTTP API for generating alignment scaffolds from dual language analysis",
     version="0.1.0"
+)
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins for development
+    allow_credentials=False,  # Set to False when using allow_origins=["*"]
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
 )
 
 
@@ -51,6 +61,12 @@ async def health_check():
     return {"status": "healthy"}
 
 
+@app.options("/analyze-and-scaffold")
+async def options_analyze_and_scaffold():
+    """Handle preflight OPTIONS request for analyze-and-scaffold endpoint."""
+    return {"message": "OK"}
+
+
 @app.post("/analyze", response_model=AnalysisResponse)
 async def analyze_texts(request: AnalysisRequest):
     """
@@ -63,11 +79,11 @@ async def analyze_texts(request: AnalysisRequest):
         raise HTTPException(status_code=500, detail="ITZULI_API_KEY not configured")
     
     try:
-        source_analysis, target_analysis, translated_text = analyze_both_texts(
+        translated_text, source_analysis, target_analysis = analyze_both_texts(
             api_key=api_key,
             text=request.text,
-            source_lang=request.source_lang,
-            target_lang=request.target_lang
+            source_language=request.source_lang,
+            target_language=request.target_lang
         )
         
         return AnalysisResponse(
@@ -86,7 +102,7 @@ async def analyze_texts(request: AnalysisRequest):
 
 
 
-@app.post("/analyze-and-scaffold", response_model=AlignmentData)
+@app.post("/analyze-and-scaffold", response_model=SentencePair)
 async def analyze_and_scaffold(request: AnalysisRequest):
     """
     Combined endpoint: analyze both texts and generate scaffold in one call.
@@ -97,11 +113,11 @@ async def analyze_and_scaffold(request: AnalysisRequest):
     
     try:
         # First perform dual analysis
-        source_analysis, target_analysis, translated_text = analyze_both_texts(
+        translated_text, source_analysis, target_analysis = analyze_both_texts(
             api_key=api_key,
             text=request.text,
-            source_lang=request.source_lang,
-            target_lang=request.target_lang
+            source_language=request.source_lang,
+            target_language=request.target_lang
         )
         
         # Then generate scaffold
@@ -115,7 +131,8 @@ async def analyze_and_scaffold(request: AnalysisRequest):
             sentence_id=request.sentence_id
         )
         
-        return alignment_data
+        # Return the first (and only) sentence pair
+        return alignment_data.sentences[0]
         
     except Exception as e:
         logger.error(f"Analysis and scaffold generation failed: {e}")

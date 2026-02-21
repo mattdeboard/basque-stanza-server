@@ -9,7 +9,11 @@ backend/*.egg-info
 # Virtual environments
 backend/.venv
 .claude/
+
+# Environment files (contain API keys and secrets)
+.env
 backend/.env
+frontend/.env
 
 # Node.js (for future frontend)
 frontend/node_modules/
