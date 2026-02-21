@@ -3,8 +3,8 @@
  * Designed to easily switch between fixture data and backend API.
  */
 
-import type { AlignmentData, DataSourceConfig } from '../types/alignment'
 import { config } from '../config'
+import type { AlignmentData, DataSourceConfig } from '../types/alignment'
 
 /**
  * Default configuration loaded from environment variables
@@ -33,15 +33,15 @@ async function loadApiData(config: DataSourceConfig): Promise<AlignmentData> {
   const url = `${config.apiBaseUrl}/sentences`
   const response = await fetch(url, {
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
     },
   })
-  
+
   if (!response.ok) {
     throw new Error(`API request failed: ${response.status} ${response.statusText}`)
   }
-  
+
   return response.json()
 }
 
@@ -53,9 +53,8 @@ export async function fetchAlignmentData(
 ): Promise<AlignmentData> {
   if (config.useFixtures) {
     return loadFixtureData()
-  } else {
-    return loadApiData(config)
   }
+  return loadApiData(config)
 }
 
 /**
@@ -68,7 +67,7 @@ export function getDataSourceConfig(): DataSourceConfig {
 /**
  * Utility to create a configuration for API mode
  */
-export function createApiConfig(apiBaseUrl: string = '/api'): DataSourceConfig {
+export function createApiConfig(apiBaseUrl = '/api'): DataSourceConfig {
   return {
     useFixtures: false,
     apiBaseUrl,

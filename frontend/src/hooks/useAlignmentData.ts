@@ -2,9 +2,9 @@
  * React hook for loading alignment data with proper state management
  */
 
-import { useState, useEffect, useCallback } from 'react'
-import type { UseAlignmentDataResult, DataSourceConfig } from '../types/alignment'
+import { useCallback, useEffect, useState } from 'react'
 import { fetchAlignmentData, getDataSourceConfig } from '../services/alignmentApi'
+import type { DataSourceConfig, UseAlignmentDataResult } from '../types/alignment'
 
 /**
  * Hook for loading alignment data with loading states and error handling
@@ -56,7 +56,7 @@ export function useSelectedSentence(initialId?: string) {
 
   const { data, loading, error, refetch } = useAlignmentData()
 
-  const selectedSentence = data?.sentences.find(s => s.id === selectedId) ?? null
+  const selectedSentence = data?.sentences.find((s) => s.id === selectedId) ?? null
   const availableSentences = data?.sentences ?? []
 
   // Auto-select first sentence if none selected and data is available
