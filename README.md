@@ -18,35 +18,6 @@ The services can be used independently or together to provide comprehensive Basq
 
 See [ARCHITECTURE.md](./ARCHITECTURE.md) for full details on project structure.
 
-```code
-core/                    # Core reusable NLP library
-  workflow.py            # Core translation+analysis workflow
-  nlp.py                 # Stanza pipeline and text processing  
-  formatters.py          # Output formatting (markdown, JSON, dict list)
-  types.py               # Shared data types
-  i18n.py                # Internationalization data
-
-mcp_server/              # MCP-specific code for AI assistant integration
-  server.py              # MCP tool definitions
-  services.py            # MCP glue layer
-
-alignment_server/        # HTTP API for frontend applications
-  server.py              # FastAPI HTTP server
-  scaffold.py            # Alignment scaffold generation
-  types.py               # Alignment-specific Pydantic types
-
-tools/                   # Workflow utilities and scripts
-  dual_analysis.py       # Analyzes both source & translation text
-  generate_scaffold.py   # Generate scaffolds from dual analysis
-  playground/            # Development/testing scripts
-
-tests/                   # Organized by component
-  core/                  # Core NLP functionality tests
-  mcp_server/            # MCP server tests
-  alignment_server/      # Alignment server tests  
-  tools/                 # Tools and utilities tests
-```
-
 ## Reusable Components
 
 The core translation and analysis functionality has been designed for reusability beyond the MCP server context:

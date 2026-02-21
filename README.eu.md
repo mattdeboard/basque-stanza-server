@@ -18,35 +18,6 @@ Zerbitzuak independenteki edo batera erabil daitezke euskal hizkuntzaren prozesa
 
 Egitura osoaren xehetasunetarako ikus [ARCHITECTURE.eu.md](./ARCHITECTURE.eu.md).
 
-```code
-core/                    # Berrerabilgarriak diren NLP liburutegi nagusia
-  workflow.py            # Itzulpen eta analisi workflow nagusia
-  nlp.py                 # Stanza pipeline eta testu prozesatzea
-  formatters.py          # Irteera formatuak (markdown, JSON, dict lista)
-  types.py               # Partekatutako datu motak
-  i18n.py                # Nazioartekotze datuak
-
-mcp_server/              # IA laguntzaileen integraziorako MCP-rentzako kodea
-  server.py              # MCP tresna definizioak
-  services.py            # MCP itsaste geruza
-
-alignment_server/        # Frontend aplikazioentzako HTTP API
-  server.py              # FastAPI HTTP zerbitzaria
-  scaffold.py            # Lerrokatze scaffold sortzea
-  types.py               # Lerrokatze-rentzako Pydantic mota zehatzak
-
-tools/                   # Workflow tresnak eta scriptak
-  dual_analysis.py       # Jatorri eta itzulpen testua aztertzen du
-  generate_scaffold.py   # Analisi bikoitzetik scaffoldak sortu
-  playground/            # Garapenerako/proba scriptak
-
-tests/                   # Osagaiaren arabera antolatuta
-  core/                  # Oinarrizko NLP funtzionalitate probak
-  mcp_server/            # MCP zerbitzari probak
-  alignment_server/      # Lerrokatze zerbitzari probak
-  tools/                 # Tresna eta utilitate probak
-```
-
 ## Berrerabilgarriak diren Osagaiak
 
 Itzulpen eta analisi funtzionalitate nagusia MCP zerbitzariaz haratago berrerabilgarria izateko diseinatu da:
