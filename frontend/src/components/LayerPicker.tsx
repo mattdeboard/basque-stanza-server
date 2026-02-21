@@ -37,8 +37,8 @@ type LayerPickerProps = {
 
 export function LayerPicker({ currentLayer, setVizLayer }: LayerPickerProps) {
   return (
-    <div className="px-10 pt-6 pb-4 mx-auto animate-on-load" style={{ animationDelay: '200ms' }}>
-      <div className="flex gap-3 justify-center">
+    <div className="px-4 sm:px-6 lg:px-10 pt-4 sm:pt-6 pb-3 sm:pb-4 mx-auto animate-on-load" style={{ animationDelay: '200ms' }}>
+      <div className="flex flex-wrap gap-2 sm:gap-3 justify-center">
         {Object.entries(LAYER_CONFIGS).map(([layerKey, config]) => {
           const isActive = currentLayer === layerKey
           return (
@@ -46,7 +46,7 @@ export function LayerPicker({ currentLayer, setVizLayer }: LayerPickerProps) {
               key={layerKey}
               onClick={() => setVizLayer(layerKey as LayerType)}
               title={LAYER_TOOLTIPS[layerKey as LayerType]}
-              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 border-2 flex items-center gap-2 ${
+              className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 border-2 flex items-center gap-1 sm:gap-2 min-h-10 ${
                 isActive
                   ? 'text-white shadow-md'
                   : 'hover:shadow-sm'
@@ -61,10 +61,10 @@ export function LayerPicker({ currentLayer, setVizLayer }: LayerPickerProps) {
               }
             >
               <div
-                className="w-3 h-3 rounded-full"
+                className="w-2.5 sm:w-3 h-2.5 sm:h-3 rounded-full flex-shrink-0"
                 style={{ backgroundColor: config.color }}
               />
-              {config.displayName}
+              <span className="truncate">{config.displayName}</span>
             </button>
           )
         })}

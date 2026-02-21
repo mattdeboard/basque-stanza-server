@@ -33,25 +33,25 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-tan-25 via-tan-50 to-tan-100">
-      <div className="max-w-7xl mx-auto p-8 font-sans animate-fade-in">
-        <header className="text-center mb-4 animate-on-load">
-          <h1 className="text-5xl font-display font-light mb-2 text-slate-800 tracking-tight">
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 font-sans animate-fade-in">
+        <header className="text-center mb-3 sm:mb-4 animate-on-load">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-light mb-2 text-slate-800 tracking-tight">
             Itzuli <span className="font-medium text-sage-600">Stanza</span>
           </h1>
-          <h2 className="text-xl font-light text-slate-500 mb-3 max-w-2xl mx-auto leading-relaxed">
+          <h2 className="text-lg sm:text-xl font-light text-slate-500 mb-3 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
             Translation Alignment Visualization for English-Basque Translations
           </h2>
 
-          <div className="content-card max-w-2xl mx-auto p-6">
-            <div className="flex items-center justify-center gap-6">
-              <label htmlFor="sentence-select" className="font-medium text-slate-600 text-sm uppercase tracking-wider">
+          <div className="content-card max-w-2xl mx-4 sm:mx-auto p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6">
+              <label htmlFor="sentence-select" className="font-medium text-slate-600 text-xs sm:text-sm uppercase tracking-wider">
                 Example Sentence
               </label>
               <select
                 id="sentence-select"
                 value={selectedId || ''}
                 onChange={(e) => setSelectedId(e.target.value)}
-                className="px-4 py-3 border border-slate-200 rounded-lg bg-white/80 backdrop-blur-sm text-base min-w-80 focus:outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200 transition-all duration-200"
+                className="px-3 sm:px-4 py-2 sm:py-3 border border-slate-200 rounded-lg bg-white/80 backdrop-blur-sm text-sm sm:text-base w-full sm:min-w-80 focus:outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200 transition-all duration-200"
               >
                 {availableSentences.map((sentence) => (
                   <option key={sentence.id} value={sentence.id}>

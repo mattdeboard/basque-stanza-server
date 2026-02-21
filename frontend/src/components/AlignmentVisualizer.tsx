@@ -41,9 +41,10 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       const rect = token.getBoundingClientRect()
       const id = token.getAttribute('data-token-id')
       if (id) {
-        // Calculate position relative to ribbon space instead of main container
+        // Calculate position relative to ribbon space
         const ribbonSpace = containerRef.current?.querySelector('.ribbon-space') as HTMLElement
         const ribbonRect = ribbonSpace?.getBoundingClientRect()
+        
         const tokenCenterX = ribbonRect
           ? rect.left - ribbonRect.left + rect.width / 2
           : rect.left - containerRect.left + rect.width / 2
@@ -64,9 +65,10 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       const rect = token.getBoundingClientRect()
       const id = token.getAttribute('data-token-id')
       if (id) {
-        // Calculate position relative to ribbon space instead of main container
+        // Calculate position relative to ribbon space
         const ribbonSpace = containerRef.current?.querySelector('.ribbon-space') as HTMLElement
         const ribbonRect = ribbonSpace?.getBoundingClientRect()
+        
         const tokenCenterX = ribbonRect
           ? rect.left - ribbonRect.left + rect.width / 2
           : rect.left - containerRect.left + rect.width / 2
@@ -88,7 +90,33 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
     updateTokenPositions()
 
     const handleResize = () => updateTokenPositions()
+    
+    // Throttle scroll updates for better performance
+    let scrollTimeout: NodeJS.Timeout | null = null
+    const handleScroll = () => {
+      if (scrollTimeout) clearTimeout(scrollTimeout)
+      scrollTimeout = setTimeout(updateTokenPositions, 10)
+    }
+    
     window.addEventListener('resize', handleResize)
+    
+    // Add scroll listeners to token containers
+    const container = containerRef.current
+    if (container) {
+      const scrollContainers = container.querySelectorAll('.overflow-x-auto')
+      scrollContainers.forEach(scrollContainer => {
+        scrollContainer.addEventListener('scroll', handleScroll, { passive: true })
+      })
+      
+      return () => {
+        window.removeEventListener('resize', handleResize)
+        scrollContainers.forEach(scrollContainer => {
+          scrollContainer.removeEventListener('scroll', handleScroll)
+        })
+        if (scrollTimeout) clearTimeout(scrollTimeout)
+      }
+    }
+    
     return () => window.removeEventListener('resize', handleResize)
   }, [updateTokenPositions, sentencePair])
 
@@ -487,19 +515,19 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
   }
 
   return (
-    <div ref={containerRef} className="relative max-w-5xl mx-auto">
+    <div ref={containerRef} className="relative max-w-5xl mx-auto px-2 sm:px-0">
       {/* Layer Toggle Controls */}
       <LayerPicker currentLayer={vizLayer} setVizLayer={setVizLayer} />
 
       {/* Source Sentence */}
-      <div className="content-card px-10 pt-4 pb-1 mx-auto mb-0 rounded-b-none animate-on-load" style={{ animationDelay: '400ms' }}>
+      <div className="content-card px-4 sm:px-6 lg:px-10 pt-3 sm:pt-4 pb-1 mx-auto mb-0 rounded-b-none animate-on-load" style={{ animationDelay: '400ms' }}>
         <div className="text-xs font-medium text-sage-600 uppercase tracking-widest mb-1 opacity-75 text-center">
           {sentencePair.source.lang.toUpperCase()}
         </div>
-        <div className="text-2xl font-display text-slate-700 mb-2 leading-relaxed font-light italic text-center">
+        <div className="text-lg sm:text-xl lg:text-2xl font-display text-slate-700 mb-2 leading-relaxed font-light italic text-center">
           {sentencePair.source.text}
         </div>
-        <div className="flex gap-4 items-center overflow-x-auto pb-1 pt-1 scrollbar-none justify-center">
+        <div className="flex gap-2 sm:gap-3 lg:gap-4 items-center overflow-x-auto pb-1 pt-1 scrollbar-none justify-start sm:justify-center px-2 sm:px-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {sentencePair.source.tokens.map((token) => {
             const isHovered = hoveredTokens.has(token.id)
             const isDimmed = hoveredTokens.size > 0 && !isHovered
@@ -527,7 +555,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
 
       {/* Ribbon Space */}
       <div
-        className="h-ribbon-space relative flex items-center justify-center mx-auto ribbon-space animate-on-load"
+        className="h-24 sm:h-32 lg:h-ribbon-space relative flex items-center justify-center mx-auto ribbon-space animate-on-load"
         style={{
           background: 'linear-gradient(to bottom, rgba(253, 248, 243, 0.6) 0%, rgba(255, 252, 250, 0.4) 50%, rgba(253, 248, 243, 0.6) 100%)',
           animationDelay: '600ms'
@@ -545,8 +573,8 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       </div>
 
       {/* Target Sentence */}
-      <div className="content-card px-10 pt-1 pb-4 mx-auto mt-0 rounded-t-none animate-on-load" style={{ animationDelay: '800ms' }}>
-        <div className="flex gap-4 items-center mb-1 overflow-x-auto pt-1 scrollbar-none justify-center">
+      <div className="content-card px-4 sm:px-6 lg:px-10 pt-1 pb-3 sm:pb-4 mx-auto mt-0 rounded-t-none animate-on-load" style={{ animationDelay: '800ms' }}>
+        <div className="flex gap-2 sm:gap-3 lg:gap-4 items-center mb-1 overflow-x-auto pt-1 scrollbar-none justify-start sm:justify-center px-2 sm:px-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {sentencePair.target.tokens.map((token) => {
             const isHovered = hoveredTokens.has(token.id)
             const isDimmed = hoveredTokens.size > 0 && !isHovered
@@ -573,13 +601,13 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
         <div className="text-xs font-medium text-sage-600 uppercase tracking-widest mb-1 opacity-75 text-center">
           {sentencePair.target.lang.toUpperCase()}
         </div>
-        <div className="text-2xl font-display text-slate-700 leading-relaxed font-light italic text-center mb-1">
+        <div className="text-lg sm:text-xl lg:text-2xl font-display text-slate-700 leading-relaxed font-light italic text-center mb-1">
           {sentencePair.target.text}
         </div>
       </div>
 
       {/* Alignment Labels */}
-      <div className="px-10 pb-1 mx-auto animate-on-load mt-0" style={{ animationDelay: '1000ms' }}>
+      <div className="px-4 sm:px-6 lg:px-10 pb-1 mx-auto animate-on-load mt-0" style={{ animationDelay: '1000ms' }}>
         <div className="space-y-1">
           {sentencePair.layers[vizLayer].map((alignment, index) => (
             <AlignmentLabel
