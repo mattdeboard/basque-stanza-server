@@ -31,7 +31,7 @@ export enum LayerType {
  * Tokens are the atomic unit for alignment — ribbon endpoints
  * target token IDs.
  */
-export interface Token {
+export type Token = {
   id: string
   form: string
   lemma: string
@@ -42,7 +42,7 @@ export interface Token {
 /**
  * A sentence with its language tag, display text, and token analysis.
  */
-export interface TokenizedSentence {
+export type TokenizedSentence = {
   lang: LanguageCode
   text: string
   tokens: Token[]
@@ -61,7 +61,7 @@ export interface TokenizedSentence {
  * The same alignment may appear in multiple layers if it is relevant
  * to more than one analytical dimension.
  */
-export interface Alignment {
+export type Alignment = {
   source: string[]
   target: string[]
   label: string
@@ -76,7 +76,7 @@ export interface Alignment {
  * features: Morphosyntactic features (tense, aspect, negation, agreement,
  *     definiteness) and how they redistribute across target morphemes.
  */
-export interface AlignmentLayers {
+export type AlignmentLayers = {
   lexical: Alignment[]
   grammatical_relations: Alignment[]
   features: Alignment[]
@@ -89,7 +89,7 @@ export interface AlignmentLayers {
  * is a curated example with hand-verified (or AI-assisted) alignments
  * across all three layers.
  */
-export interface SentencePair {
+export type SentencePair = {
   id: string
   source: TokenizedSentence
   target: TokenizedSentence
@@ -102,14 +102,14 @@ export interface SentencePair {
  * Serialized as JSON and served from /api/sentences (or loaded as
  * fixture data during development).
  */
-export interface AlignmentData {
+export type AlignmentData = {
   sentences: SentencePair[]
 }
 
 /**
  * Configuration for data source (fixture vs API)
  */
-export interface DataSourceConfig {
+export type DataSourceConfig = {
   useFixtures: boolean
   apiBaseUrl?: string
 }
@@ -117,7 +117,7 @@ export interface DataSourceConfig {
 /**
  * Hook return type for alignment data loading
  */
-export interface UseAlignmentDataResult {
+export type UseAlignmentDataResult = {
   data: AlignmentData | null
   loading: boolean
   error: string | null

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import type { SentencePair, Alignment } from '../types/alignment'
+import { type SentencePair, type Alignment, LayerType } from '../types/alignment'
+import { LayerPicker, LAYER_CONFIGS } from './LayerPicker'
 
-interface TokenPosition {
+type TokenPosition = {
   id: string
   x: number
   y: number
@@ -9,7 +10,7 @@ interface TokenPosition {
   height: number
 }
 
-interface AlignmentVisualizerProps {
+type AlignmentVisualizerProps = {
   sentencePair: SentencePair
 }
 
@@ -23,6 +24,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
   const [pinnedIsSource, setPinnedIsSource] = useState<boolean>(false)
   const [animatingRibbons, setAnimatingRibbons] = useState<Set<number>>(new Set())
   const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState<boolean>(false)
+  const [vizLayer, setVizLayer] = useState<LayerType>(LayerType.LEXICAL)
 
   const updateTokenPositions = useCallback(() => {
     if (!containerRef.current) return
@@ -105,7 +107,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       setHasInitiallyLoaded(true)
 
       // Animate all ribbons on initial load with staggered timing
-      const allAlignmentIndices = sentencePair.layers.lexical.map((_, index) => index)
+      const allAlignmentIndices = sentencePair.layers[vizLayer].map((_, index) => index)
 
       // Start staggered animations for all ribbons
       allAlignmentIndices.forEach((alignmentIndex, order) => {
@@ -124,7 +126,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
         setAnimatingRibbons(new Set())
       }, totalDuration)
     }
-  }, [sourcePositions, targetPositions, sentencePair.layers.lexical, hasInitiallyLoaded])
+  }, [sourcePositions, targetPositions, sentencePair.layers[vizLayer], hasInitiallyLoaded])
 
 
   // Calculate path length for SVG animation
@@ -145,7 +147,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
     const newHighlightedAlignments = new Set<number>()
 
     const connectedAlignments: number[] = []
-    sentencePair.layers.lexical.forEach((alignment, index) => {
+    sentencePair.layers[vizLayer].forEach((alignment, index) => {
       const isConnected = isSource
         ? alignment.source.includes(tokenId)
         : alignment.target.includes(tokenId)
@@ -165,7 +167,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       const pinnedTokens = new Set<string>()
       const pinnedAlignments = new Set<number>()
 
-      sentencePair.layers.lexical.forEach((alignment, index) => {
+      sentencePair.layers[vizLayer].forEach((alignment, index) => {
         const isConnectedToPinned = pinnedIsSource
           ? alignment.source.includes(pinnedTokenId)
           : alignment.target.includes(pinnedTokenId)
@@ -199,7 +201,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
 
     setHoveredTokens(newHoveredTokens)
     setHighlightedAlignments(newHighlightedAlignments)
-  }, [sentencePair.layers.lexical, pinnedTokenId, pinnedIsSource, highlightedAlignments])
+  }, [sentencePair.layers[vizLayer], pinnedTokenId, pinnedIsSource, highlightedAlignments])
 
   const handleTokenLeave = useCallback(() => {
     if (pinnedTokenId) {
@@ -207,7 +209,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       const pinnedTokens = new Set<string>()
       const pinnedAlignments = new Set<number>()
 
-      sentencePair.layers.lexical.forEach((alignment, index) => {
+      sentencePair.layers[vizLayer].forEach((alignment, index) => {
         const isConnectedToPinned = pinnedIsSource
           ? alignment.source.includes(pinnedTokenId)
           : alignment.target.includes(pinnedTokenId)
@@ -228,7 +230,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       setHighlightedAlignments(new Set())
       setAnimatingRibbons(new Set())
     }
-  }, [pinnedTokenId, pinnedIsSource, sentencePair.layers.lexical])
+  }, [pinnedTokenId, pinnedIsSource, sentencePair.layers[vizLayer]])
 
   const handleTokenClick = useCallback((tokenId: string, isSource: boolean) => {
     // Toggle pin state
@@ -248,7 +250,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       const newHighlightedAlignments = new Set<number>()
 
       const connectedAlignments: number[] = []
-      sentencePair.layers.lexical.forEach((alignment, index) => {
+      sentencePair.layers[vizLayer].forEach((alignment, index) => {
         const isConnected = isSource
           ? alignment.source.includes(tokenId)
           : alignment.target.includes(tokenId)
@@ -279,7 +281,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       setHoveredTokens(newHoveredTokens)
       setHighlightedAlignments(newHighlightedAlignments)
     }
-  }, [pinnedTokenId, sentencePair.layers.lexical])
+  }, [pinnedTokenId, sentencePair.layers[vizLayer]])
 
   const createRibbonPath = (alignment: Alignment, index: number) => {
     // Find positions for source and target tokens
@@ -339,17 +341,17 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
     const isAnimating = animatingRibbons.has(index)
 
     // Determine if this ribbon is part of the pinned set
-    const isPinnedRibbon = pinnedTokenId ? sentencePair.layers.lexical[index] &&
+    const isPinnedRibbon = pinnedTokenId ? sentencePair.layers[vizLayer][index] &&
       (pinnedIsSource
-        ? sentencePair.layers.lexical[index].source.includes(pinnedTokenId)
-        : sentencePair.layers.lexical[index].target.includes(pinnedTokenId)
+        ? sentencePair.layers[vizLayer][index].source.includes(pinnedTokenId)
+        : sentencePair.layers[vizLayer][index].target.includes(pinnedTokenId)
       ) : false
 
     // Different opacity for pinned vs hovered ribbons
     const baseOpacity = isHighlighted
       ? (isPinnedRibbon ? 1 : 0.7) // Pinned ribbons at full opacity, hover preview at 70%
       : (isDimmed ? 0.15 : 0.6)
-    
+
     const opacity = baseOpacity * (options?.opacityMultiplier || 1)
 
     // Calculate path length for animation (using a simpler approach)
@@ -368,7 +370,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
           key={options?.pathKey || `ribbon-path-${index}`}
           d={ribbonPath}
           fill="none"
-          stroke="#3b82f6"
+          stroke={LAYER_CONFIGS[vizLayer].color}
           strokeWidth={options?.strokeWidth || "3"}
           opacity={opacity}
           className="transition-opacity duration-300"
@@ -386,7 +388,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
           cx={sourceDotX}
           cy={sourceDotY}
           r={options?.sourceDotRadius || "4"}
-          fill="#3b82f6"
+          fill={LAYER_CONFIGS[vizLayer].color}
           opacity={isHighlighted && isAnimating ? opacity : (isHighlighted ? 0 : opacity)}
           className="transition-all duration-300"
           style={isHighlighted ? {
@@ -400,7 +402,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
           cx={targetDotX}
           cy={targetDotY}
           r={options?.targetDotRadius || "4"}
-          fill="#3b82f6"
+          fill={LAYER_CONFIGS[vizLayer].color}
           opacity={isHighlighted && isAnimating ? opacity : (isHighlighted ? 0 : opacity)}
           className="transition-all duration-300"
           style={isHighlighted ? {
@@ -413,7 +415,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
 
   const createSimpleRibbon = (sourcePos: TokenPosition, targetPos: TokenPosition, ribbonRect: DOMRect, index: number) => {
     const ribbon = createSingleRibbon(sourcePos, targetPos, ribbonRect, index)
-    
+
     return (
       <g key={`ribbon-group-${index}`}>
         {ribbon.path}
@@ -488,6 +490,9 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
 
   return (
     <div ref={containerRef} className="relative">
+      {/* Layer Toggle Controls */}
+      <LayerPicker currentLayer={vizLayer} setVizLayer={setVizLayer} />
+
       {/* Source Sentence */}
       <div className="px-8 pt-6 pb-0 bg-gray-50 rounded-t-lg mx-8">
         <div className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
@@ -501,7 +506,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
             const isHovered = hoveredTokens.has(token.id)
             const isDimmed = hoveredTokens.size > 0 && !isHovered
             const isPinned = pinnedTokenId === token.id
-            const isConnected = sentencePair.layers.lexical.some(alignment =>
+            const isConnected = sentencePair.layers[vizLayer].some(alignment =>
               alignment.source.includes(token.id)
             )
 
@@ -534,7 +539,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
           className="absolute inset-0 w-full h-full pointer-events-none"
           style={{ zIndex: 1 }}
         >
-          {sourcePositions.length > 0 && targetPositions.length > 0 && sentencePair.layers.lexical.map((alignment, index) =>
+          {sourcePositions.length > 0 && targetPositions.length > 0 && sentencePair.layers[vizLayer].map((alignment, index) =>
             createRibbonPath(alignment, index)
           )}
         </svg>
@@ -547,7 +552,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
             const isHovered = hoveredTokens.has(token.id)
             const isDimmed = hoveredTokens.size > 0 && !isHovered
             const isPinned = pinnedTokenId === token.id
-            const isConnected = sentencePair.layers.lexical.some(alignment =>
+            const isConnected = sentencePair.layers[vizLayer].some(alignment =>
               alignment.target.includes(token.id)
             )
 
