@@ -103,10 +103,10 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
     if (sourcePositions.length > 0 && targetPositions.length > 0 && !hasInitiallyLoaded) {
       // Mark as initially loaded
       setHasInitiallyLoaded(true)
-      
+
       // Animate all ribbons on initial load with staggered timing
       const allAlignmentIndices = sentencePair.layers.lexical.map((_, index) => index)
-      
+
       // Start staggered animations for all ribbons
       allAlignmentIndices.forEach((alignmentIndex, order) => {
         setTimeout(() => {
@@ -116,7 +116,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
 
       // Show all ribbons as highlighted during initial load
       setHighlightedAlignments(new Set(allAlignmentIndices))
-      
+
       // Clear the highlight after all animations complete
       const totalDuration = allAlignmentIndices.length * 150 + 50 + 400 // stagger + delay + animation duration
       setTimeout(() => {
@@ -164,7 +164,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       // Merge with pinned tokens but keep them visually distinct
       const pinnedTokens = new Set<string>()
       const pinnedAlignments = new Set<number>()
-      
+
       sentencePair.layers.lexical.forEach((alignment, index) => {
         const isConnectedToPinned = pinnedIsSource
           ? alignment.source.includes(pinnedTokenId)
@@ -189,7 +189,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       connectedAlignments.forEach(idx => newSet.delete(idx))
       return newSet
     })
-    
+
     // Then start staggered animations with delays
     connectedAlignments.forEach((alignmentIndex, order) => {
       setTimeout(() => {
@@ -206,7 +206,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       // Restore to pinned state only
       const pinnedTokens = new Set<string>()
       const pinnedAlignments = new Set<number>()
-      
+
       sentencePair.layers.lexical.forEach((alignment, index) => {
         const isConnectedToPinned = pinnedIsSource
           ? alignment.source.includes(pinnedTokenId)
@@ -243,10 +243,10 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       // Pin this token
       setPinnedTokenId(tokenId)
       setPinnedIsSource(isSource)
-      
+
       const newHoveredTokens = new Set([tokenId])
       const newHighlightedAlignments = new Set<number>()
-      
+
       const connectedAlignments: number[] = []
       sentencePair.layers.lexical.forEach((alignment, index) => {
         const isConnected = isSource
@@ -268,7 +268,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
         connectedAlignments.forEach(idx => newSet.delete(idx))
         return newSet
       })
-      
+
       // Then start staggered animations with delays
       connectedAlignments.forEach((alignmentIndex, order) => {
         setTimeout(() => {
@@ -303,20 +303,21 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
 
     const ribbonRect = ribbonSpace.getBoundingClientRect()
 
-    // Use the stored positions directly - they're already calculated as centers
-    const sourceX = alignmentSourcePositions.length === 1
-      ? alignmentSourcePositions[0].x
-      : (Math.min(...alignmentSourcePositions.map(pos => pos.x)) +
-         Math.max(...alignmentSourcePositions.map(pos => pos.x))) / 2
-    const targetX = alignmentTargetPositions.length === 1
-      ? alignmentTargetPositions[0].x
-      : (Math.min(...alignmentTargetPositions.map(pos => pos.x)) +
-         Math.max(...alignmentTargetPositions.map(pos => pos.x))) / 2
+    // Determine if this is a many-to-many connection
+    const isManyToMany = alignmentSourcePositions.length > 1 || alignmentTargetPositions.length > 1
 
+    if (isManyToMany) {
+      return createManyToManyRibbon(alignmentSourcePositions, alignmentTargetPositions, ribbonRect, index)
+    } else {
+      return createSimpleRibbon(alignmentSourcePositions[0], alignmentTargetPositions[0], ribbonRect, index)
+    }
+  }
+
+  const createSimpleRibbon = (sourcePos: TokenPosition, targetPos: TokenPosition, ribbonRect: DOMRect, index: number) => {
     // Connection points
-    const sourceDotX = sourceX
+    const sourceDotX = sourcePos.x
     const sourceDotY = -8
-    const targetDotX = targetX
+    const targetDotX = targetPos.x
     const targetDotY = ribbonRect.height + 8
 
     // Smooth bezier curve
@@ -329,16 +330,16 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
     const isHighlighted = highlightedAlignments.has(index)
     const isDimmed = highlightedAlignments.size > 0 && !isHighlighted
     const isAnimating = animatingRibbons.has(index)
-    
+
     // Determine if this ribbon is part of the pinned set
-    const isPinnedRibbon = pinnedTokenId ? sentencePair.layers.lexical[index] && 
-      (pinnedIsSource 
+    const isPinnedRibbon = pinnedTokenId ? sentencePair.layers.lexical[index] &&
+      (pinnedIsSource
         ? sentencePair.layers.lexical[index].source.includes(pinnedTokenId)
         : sentencePair.layers.lexical[index].target.includes(pinnedTokenId)
       ) : false
-    
+
     // Different opacity for pinned vs hovered ribbons
-    const opacity = isHighlighted 
+    const opacity = isHighlighted
       ? (isPinnedRibbon ? 1 : 0.7) // Pinned ribbons at full opacity, hover preview at 70%
       : (isDimmed ? 0.15 : 0.6)
 
@@ -394,7 +395,111 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
             transitionDelay: isAnimating ? '350ms' : '0ms'
           } : undefined}
         />
+      </g>
+    )
+  }
 
+  const createManyToManyRibbon = (sourcePositions: TokenPosition[], targetPositions: TokenPosition[], ribbonRect: DOMRect, index: number) => {
+    const isHighlighted = highlightedAlignments.has(index)
+    const isDimmed = highlightedAlignments.size > 0 && !isHighlighted
+    const isAnimating = animatingRibbons.has(index)
+
+    // Determine if this ribbon is part of the pinned set
+    const isPinnedRibbon = pinnedTokenId ? sentencePair.layers.lexical[index] &&
+      (pinnedIsSource
+        ? sentencePair.layers.lexical[index].source.includes(pinnedTokenId)
+        : sentencePair.layers.lexical[index].target.includes(pinnedTokenId)
+      ) : false
+
+    // Different opacity for pinned vs hovered ribbons
+    const opacity = isHighlighted
+      ? (isPinnedRibbon ? 1 : 0.7)
+      : (isDimmed ? 0.15 : 0.6)
+
+    const ribbonElements: JSX.Element[] = []
+
+    // Create individual simple ribbons from each source to each target
+    sourcePositions.forEach((sourcePos, sourceIndex) => {
+      targetPositions.forEach((targetPos, targetIndex) => {
+        const ribbonKey = `${sourceIndex}-${targetIndex}`
+
+        // Use the same logic as simple ribbons
+        const sourceDotX = sourcePos.x
+        const sourceDotY = -8
+        const targetDotX = targetPos.x
+        const targetDotY = ribbonRect.height + 8
+
+        // Smooth bezier curve
+        const curveHeight = targetDotY - sourceDotY
+        const controlOffset = Math.min(curveHeight * 0.3, 50)
+
+        const ribbonPath = `M ${sourceDotX} ${sourceDotY}
+                           C ${sourceDotX} ${sourceDotY + controlOffset}, ${targetDotX} ${targetDotY - controlOffset}, ${targetDotX} ${targetDotY}`
+
+        let pathLength: number
+        try {
+          pathLength = calculatePathLength(ribbonPath)
+          if (pathLength < 50) pathLength = 150
+        } catch {
+          pathLength = 150
+        }
+
+        ribbonElements.push(
+          <path
+            key={`many-ribbon-${index}-${ribbonKey}`}
+            d={ribbonPath}
+            fill="none"
+            stroke="#3b82f6"
+            strokeWidth="2.5"
+            opacity={opacity * 0.8}
+            className="transition-opacity duration-300"
+            strokeDasharray={isHighlighted || !hasInitiallyLoaded ? `${pathLength}` : undefined}
+            strokeDashoffset={isHighlighted || !hasInitiallyLoaded ? (isAnimating ? '0' : `${pathLength}`) : undefined}
+            style={isHighlighted ? {
+              transition: `stroke-dashoffset 400ms ease-out`,
+              transitionDelay: `${(sourceIndex + targetIndex) * 100}ms`
+            } : undefined}
+          />
+        )
+      })
+    })
+
+    return (
+      <g key={`many-to-many-${index}`}>
+        {/* Individual ribbon paths */}
+        {ribbonElements}
+
+        {/* Connection dots for source tokens */}
+        {sourcePositions.map((pos, i) => (
+          <circle
+            key={`source-dot-${index}-${i}`}
+            cx={pos.x}
+            cy={-8}
+            r="3"
+            fill="#3b82f6"
+            opacity={isHighlighted && isAnimating ? opacity : (isHighlighted ? 0 : opacity)}
+            className="transition-all duration-300"
+            style={isHighlighted ? {
+              transitionDelay: isAnimating ? `${300 + i * 50}ms` : '0ms'
+            } : undefined}
+          />
+        ))}
+
+        {/* Connection dots for target tokens */}
+        {targetPositions.map((pos, i) => (
+          <circle
+            key={`target-dot-${index}-${i}`}
+            cx={pos.x}
+            cy={ribbonRect.height + 8}
+            r="3"
+            fill="#3b82f6"
+            opacity={isHighlighted && isAnimating ? opacity : (isHighlighted ? 0 : opacity)}
+            className="transition-all duration-300"
+            style={isHighlighted ? {
+              transitionDelay: isAnimating ? `${350 + i * 50}ms` : '0ms'
+            } : undefined}
+          />
+        ))}
       </g>
     )
   }
