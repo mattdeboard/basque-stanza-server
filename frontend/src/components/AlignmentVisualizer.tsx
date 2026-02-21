@@ -346,6 +346,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
     const isHighlighted = highlightedAlignments.has(index)
     const isDimmed = highlightedAlignments.size > 0 && !isHighlighted
     const isAnimating = animatingRibbons.has(index)
+    const isSolidLine = (isHighlighted && showLabels) || !hasInitiallyLoaded
 
     // Determine if this ribbon is part of the pinned set
     const isPinnedRibbon = pinnedTokenId ? sentencePair.layers[vizLayer][index] &&
@@ -381,8 +382,8 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
           strokeWidth={options?.strokeWidth || "3"}
           opacity={opacity}
           className="transition-opacity duration-300"
-          strokeDasharray={isHighlighted || !hasInitiallyLoaded ? `${pathLength}` : undefined}
-          strokeDashoffset={isHighlighted || !hasInitiallyLoaded ? (isAnimating ? '0' : `${pathLength}`) : undefined}
+          strokeDasharray={isSolidLine ? `${pathLength}` : "6 4"}
+          strokeDashoffset={isSolidLine ? (isAnimating ? '0' : `${pathLength}`) : undefined}
           style={isHighlighted ? {
             transition: 'stroke-dashoffset 400ms ease-out',
             transitionDelay: options?.animationDelay ? `${options.animationDelay}ms` : undefined
