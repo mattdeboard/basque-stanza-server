@@ -7,11 +7,7 @@ type AlignmentLabelProps = {
   visible?: boolean
 }
 
-export function AlignmentLabel({
-  label,
-  currentLayer,
-  visible = false,
-}: AlignmentLabelProps) {
+export function AlignmentLabel({ label, currentLayer, visible = false }: AlignmentLabelProps) {
   if (!visible) {
     return null
   }

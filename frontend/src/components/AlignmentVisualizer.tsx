@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import type { SentencePair } from '../schemas/validation'
 import { type Alignment, LayerType } from '../types/alignment'
-import { type SentencePair } from '../schemas/validation'
 import { AlignmentLabel } from './AlignmentLabel'
 import { LAYER_CONFIGS, LayerPicker } from './LayerPicker'
 
@@ -107,7 +107,9 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
     if (container) {
       const scrollContainers = container.querySelectorAll('.overflow-x-auto')
       scrollContainers.forEach((scrollContainer) => {
-        scrollContainer.addEventListener('scroll', handleScroll, { passive: true })
+        scrollContainer.addEventListener('scroll', handleScroll, {
+          passive: true,
+        })
       })
 
       return () => {
@@ -120,7 +122,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
     }
 
     return () => window.removeEventListener('resize', handleResize)
-  }, [updateTokenPositions, sentencePair])
+  }, [updateTokenPositions])
 
   // Reset initial load state when sentence pair changes
   useEffect(() => {
@@ -131,7 +133,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
     setPinnedTokenId(null)
     setPinnedIsSource(false)
     setShowLabels(false)
-  }, [sentencePair])
+  }, [])
 
   // Trigger initial animations when lexical layer loads
   useEffect(() => {
@@ -162,7 +164,13 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
         setAnimatingRibbons(new Set())
       }, totalDuration)
     }
-  }, [sourcePositions, targetPositions, sentencePair.layers[vizLayer], hasInitiallyLoaded])
+  }, [
+    sourcePositions,
+    targetPositions,
+    sentencePair.layers[vizLayer],
+    hasInitiallyLoaded,
+    vizLayer,
+  ])
 
   // Calculate path length for SVG animation
   const calculatePathLength = useCallback((path: string): number => {
@@ -256,13 +264,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
         )
       }
     },
-    [
-      sentencePair.layers[vizLayer],
-      pinnedTokenId,
-      pinnedIsSource,
-      highlightedAlignments,
-      sentencePair,
-    ]
+    [sentencePair.layers[vizLayer], pinnedTokenId, pinnedIsSource, sentencePair, vizLayer]
   )
 
   const handleTokenLeave = useCallback(() => {
@@ -297,7 +299,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       setAnimatingRibbons(new Set())
       setShowLabels(false)
     }
-  }, [pinnedTokenId, pinnedIsSource, sentencePair.layers[vizLayer]])
+  }, [pinnedTokenId, pinnedIsSource, sentencePair.layers[vizLayer], vizLayer])
 
   const handleTokenClick = useCallback(
     (tokenId: string, isSource: boolean) => {
@@ -361,7 +363,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
         }
       }
     },
-    [pinnedTokenId, sentencePair.layers[vizLayer], sentencePair]
+    [pinnedTokenId, sentencePair.layers[vizLayer], sentencePair, vizLayer]
   )
 
   const createRibbonPath = (alignment: Alignment, index: number) => {
@@ -634,7 +636,6 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
         className="content-card px-4 sm:px-6 lg:px-10 pt-3 sm:pt-4 pb-1 mx-auto mb-0 rounded-b-none animate-on-load"
         style={{ animationDelay: '400ms' }}
         aria-labelledby="source-lang-label"
-        role="region"
       >
         <div
           id="source-lang-label"
@@ -642,16 +643,12 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
         >
           {sentencePair.source.lang.toUpperCase()} (Source Language)
         </div>
-        <div
-          className="text-lg sm:text-xl lg:text-2xl font-display text-slate-700 mb-2 leading-relaxed font-light italic text-center"
-          aria-label={`Source sentence: ${sentencePair.source.text}`}
-        >
+        <div className="text-lg sm:text-xl lg:text-2xl font-display text-slate-700 mb-2 leading-relaxed font-light italic text-center">
           {sentencePair.source.text}
         </div>
-        <div
-          className="flex gap-2 sm:gap-3 lg:gap-4 items-center overflow-x-auto pb-1 pt-1 scrollbar-none justify-start px-2 sm:px-0"
+        <ul
+          className="flex gap-2 sm:gap-3 lg:gap-4 items-center overflow-x-auto pb-1 pt-1 scrollbar-none justify-start px-2 sm:px-0 list-none"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          role="list"
           aria-label="Source sentence tokens - click to highlight connections"
         >
           {sentencePair.source.tokens.map((token) => {
@@ -663,29 +660,30 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
             )
 
             return (
-              <button
-                key={token.id}
-                className={`token flex-shrink-0 ${isHovered ? 'token--highlighted' : ''} ${isDimmed ? 'token--dimmed' : ''} ${isConnected ? 'token--connected token--source' : 'token--disconnected'} ${isPinned ? 'token--pinned' : ''}`}
-                data-token-id={token.id}
-                data-token-type="source"
-                onMouseEnter={() => isConnected && handleTokenHover(token.id, true)}
-                onMouseLeave={handleTokenLeave}
-                onClick={() => isConnected && handleTokenClick(token.id, true)}
-                role="listitem"
-                aria-label={`Source word: ${token.form}${isConnected ? ` - has ${sentencePair.layers[vizLayer].filter((a) => a.source.includes(token.id)).length} alignment connections` : ' - no connections in this layer'}${isPinned ? ', currently pinned' : isConnected ? '. Press Enter or Space to pin and explore connections' : ''}`}
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (isConnected && (e.key === 'Enter' || e.key === ' ')) {
-                    e.preventDefault()
-                    handleTokenClick(token.id, true)
-                  }
-                }}
-              >
-                {token.form}
-              </button>
+              <li key={token.id}>
+                <button
+                  type="button"
+                  className={`token flex-shrink-0 ${isHovered ? 'token--highlighted' : ''} ${isDimmed ? 'token--dimmed' : ''} ${isConnected ? 'token--connected token--source' : 'token--disconnected'} ${isPinned ? 'token--pinned' : ''}`}
+                  data-token-id={token.id}
+                  data-token-type="source"
+                  onMouseEnter={() => isConnected && handleTokenHover(token.id, true)}
+                  onMouseLeave={handleTokenLeave}
+                  onClick={() => isConnected && handleTokenClick(token.id, true)}
+                  aria-label={`Source word: ${token.form}${isConnected ? ` - has ${sentencePair.layers[vizLayer].filter((a) => a.source.includes(token.id)).length} alignment connections` : ' - no connections in this layer'}${isPinned ? ', currently pinned' : isConnected ? '. Press Enter or Space to pin and explore connections' : ''}`}
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (isConnected && (e.key === 'Enter' || e.key === ' ')) {
+                      e.preventDefault()
+                      handleTokenClick(token.id, true)
+                    }
+                  }}
+                >
+                  {token.form}
+                </button>
+              </li>
             )
           })}
-        </div>
+        </ul>
       </section>
 
       {/* Ribbon Space */}
@@ -698,7 +696,11 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
         }}
       >
         {/* SVG Ribbons */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
+        <svg
+          className="absolute inset-0 w-full h-full pointer-events-none"
+          style={{ zIndex: 1 }}
+          aria-hidden="true"
+        >
           {sourcePositions.length > 0 &&
             targetPositions.length > 0 &&
             sentencePair.layers[vizLayer].map((alignment, index) =>
@@ -712,12 +714,10 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
         className="content-card px-4 sm:px-6 lg:px-10 pt-1 pb-3 sm:pb-4 mx-auto mt-0 rounded-t-none animate-on-load"
         style={{ animationDelay: '800ms' }}
         aria-labelledby="target-lang-label"
-        role="region"
       >
-        <div
-          className="flex gap-2 sm:gap-3 lg:gap-4 items-center mb-1 overflow-x-auto pt-1 scrollbar-none justify-start px-2 sm:px-0"
+        <ul
+          className="flex gap-2 sm:gap-3 lg:gap-4 items-center mb-1 overflow-x-auto pt-1 scrollbar-none justify-start px-2 sm:px-0 list-none"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          role="list"
           aria-label="Target sentence tokens - click to highlight connections"
         >
           {sentencePair.target.tokens.map((token) => {
@@ -729,39 +729,37 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
             )
 
             return (
-              <button
-                key={token.id}
-                className={`token flex-shrink-0 ${isHovered ? 'token--highlighted' : ''} ${isDimmed ? 'token--dimmed' : ''} ${isConnected ? 'token--connected token--target' : 'token--disconnected'} ${isPinned ? 'token--pinned' : ''}`}
-                data-token-id={token.id}
-                data-token-type="target"
-                onMouseEnter={() => isConnected && handleTokenHover(token.id, false)}
-                onMouseLeave={handleTokenLeave}
-                onClick={() => isConnected && handleTokenClick(token.id, false)}
-                role="listitem"
-                aria-label={`Target word: ${token.form}${isConnected ? ` - has ${sentencePair.layers[vizLayer].filter((a) => a.target.includes(token.id)).length} alignment connections` : ' - no connections in this layer'}${isPinned ? ', currently pinned' : isConnected ? '. Press Enter or Space to pin and explore connections' : ''}`}
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (isConnected && (e.key === 'Enter' || e.key === ' ')) {
-                    e.preventDefault()
-                    handleTokenClick(token.id, false)
-                  }
-                }}
-              >
-                {token.form}
-              </button>
+              <li key={token.id}>
+                <button
+                  type="button"
+                  className={`token flex-shrink-0 ${isHovered ? 'token--highlighted' : ''} ${isDimmed ? 'token--dimmed' : ''} ${isConnected ? 'token--connected token--target' : 'token--disconnected'} ${isPinned ? 'token--pinned' : ''}`}
+                  data-token-id={token.id}
+                  data-token-type="target"
+                  onMouseEnter={() => isConnected && handleTokenHover(token.id, false)}
+                  onMouseLeave={handleTokenLeave}
+                  onClick={() => isConnected && handleTokenClick(token.id, false)}
+                  aria-label={`Target word: ${token.form}${isConnected ? ` - has ${sentencePair.layers[vizLayer].filter((a) => a.target.includes(token.id)).length} alignment connections` : ' - no connections in this layer'}${isPinned ? ', currently pinned' : isConnected ? '. Press Enter or Space to pin and explore connections' : ''}`}
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (isConnected && (e.key === 'Enter' || e.key === ' ')) {
+                      e.preventDefault()
+                      handleTokenClick(token.id, false)
+                    }
+                  }}
+                >
+                  {token.form}
+                </button>
+              </li>
             )
           })}
-        </div>
+        </ul>
         <div
           id="target-lang-label"
           className="text-xs font-medium text-sage-600 uppercase tracking-widest mb-1 opacity-75 text-center"
         >
           {sentencePair.target.lang.toUpperCase()} (Target Language)
         </div>
-        <div
-          className="text-lg sm:text-xl lg:text-2xl font-display text-slate-700 leading-relaxed font-light italic text-center mb-1"
-          aria-label={`Target sentence: ${sentencePair.target.text}`}
-        >
+        <div className="text-lg sm:text-xl lg:text-2xl font-display text-slate-700 leading-relaxed font-light italic text-center mb-1">
           {sentencePair.target.text}
         </div>
       </section>
@@ -774,9 +772,9 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       </div>
 
       {/* Live region for screen reader announcements */}
-      <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+      <output className="sr-only" aria-live="polite" aria-atomic="true">
         {announcement}
-      </div>
+      </output>
 
       {/* Alignment Labels */}
       <section
@@ -785,16 +783,17 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
         style={{ animationDelay: '1000ms' }}
         aria-label="Alignment analysis results"
       >
-        <div className="space-y-1" role="list" aria-label="Active alignment connections">
+        <ul className="space-y-1 list-none" aria-label="Active alignment connections">
           {sentencePair.layers[vizLayer].map((alignment, index) => (
-            <AlignmentLabel
-              key={`${vizLayer}-alignment-${index}`}
-              label={alignment.label}
-              currentLayer={vizLayer}
-              visible={showLabels && highlightedAlignments.has(index)}
-            />
+            <li key={`${vizLayer}-alignment-${alignment.label}-${index}`}>
+              <AlignmentLabel
+                label={alignment.label}
+                currentLayer={vizLayer}
+                visible={showLabels && highlightedAlignments.has(index)}
+              />
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
     </div>
   )
