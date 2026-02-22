@@ -1,6 +1,7 @@
 /** biome-ignore-all lint/a11y/useButtonType: Temp disable */
 import { useEffect, useState } from 'react'
 import { AlignmentVisualizer } from './components/AlignmentVisualizer'
+import { AnimatedTitle } from './components/AnimatedTitle'
 import { LanguageSwitcher } from './components/LanguageSwitcher'
 import { LoadingIndicator } from './components/LoadingIndicator'
 import { TranslationInput } from './components/TranslationInput'
@@ -92,9 +93,7 @@ function App() {
           <div className="flex justify-end mb-4">
             <LanguageSwitcher compact />
           </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-light mb-2 text-slate-800 tracking-tight">
-            Xingolak
-          </h1>
+          <AnimatedTitle className="text-3xl sm:text-4xl lg:text-5xl font-display font-light mb-2 text-slate-800 tracking-tight" />
           <h2 className="text-lg sm:text-xl font-light text-slate-500 mb-3 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
             {t('app.subtitle')}
           </h2>
