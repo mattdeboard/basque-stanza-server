@@ -4,7 +4,17 @@
  */
 
 import { config } from '../config'
-import type { AlignmentData, DataSourceConfig } from '../types/alignment'
+import type { AlignmentData, DataSourceConfig, LanguageCode } from '../types/alignment'
+
+/**
+ * Request model for translation analysis
+ */
+export type AnalysisRequest = {
+  text: string
+  source_lang: LanguageCode
+  target_lang: LanguageCode
+  sentence_id?: string
+}
 
 /**
  * Default configuration loaded from environment variables
@@ -80,5 +90,42 @@ export function createApiConfig(apiBaseUrl = '/api'): DataSourceConfig {
 export function createFixtureConfig(): DataSourceConfig {
   return {
     useFixtures: true,
+  }
+}
+
+/**
+ * Submit text for translation analysis and alignment
+ */
+export async function submitTranslationRequest(request: AnalysisRequest): Promise<AlignmentData> {
+  const url = `${config.apiBaseUrl}/analyze-and-scaffold`
+  
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      text: request.text,
+      source_lang: request.source_lang,
+      target_lang: request.target_lang,
+      sentence_id: request.sentence_id || crypto.randomUUID(),
+    }),
+  })
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}))
+    const errorMessage = errorData.detail || `API request failed: ${response.status} ${response.statusText}`
+    throw new Error(errorMessage)
+  }
+
+  const alignmentData = await response.json()
+  
+  // Log the server response for debugging
+  console.log('Server response:', alignmentData)
+  
+  // The backend returns a single SentencePair, but we need AlignmentData format
+  return {
+    sentences: [alignmentData]
   }
 }
