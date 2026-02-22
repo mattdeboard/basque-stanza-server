@@ -5,6 +5,7 @@ Reads API key from .env file and provides simple interface to test translations.
 """
 
 import os
+
 from dotenv import load_dotenv
 from Itzuli import Itzuli
 

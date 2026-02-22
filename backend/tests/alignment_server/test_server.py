@@ -8,9 +8,15 @@ from unittest.mock import patch
 import pytest
 from fastapi.testclient import TestClient
 
-from itzuli_nlp.core.types import AnalysisRow
 from itzuli_nlp.alignment_server.server import app
-from itzuli_nlp.alignment_server.types import AlignmentData, SentencePair, TokenizedSentence, Token, AlignmentLayers
+from itzuli_nlp.alignment_server.types import (
+    AlignmentData,
+    AlignmentLayers,
+    SentencePair,
+    Token,
+    TokenizedSentence,
+)
+from itzuli_nlp.core.types import AnalysisRow
 
 
 @pytest.fixture

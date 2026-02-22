@@ -3,8 +3,9 @@
 import logging
 
 from Itzuli import Itzuli
+
 from .nlp import create_pipeline, process_raw_analysis
-from .types import TranslationResult, LanguageCode
+from .types import LanguageCode, TranslationResult
 
 logger = logging.getLogger("itzuli-stanza-pipeline")
 

@@ -8,13 +8,12 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from tools.dual_analysis import analyze_both_texts
 
 from ..core.types import AnalysisRow, LanguageCode
-from tools.dual_analysis import analyze_both_texts
-from .scaffold import create_scaffold_from_dual_analysis
-from .types import AlignmentData, SentencePair
-from .cache import AlignmentCache
 from .alignment_generator import create_enriched_alignment_data
+from .cache import AlignmentCache
+from .types import SentencePair
 
 load_dotenv()
 

@@ -3,12 +3,11 @@
 import json
 import logging
 import os
-from typing import Dict, Any
+from typing import Any, Dict
 
-import anthropic
 from anthropic import Anthropic
 
-from .types import AlignmentLayers, Alignment
+from .types import Alignment, AlignmentLayers
 
 logger = logging.getLogger(__name__)
 

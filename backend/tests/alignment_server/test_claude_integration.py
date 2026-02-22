@@ -1,12 +1,12 @@
 """Tests for Claude API integration."""
 
-import json
 import os
 from unittest.mock import Mock, patch
+
 import pytest
 
 from itzuli_nlp.alignment_server.claude_client import ClaudeClient
-from itzuli_nlp.alignment_server.types import AlignmentLayers, Alignment
+from itzuli_nlp.alignment_server.types import Alignment, AlignmentLayers
 
 
 class TestClaudeClient:

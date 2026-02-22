@@ -3,10 +3,15 @@
 import json
 import tempfile
 from pathlib import Path
-import pytest
 
 from itzuli_nlp.alignment_server.cache import AlignmentCache
-from itzuli_nlp.alignment_server.types import AlignmentData, SentencePair, TokenizedSentence, Token, AlignmentLayers
+from itzuli_nlp.alignment_server.types import (
+    AlignmentData,
+    AlignmentLayers,
+    SentencePair,
+    Token,
+    TokenizedSentence,
+)
 
 
 class TestAlignmentCache:

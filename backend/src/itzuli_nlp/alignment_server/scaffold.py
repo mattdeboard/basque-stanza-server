@@ -1,18 +1,17 @@
 """Scaffold generator for alignment data from dual analysis output."""
 
-import json
 from pathlib import Path
 from typing import List
 
+from ..core.i18n import FRIENDLY_FEATS
 from ..core.types import AnalysisRow
 from .types import (
-    Token,
-    TokenizedSentence,
+    AlignmentData,
     AlignmentLayers,
     SentencePair,
-    AlignmentData,
+    Token,
+    TokenizedSentence,
 )
-from ..core.i18n import FRIENDLY_FEATS
 
 
 def parse_features_string(feats_string: str, language: str = "en") -> List[str]:

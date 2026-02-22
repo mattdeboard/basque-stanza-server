@@ -2,6 +2,7 @@
 """Stanza playground for testing Basque morphological analysis."""
 
 import sys
+
 from itzuli_stanza_mcp.nlp import create_pipeline
 
 

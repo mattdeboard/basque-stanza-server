@@ -12,7 +12,7 @@ import json
 import logging
 import os
 import sys
-from typing import Tuple, List
+from typing import List, Tuple
 
 from dotenv import load_dotenv
 from Itzuli import Itzuli
