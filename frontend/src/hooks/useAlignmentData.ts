@@ -3,8 +3,8 @@
  */
 
 import { useCallback, useEffect, useState } from 'react'
-import { fetchAlignmentData, getDataSourceConfig } from '../services/alignmentApi'
 import type { AlignmentData, DataSourceConfig } from '../schemas/validation'
+import { fetchAlignmentData, getDataSourceConfig } from '../services/alignmentApi'
 
 export type UseAlignmentDataResult = {
   data: AlignmentData | null

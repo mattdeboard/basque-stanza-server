@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { type Alignment, LayerType, type SentencePair } from '../types/alignment'
+import { type Alignment, LayerType } from '../types/alignment'
+import { type SentencePair } from '../schemas/validation'
 import { AlignmentLabel } from './AlignmentLabel'
 import { LAYER_CONFIGS, LayerPicker } from './LayerPicker'
 
@@ -191,8 +192,12 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
           connectedAlignments.push(index)
           newHighlightedAlignments.add(index)
           // Add connected tokens
-          alignment.source.forEach((id) => newHoveredTokens.add(id))
-          alignment.target.forEach((id) => newHoveredTokens.add(id))
+          alignment.source.forEach((id) => {
+            newHoveredTokens.add(id)
+          })
+          alignment.target.forEach((id) => {
+            newHoveredTokens.add(id)
+          })
         }
       })
 
@@ -209,14 +214,22 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
 
           if (isConnectedToPinned) {
             pinnedAlignments.add(index)
-            alignment.source.forEach((id) => pinnedTokens.add(id))
-            alignment.target.forEach((id) => pinnedTokens.add(id))
+            alignment.source.forEach((id) => {
+              pinnedTokens.add(id)
+            })
+            alignment.target.forEach((id) => {
+              pinnedTokens.add(id)
+            })
           }
         })
 
         // Add pinned tokens to hover set with special identifier
-        pinnedTokens.forEach((id) => newHoveredTokens.add(id))
-        pinnedAlignments.forEach((idx) => newHighlightedAlignments.add(idx))
+        pinnedTokens.forEach((id) => {
+          newHoveredTokens.add(id)
+        })
+        pinnedAlignments.forEach((idx) => {
+          newHighlightedAlignments.add(idx)
+        })
       }
 
       // Start animations for all connected alignments immediately (no stagger for user interactions)
@@ -265,8 +278,12 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
 
         if (isConnectedToPinned) {
           pinnedAlignments.add(index)
-          alignment.source.forEach((id) => pinnedTokens.add(id))
-          alignment.target.forEach((id) => pinnedTokens.add(id))
+          alignment.source.forEach((id) => {
+            pinnedTokens.add(id)
+          })
+          alignment.target.forEach((id) => {
+            pinnedTokens.add(id)
+          })
         }
       })
 
@@ -310,8 +327,12 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
           if (isConnected) {
             connectedAlignments.push(index)
             newHighlightedAlignments.add(index)
-            alignment.source.forEach((id) => newHoveredTokens.add(id))
-            alignment.target.forEach((id) => newHoveredTokens.add(id))
+            alignment.source.forEach((id) => {
+              newHoveredTokens.add(id)
+            })
+            alignment.target.forEach((id) => {
+              newHoveredTokens.add(id)
+            })
           }
         })
 
@@ -770,7 +791,6 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
               key={`${vizLayer}-alignment-${index}`}
               label={alignment.label}
               currentLayer={vizLayer}
-              index={index}
               visible={showLabels && highlightedAlignments.has(index)}
             />
           ))}

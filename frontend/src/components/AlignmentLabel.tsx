@@ -4,14 +4,12 @@ import { LAYER_CONFIGS } from './LayerPicker'
 type AlignmentLabelProps = {
   label: string
   currentLayer: LayerType
-  index?: number
   visible?: boolean
 }
 
 export function AlignmentLabel({
   label,
   currentLayer,
-  index,
   visible = false,
 }: AlignmentLabelProps) {
   if (!visible) {

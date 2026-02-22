@@ -89,7 +89,7 @@ function App() {
             Itzuli <span className="font-medium text-sage-600">Stanza</span>
           </h1>
           <h2 className="text-lg sm:text-xl font-light text-slate-500 mb-3 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
-            Translation Alignment Visualization for English-Basque Translations
+            Translation Alignment Visualization for Basque
           </h2>
 
           {/* Mode Toggle - only show if fixtures are available */}
