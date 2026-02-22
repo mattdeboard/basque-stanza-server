@@ -140,7 +140,7 @@ CLAUDE.md                  # Garapen gidalerroak
 **Claude API Bezeroa (`claude_client.py`)**
 
 - **Helburua**: Lerrokatze sortzearen Anthropic-en Claude API integrazioa
-- **Teknologia**: Egituraturiko JSON lerrokatze erantzunetarako Claude 3.5 Sonnet
+- **Teknologia**: Egituraturiko JSON lerrokatze erantzunetarako Claude Opus 4.6
 - **Ezaugarriak**: Lexiko, gramatika eta ezaugarri lerrokatzeentzako prompt ingeniaritza
 - **Diseinua**: API erantzunetarako fall-back kudeaketa duen JSON parsing sendoa
 

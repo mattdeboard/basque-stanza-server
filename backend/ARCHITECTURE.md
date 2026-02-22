@@ -140,7 +140,7 @@ CLAUDE.md                  # Development guidelines
 **Claude API Client (`claude_client.py`)**
 
 - **Purpose**: Integration with Anthropic's Claude API for alignment generation
-- **Technology**: Claude 3.5 Sonnet for structured JSON alignment responses
+- **Technology**: Claude Opus 4.6 for structured JSON alignment responses
 - **Features**: Prompt engineering for lexical, grammatical, and feature alignments
 - **Design**: Robust JSON parsing with fallback handling for API responses
 
