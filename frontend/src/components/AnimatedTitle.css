@@ -1,0 +1,294 @@
+/**
+ * Pure CSS typing animation for Xingolak title easter egg
+ * Cycles through "Ribbons" in all supported languages on hover
+ */
+
+.animated-title {
+  position: relative;
+  display: inline-block;
+  cursor: default;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.animated-title:hover {
+  color: #477c5d; /* sage-600 */
+}
+
+.animated-text {
+  display: inline-block;
+}
+
+/* Hide original text and show animated text on hover */
+.animated-title:hover .animated-text {
+  opacity: 0;
+}
+
+.animated-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  white-space: nowrap;
+  opacity: 0;
+  animation: none;
+}
+
+.animated-title:hover::after {
+  opacity: 1;
+  animation: typeRibbons 10.8s infinite;
+}
+
+/* Dynamic cursor changes based on current language */
+.animated-title:hover {
+  animation: cursorFlags 10.8s infinite;
+}
+
+@keyframes cursorFlags {
+  /* During Ribbons (English) - show US flag */
+  10%,
+  29% {
+    cursor:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><text y='20' font-size='20'>🇺🇸</text></svg>"),
+      auto;
+  }
+
+  /* During Cintas (Spanish) - show Spanish flag */
+  32%,
+  49% {
+    cursor:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><text y='20' font-size='20'>🇪🇸</text></svg>"),
+      auto;
+  }
+
+  /* During Rubans (French) - show French flag */
+  52%,
+  69% {
+    cursor:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><text y='20' font-size='20'>🇫🇷</text></svg>"),
+      auto;
+  }
+
+  /* During Xingolak (Basque) and transitions - default cursor */
+  0%,
+  9%,
+  30%,
+  31%,
+  50%,
+  51%,
+  70%,
+  100% {
+    cursor: default;
+  }
+}
+
+/*
+ * Typing animation - balanced timing with consistent character speed
+ * 10.8s total cycle (25% faster than 14.4s)
+ */
+@keyframes typeRibbons {
+  /* Start by clearing Xingolak - faster, consistent character timing */
+  0% {
+    content: "Xingolak";
+  }
+  1% {
+    content: "Xingola";
+  }
+  2% {
+    content: "Xingol";
+  }
+  3% {
+    content: "Xingo";
+  }
+  4% {
+    content: "Xing";
+  }
+  5% {
+    content: "Xin";
+  }
+  6% {
+    content: "Xi";
+  }
+  7% {
+    content: "X";
+  }
+  8% {
+    content: "";
+  }
+
+  /* Type Ribbons - consistent timing */
+  10% {
+    content: "R";
+  }
+  11% {
+    content: "Ri";
+  }
+  12% {
+    content: "Rib";
+  }
+  13% {
+    content: "Ribb";
+  }
+  14% {
+    content: "Ribbo";
+  }
+  15% {
+    content: "Ribbon";
+  }
+  16% {
+    content: "Ribbons";
+  }
+
+  /* Pause at Ribbons */
+  17%,
+  22% {
+    content: "Ribbons";
+  }
+
+  /* Delete Ribbons */
+  24% {
+    content: "Ribbon";
+  }
+  25% {
+    content: "Ribbo";
+  }
+  26% {
+    content: "Ribb";
+  }
+  27% {
+    content: "Rib";
+  }
+  28% {
+    content: "Ri";
+  }
+  29% {
+    content: "R";
+  }
+  30% {
+    content: "";
+  }
+
+  /* Type Cintas */
+  32% {
+    content: "C";
+  }
+  33% {
+    content: "Ci";
+  }
+  34% {
+    content: "Cin";
+  }
+  35% {
+    content: "Cint";
+  }
+  36% {
+    content: "Cinta";
+  }
+  37% {
+    content: "Cintas";
+  }
+
+  /* Pause at Cintas */
+  38%,
+  43% {
+    content: "Cintas";
+  }
+
+  /* Delete Cintas */
+  45% {
+    content: "Cinta";
+  }
+  46% {
+    content: "Cint";
+  }
+  47% {
+    content: "Cin";
+  }
+  48% {
+    content: "Ci";
+  }
+  49% {
+    content: "C";
+  }
+  50% {
+    content: "";
+  }
+
+  /* Type Rubans */
+  52% {
+    content: "R";
+  }
+  53% {
+    content: "Ru";
+  }
+  54% {
+    content: "Rub";
+  }
+  55% {
+    content: "Ruba";
+  }
+  56% {
+    content: "Ruban";
+  }
+  57% {
+    content: "Rubans";
+  }
+
+  /* Pause at Rubans */
+  58%,
+  63% {
+    content: "Rubans";
+  }
+
+  /* Delete Rubans */
+  65% {
+    content: "Ruban";
+  }
+  66% {
+    content: "Ruba";
+  }
+  67% {
+    content: "Rub";
+  }
+  68% {
+    content: "Ru";
+  }
+  69% {
+    content: "R";
+  }
+  70% {
+    content: "";
+  }
+
+  /* Type Xingolak back - consistent with initial deletion speed */
+  72% {
+    content: "X";
+  }
+  73% {
+    content: "Xi";
+  }
+  74% {
+    content: "Xin";
+  }
+  75% {
+    content: "Xing";
+  }
+  76% {
+    content: "Xingo";
+  }
+  77% {
+    content: "Xingol";
+  }
+  78% {
+    content: "Xingola";
+  }
+  79% {
+    content: "Xingolak";
+  }
+
+  /* Pause before repeating */
+  80%,
+  100% {
+    content: "Xingolak";
+  }
+}

@@ -28,7 +28,7 @@ Python oinarritutako NLP prozesatze zerbitzaria:
 - Itzulpen lerrokatze algoritmoak
 - MCP (Model Context Protocol) zerbitzaria Claude integraziorako
 
-### Frontend-a
+### Frontend-a ("Xingolak")
 
 React oinarritutako bistaratzaile interfazea:
 

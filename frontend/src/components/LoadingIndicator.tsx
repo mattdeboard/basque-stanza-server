@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useI18n } from '../i18n'
 
 type LoadingIndicatorProps = {
   mode: 'input' | 'examples'
@@ -10,11 +11,17 @@ type ProgressStep = {
 }
 
 export function LoadingIndicator({ mode }: LoadingIndicatorProps) {
-  const [steps, setSteps] = useState<ProgressStep[]>([
-    { name: 'Translating with Itzuli API', status: 'pending' },
-    { name: 'Analyzing with Stanza NLP', status: 'pending' },
-    { name: 'Generating alignments with Claude', status: 'pending' },
-  ])
+  const { t } = useI18n()
+  const [steps, setSteps] = useState<ProgressStep[]>([])
+
+  // Initialize steps with translations
+  useEffect(() => {
+    setSteps([
+      { name: t('loading.step_translating'), status: 'pending' },
+      { name: t('loading.step_analyzing'), status: 'pending' },
+      { name: t('loading.step_generating_alignments'), status: 'pending' },
+    ])
+  }, [t])
 
   useEffect(() => {
     if (mode !== 'input') return
@@ -53,10 +60,10 @@ export function LoadingIndicator({ mode }: LoadingIndicatorProps) {
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 font-sans">
         <header className="text-center mb-3 sm:mb-4">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-light mb-2 text-slate-800 tracking-tight">
-            Itzuli <span className="font-medium text-sage-600">Stanza</span>
+            Xingolak
           </h1>
           <h2 className="text-lg sm:text-xl font-light text-slate-500 mb-6 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
-            Translation Alignment Visualization for English-Basque Translations
+            {t('app.loading.subtitle')}
           </h2>
         </header>
 
@@ -74,12 +81,12 @@ export function LoadingIndicator({ mode }: LoadingIndicatorProps) {
           <div className="bg-white/60 backdrop-blur-sm border border-slate-200/60 rounded-lg p-6 max-w-md mx-auto">
             <div className="text-center mb-4">
               <h3 className="text-lg font-medium text-slate-800 mb-2">
-                {mode === 'input' ? 'Analyzing Translation' : 'Loading Alignment Data'}
+                {mode === 'input'
+                  ? t('loading.analyzing_translation')
+                  : t('loading.loading_alignment_data')}
               </h3>
               <p className="text-sm text-slate-600">
-                {mode === 'input'
-                  ? 'Processing your text through our AI pipeline...'
-                  : 'Loading example sentence data...'}
+                {mode === 'input' ? t('loading.processing_text') : t('loading.loading_examples')}
               </p>
             </div>
 
@@ -127,7 +134,7 @@ export function LoadingIndicator({ mode }: LoadingIndicatorProps) {
           </div>
 
           <p className="text-xs text-slate-500 mt-4 max-w-sm text-center">
-            This may take 10-30 seconds depending on text complexity
+            {t('loading.time_estimate')}
           </p>
         </div>
       </div>

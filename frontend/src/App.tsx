@@ -1,14 +1,18 @@
 /** biome-ignore-all lint/a11y/useButtonType: Temp disable */
 import { useEffect, useState } from 'react'
 import { AlignmentVisualizer } from './components/AlignmentVisualizer'
+import { AnimatedTitle } from './components/AnimatedTitle'
+import { LanguageSwitcher } from './components/LanguageSwitcher'
 import { LoadingIndicator } from './components/LoadingIndicator'
 import { TranslationInput } from './components/TranslationInput'
 import { config } from './config'
 import { useSelectedSentence } from './hooks/useAlignmentData'
 import { useTranslationRequest } from './hooks/useTranslationRequest'
+import { useI18n } from './i18n'
 import type { LanguageCode } from './types/alignment'
 
 function App() {
+  const { t } = useI18n()
   const [mode, setMode] = useState<'input' | 'examples'>('input')
 
   // Hook for loading example sentences (fixture data only)
@@ -54,9 +58,9 @@ function App() {
   // Update page title for screen readers
   useEffect(() => {
     if (currentSentence) {
-      document.title = `Itzuli Stanza - Analyzing: ${currentSentence.source.text.substring(0, 50)}${currentSentence.source.text.length > 50 ? '...' : ''}`
+      document.title = `Xingolak - Analyzing: ${currentSentence.source.text.substring(0, 50)}${currentSentence.source.text.length > 50 ? '...' : ''}`
     } else {
-      document.title = 'Itzuli Stanza - Translation Alignment Visualizer'
+      document.title = 'Xingolak - Translation Alignment Visualizer'
     }
   }, [currentSentence])
 
@@ -86,11 +90,12 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-tan-25 via-tan-50 to-tan-100">
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 font-sans animate-fade-in">
         <header className="text-center mb-3 sm:mb-4 animate-on-load">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-light mb-2 text-slate-800 tracking-tight">
-            Itzuli <span className="font-medium text-sage-600">Stanza</span>
-          </h1>
+          <div className="flex justify-end mb-4">
+            <LanguageSwitcher compact />
+          </div>
+          <AnimatedTitle className="text-3xl sm:text-4xl lg:text-5xl font-display font-light mb-2 text-slate-800 tracking-tight" />
           <h2 className="text-lg sm:text-xl font-light text-slate-500 mb-3 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
-            Translation Alignment Visualization for Basque
+            {t('app.subtitle')}
           </h2>
 
           {/* Mode Toggle - only show if fixtures are available */}
@@ -172,9 +177,7 @@ function App() {
         {/* Show helpful message when no data is available */}
         {!currentSentence && !isLoading && !currentError && (
           <div className="text-center py-12 text-lg text-slate-600">
-            {mode === 'input'
-              ? 'Enter text above to begin analysis'
-              : 'Select an example sentence to view alignment visualization'}
+            {mode === 'input' ? null : t('help.select_example')}
           </div>
         )}
       </div>
