@@ -1,12 +1,12 @@
 import json
 
-from itzuli_nlp.core.types import AnalysisRow, TranslationResult
 from itzuli_nlp.core.formatters import (
-    format_as_markdown_table,
-    format_as_json,
-    format_as_dict_list,
     apply_friendly_mappings,
+    format_as_dict_list,
+    format_as_json,
+    format_as_markdown_table,
 )
+from itzuli_nlp.core.types import AnalysisRow, TranslationResult
 
 
 class TestFormatAsMarkdownTable:

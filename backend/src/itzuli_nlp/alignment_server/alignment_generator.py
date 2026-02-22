@@ -5,7 +5,7 @@ from typing import List
 
 from ..core.types import AnalysisRow
 from .claude_client import ClaudeClient
-from .types import AlignmentData, SentencePair, AlignmentLayers
+from .types import AlignmentData, SentencePair
 
 logger = logging.getLogger(__name__)
 

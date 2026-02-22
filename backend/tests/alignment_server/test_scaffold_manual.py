@@ -7,8 +7,11 @@ from pathlib import Path
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
+from itzuli_nlp.alignment_server.scaffold import (
+    create_scaffold_from_dual_analysis,
+    save_alignment_data,
+)
 from itzuli_nlp.core.types import AnalysisRow
-from itzuli_nlp.alignment_server.scaffold import create_scaffold_from_dual_analysis, save_alignment_data
 
 
 def main():

@@ -1,7 +1,10 @@
 from unittest.mock import Mock, patch
 
-from itzuli_nlp.core.workflow import process_translation_with_analysis, get_cached_stanza_pipeline
 from itzuli_nlp.core.types import AnalysisRow, TranslationResult
+from itzuli_nlp.core.workflow import (
+    get_cached_stanza_pipeline,
+    process_translation_with_analysis,
+)
 
 
 class TestAnalysisRow:

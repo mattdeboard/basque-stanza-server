@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 from mcp.server.fastmcp.exceptions import ToolError
 
-from itzuli_nlp.mcp_server.server import translate, get_quota, send_feedback
+from itzuli_nlp.mcp_server.server import get_quota, send_feedback, translate
 
 
 class TestTranslate:

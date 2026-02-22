@@ -880,7 +880,7 @@ wheels = [
 [[package]]
 name = "itzuli-nlp"
 version = "1.0.0"
-source = { editable = "." }
+source = { virtual = "." }
 dependencies = [
     { name = "anthropic" },
     { name = "dependencies" },

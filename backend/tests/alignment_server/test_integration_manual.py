@@ -8,12 +8,15 @@ Usage:
     uv run python tests/alignment_server/test_integration_manual.py
 """
 
-import os
 import json
+import os
 from pathlib import Path
 
-from itzuli_nlp.alignment_server.alignment_generator import create_enriched_alignment_data
 from tools.dual_analysis import analyze_both_texts
+
+from itzuli_nlp.alignment_server.alignment_generator import (
+    create_enriched_alignment_data,
+)
 
 
 def test_end_to_end_pipeline():
@@ -79,7 +82,7 @@ def test_end_to_end_pipeline():
             sentence_pair = alignment_data.sentences[0]
             layers = sentence_pair.layers
             
-            print(f"  ✅ Generated alignments:")
+            print("  ✅ Generated alignments:")
             print(f"    - Lexical: {len(layers.lexical)} alignments")
             print(f"    - Grammatical Relations: {len(layers.grammatical_relations)} alignments") 
             print(f"    - Features: {len(layers.features)} alignments")
