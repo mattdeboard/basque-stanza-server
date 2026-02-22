@@ -50,7 +50,7 @@ export function LayerPicker({ currentLayer, setVizLayer }: LayerPickerProps) {
     if (activeButton && document.activeElement !== activeButton) {
       activeButton.focus()
     }
-  }, [currentLayer])
+  }, [])
 
   const handleKeyDown = (e: React.KeyboardEvent, currentLayerKey: string) => {
     const layerEntries = Object.entries(LAYER_CONFIGS)
@@ -90,7 +90,6 @@ export function LayerPicker({ currentLayer, setVizLayer }: LayerPickerProps) {
     <nav
       className="px-4 sm:px-6 lg:px-10 pt-4 sm:pt-6 pb-3 sm:pb-4 mx-auto animate-on-load"
       style={{ animationDelay: '200ms' }}
-      role="navigation"
       aria-label="Alignment layer selection"
     >
       <div
@@ -113,6 +112,7 @@ export function LayerPicker({ currentLayer, setVizLayer }: LayerPickerProps) {
               aria-controls="alignment-visualization"
               aria-label={`${config.displayName} layer: ${LAYER_TOOLTIPS[layerKey as LayerType]}`}
               tabIndex={isActive ? 0 : -1}
+              type="button"
               onKeyDown={(e) => handleKeyDown(e, layerKey)}
               style={
                 isActive

@@ -102,8 +102,10 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
           onClick={() => setIsExpanded(true)}
           className="bg-sage-500 hover:bg-sage-600 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-sage-400 focus:ring-offset-2"
           aria-label="Analyze new text"
+          type="button"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <title id="analyze-text-btn-icon">Analyze Text Button Icon</title>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
         </button>
@@ -116,9 +118,11 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
     return (
       <>
         {/* Backdrop */}
-        <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 transition-opacity duration-300"
+        <button
+          type="button"
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 transition-opacity duration-300 border-none p-0 cursor-default"
           onClick={() => setIsExpanded(false)}
+          aria-label="Close drawer"
         />
 
         {/* Drawer */}
@@ -130,9 +134,11 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
               <button
                 onClick={() => setIsExpanded(false)}
                 className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors duration-200"
+                type="button"
                 aria-label="Close"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <title id="drawer-close-btn-icon">Drawer Close Button Icon</title>
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -184,6 +190,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
                         stroke="currentColor"
                         viewBox="0 0 24 24"
                       >
+                        <title id="swap-language-btn-icon">Swap Language Button Icon</title>
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -260,6 +267,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
                 {loading ? (
                   <>
                     <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <title id="analyzing-spinner-icon">Analyzing Spinner Icon</title>
                       <circle
                         className="opacity-25"
                         cx="12"
@@ -279,6 +287,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
                 ) : (
                   <>
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <title id="analyze-btn-icon">Analyze Button Icon</title>
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -335,6 +344,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
+              <title id="clear-text-btn-icon">Clear Text Button Icon</title>
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -399,6 +409,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
             {loading ? (
               <>
                 <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <title id="translation-spinner-icon">Translation Spinner Icon</title>
                   <circle
                     className="opacity-25"
                     cx="12"
@@ -418,6 +429,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
             ) : (
               <>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <title id="analyze-translation-btn-icon">Analyze Translation button icon</title>
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
