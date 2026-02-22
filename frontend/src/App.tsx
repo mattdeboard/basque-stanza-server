@@ -54,9 +54,9 @@ function App() {
   // Update page title for screen readers
   useEffect(() => {
     if (currentSentence) {
-      document.title = `Itzuli Stanza - Analyzing: ${currentSentence.source.text.substring(0, 50)}${currentSentence.source.text.length > 50 ? '...' : ''}`
+      document.title = `Xingolak - Analyzing: ${currentSentence.source.text.substring(0, 50)}${currentSentence.source.text.length > 50 ? '...' : ''}`
     } else {
-      document.title = 'Itzuli Stanza - Translation Alignment Visualizer'
+      document.title = 'Xingolak - Translation Alignment Visualizer'
     }
   }, [currentSentence])
 
@@ -87,7 +87,7 @@ function App() {
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 font-sans animate-fade-in">
         <header className="text-center mb-3 sm:mb-4 animate-on-load">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-light mb-2 text-slate-800 tracking-tight">
-            Itzuli <span className="font-medium text-sage-600">Stanza</span>
+            Xingolak
           </h1>
           <h2 className="text-lg sm:text-xl font-light text-slate-500 mb-3 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
             Translation Alignment Visualization for Basque
@@ -172,9 +172,7 @@ function App() {
         {/* Show helpful message when no data is available */}
         {!currentSentence && !isLoading && !currentError && (
           <div className="text-center py-12 text-lg text-slate-600">
-            {mode === 'input'
-              ? 'Enter text above to begin analysis'
-              : 'Select an example sentence to view alignment visualization'}
+            {mode === 'input' ? null : 'Select an example sentence to view alignment visualization'}
           </div>
         )}
       </div>

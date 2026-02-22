@@ -53,7 +53,7 @@ export function LoadingIndicator({ mode }: LoadingIndicatorProps) {
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 font-sans">
         <header className="text-center mb-3 sm:mb-4">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-light mb-2 text-slate-800 tracking-tight">
-            Itzuli <span className="font-medium text-sage-600">Stanza</span>
+            Xingolak
           </h1>
           <h2 className="text-lg sm:text-xl font-light text-slate-500 mb-6 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
             Translation Alignment Visualization for English-Basque Translations
