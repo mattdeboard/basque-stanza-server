@@ -8,6 +8,8 @@ Hau euskal NLP sistema bat duen monorepo bat da, itzulpen eta analisi morfologik
 
 ![Lerrokatze Bistaratzaile Demoa](resources/demo.gif)
 
+![MCP Zerbitzari Irteera Demoa](resources/mcp-demo.gif)
+
 ## Proiektuaren Egitura
 
 ```text

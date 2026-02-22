@@ -8,6 +8,8 @@ This is a monorepo containing a Basque NLP system that integrates translation an
 
 ![Alignment Visualization Demo](resources/demo.gif)
 
+![MCP Server Output Demo](resources/mcp-demo.gif)
+
 ## Project Structure
 
 ```text
