@@ -8,9 +8,9 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from tools.dual_analysis import analyze_both_texts
 
 from ..core.types import AnalysisRow, LanguageCode
+from ..tools.dual_analysis import analyze_both_texts
 from .alignment_generator import create_enriched_alignment_data
 from .cache import AlignmentCache
 from .types import SentencePair
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 app = FastAPI(
     title="Alignment Server",
     description="HTTP API for generating alignment scaffolds from dual language analysis",
-    version="0.1.0"
+    version="1.0.0",
 )
 
 # Initialize cache
@@ -40,6 +40,7 @@ app.add_middleware(
 
 class AnalysisRequest(BaseModel):
     """Request model for dual analysis."""
+
     text: str
     source_lang: LanguageCode
     target_lang: LanguageCode
@@ -48,14 +49,13 @@ class AnalysisRequest(BaseModel):
 
 class AnalysisResponse(BaseModel):
     """Response model for dual analysis."""
+
     source_text: str
     target_text: str
     source_lang: str
     target_lang: str
     source_analysis: List[AnalysisRow]
     target_analysis: List[AnalysisRow]
-
-
 
 
 @app.get("/health")
@@ -83,10 +83,7 @@ async def analyze_texts(request: AnalysisRequest):
 
     try:
         translated_text, source_analysis, target_analysis = analyze_both_texts(
-            api_key=api_key,
-            text=request.text,
-            source_language=request.source_lang,
-            target_language=request.target_lang
+            api_key=api_key, text=request.text, source_language=request.source_lang, target_language=request.target_lang
         )
 
         return AnalysisResponse(
@@ -95,14 +92,12 @@ async def analyze_texts(request: AnalysisRequest):
             source_lang=request.source_lang,
             target_lang=request.target_lang,
             source_analysis=source_analysis,
-            target_analysis=target_analysis
+            target_analysis=target_analysis,
         )
 
     except Exception as e:
         logger.error(f"Analysis failed: {e}")
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
-
-
 
 
 @app.post("/analyze-and-scaffold", response_model=SentencePair)
@@ -130,7 +125,7 @@ async def analyze_and_scaffold(request: AnalysisRequest):
             api_key=itzuli_api_key,
             text=request.text,
             source_language=request.source_lang,
-            target_language=request.target_lang
+            target_language=request.target_lang,
         )
 
         # Generate enriched alignment data with Claude
@@ -142,7 +137,7 @@ async def analyze_and_scaffold(request: AnalysisRequest):
             source_text=request.text,
             target_text=translated_text,
             sentence_id=request.sentence_id,
-            claude_api_key=claude_api_key
+            claude_api_key=claude_api_key,
         )
 
         # Cache the result
