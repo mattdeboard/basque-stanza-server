@@ -69,13 +69,13 @@
   .token--disconnected {
     @apply cursor-default opacity-60;
     /* Ensure disconnected tokens still participate in normal flex layout */
-    flex-shrink: 0 !important;
-    position: relative !important;
+    flex-shrink: 0;
+    position: relative;
     /* Remove any pseudo-element positioning from disconnected tokens */
   }
 
   .token--disconnected::after {
-    display: none !important;
+    display: none;
   }
 
   .token--disconnected:hover {
