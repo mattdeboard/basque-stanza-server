@@ -28,7 +28,7 @@ Python-based NLP processing server with:
 - Translation alignment algorithms
 - MCP (Model Context Protocol) server for Claude integration
 
-### Frontend (Xingolak)
+### Frontend ("Xingolak")
 
 React-based visualization interface named "Xingolak" (Basque for "Ribbons") featuring:
 
