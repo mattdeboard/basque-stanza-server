@@ -21,13 +21,41 @@ from itzuli_nlp.core.types import AnalysisRow
 
 @pytest.fixture
 def client():
-    """Test client for FastAPI app."""
     return TestClient(app)
 
 
 @pytest.fixture
+def itzuli_env():
+    with patch.dict(os.environ, {"ITZULI_API_KEY": "test-key"}):
+        yield
+
+
+@pytest.fixture
+def full_env():
+    with patch.dict(os.environ, {"ITZULI_API_KEY": "test-key", "CLAUDE_API_KEY": "test-claude-key"}):
+        yield
+
+
+@pytest.fixture
+def mock_analyze():
+    with patch("itzuli_nlp.alignment_server.server.analyze_both_texts") as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_scaffold():
+    with patch("itzuli_nlp.alignment_server.server.create_enriched_alignment_data") as mock:
+        yield mock
+
+
+@pytest.fixture
+def scaffold_setup(full_env, mock_analyze, mock_scaffold):
+    with patch("itzuli_nlp.alignment_server.server.cache.get", return_value=None) as mock_cache:
+        yield {"mock_analyze": mock_analyze, "mock_scaffold": mock_scaffold, "mock_cache": mock_cache}
+
+
+@pytest.fixture
 def mock_analysis_data():
-    """Mock analysis data for testing."""
     source_analysis = [
         AnalysisRow("Kaixo", "kaixo", "INTJ", ""),
         AnalysisRow("mundua", "mundu", "NOUN", "Case=Abs|Definite=Def|Number=Sing"),
@@ -43,7 +71,6 @@ def mock_analysis_data():
 
 @pytest.fixture
 def mock_alignment_data():
-    """Mock alignment data for testing."""
     source_tokens = [
         Token(id="s0", form="Kaixo", lemma="kaixo", pos="intj", features=[]),
         Token(id="s1", form="mundua", lemma="mundu", pos="noun", features=["absolutive", "definite", "singular"]),
@@ -64,6 +91,80 @@ def mock_alignment_data():
     return AlignmentData(sentences=[sentence_pair])
 
 
+# Request data factory functions
+def basic_request(text="Kaixo mundua", source_lang="eu", target_lang="en"):
+    return {"text": text, "source_lang": source_lang, "target_lang": target_lang}
+
+
+# Mock configuration helper functions
+def setup_analyze_mock(mock_analyze, data=None, error=None):
+    if error:
+        mock_analyze.side_effect = Exception(error)
+    elif data:
+        mock_analyze.return_value = data
+    else:
+        raise ValueError("Must provide either data or error")
+
+
+def setup_scaffold_mock(mock_scaffold, data=None, error=None):
+    if error:
+        mock_scaffold.side_effect = Exception(error)
+    elif data:
+        mock_scaffold.return_value = data
+    else:
+        raise ValueError("Must provide either data or error")
+
+
+def assert_analyze_called(mock_analyze, text="Kaixo mundua", source_lang="eu", target_lang="en"):
+    mock_analyze.assert_called_once_with(
+        api_key="test-key", text=text, source_language=source_lang, target_language=target_lang
+    )
+
+
+def assert_scaffold_called(
+    mock_scaffold,
+    mock_analysis_data,
+    text="Kaixo mundua",
+    translated_text="Hello world",
+    source_lang="eu",
+    target_lang="en",
+    sentence_id="test-001",
+):
+    mock_scaffold.assert_called_once_with(
+        source_analysis=mock_analysis_data[1],
+        target_analysis=mock_analysis_data[2],
+        source_lang=source_lang,
+        target_lang=target_lang,
+        source_text=text,
+        target_text=translated_text,
+        sentence_id=sentence_id,
+        claude_api_key="test-claude-key",
+    )
+
+
+# Response validation helper functions
+def assert_error_response(response, status_code, message_fragment):
+    assert response.status_code == status_code
+    assert message_fragment in response.json()["detail"]
+
+
+def assert_analysis_response_structure(data):
+    assert "source_text" in data
+    assert "target_text" in data
+    assert "source_lang" in data
+    assert "target_lang" in data
+    assert "source_analysis" in data
+    assert "target_analysis" in data
+    assert len(data["source_analysis"]) >= 0
+    assert len(data["target_analysis"]) >= 0
+
+
+def assert_scaffold_response_structure(data):
+    assert "id" in data
+    assert "source" in data
+    assert "target" in data
+
+
 class TestHealthCheck:
     def test_health_check_returns_healthy_status(self, client):
         response = client.get("/health")
@@ -73,18 +174,18 @@ class TestHealthCheck:
 
 
 class TestAnalyzeEndpoint:
-    @patch.dict(os.environ, {"ITZULI_API_KEY": "test-key"})
-    @patch("itzuli_nlp.alignment_server.server.analyze_both_texts")
-    def test_analyze_texts_success(self, mock_analyze, client, mock_analysis_data):
-        mock_analyze.return_value = mock_analysis_data
+    def test_analyze_texts_success(self, itzuli_env, mock_analyze, client, mock_analysis_data):
+        setup_analyze_mock(mock_analyze, data=mock_analysis_data)
 
-        request_data = {"text": "Kaixo mundua", "source_lang": "eu", "target_lang": "en", "sentence_id": "test-001"}
-
-        response = client.post("/analyze", json=request_data)
+        response = client.post(
+            "/analyze",
+            json={"text": "Kaixo mundua", "source_lang": "eu", "target_lang": "en", "sentence_id": "test-001"},
+        )
 
         assert response.status_code == 200
         data = response.json()
 
+        assert_analysis_response_structure(data)
         assert data["source_text"] == "Kaixo mundua"
         assert data["target_text"] == "Hello world"
         assert data["source_lang"] == "eu"
@@ -95,165 +196,92 @@ class TestAnalyzeEndpoint:
         # Verify analysis row structure
         assert data["source_analysis"][0] == {"word": "Kaixo", "lemma": "kaixo", "upos": "INTJ", "feats": ""}
 
-        mock_analyze.assert_called_once_with(
-            api_key="test-key", text="Kaixo mundua", source_language="eu", target_language="en"
-        )
+        assert_analyze_called(mock_analyze)
 
     @patch.dict(os.environ, {}, clear=True)
     def test_analyze_texts_missing_api_key(self, client):
-        request_data = {"text": "Kaixo mundua", "source_lang": "eu", "target_lang": "en"}
+        response = client.post("/analyze", json=basic_request())
 
-        response = client.post("/analyze", json=request_data)
+        assert_error_response(response, 500, "ITZULI_API_KEY not configured")
 
-        assert response.status_code == 500
-        assert "ITZULI_API_KEY not configured" in response.json()["detail"]
+    def test_analyze_texts_analysis_error(self, itzuli_env, mock_analyze, client):
+        setup_analyze_mock(mock_analyze, error="Translation failed")
 
-    @patch.dict(os.environ, {"ITZULI_API_KEY": "test-key"})
-    @patch("itzuli_nlp.alignment_server.server.analyze_both_texts")
-    def test_analyze_texts_analysis_error(self, mock_analyze, client):
-        mock_analyze.side_effect = Exception("Translation failed")
+        response = client.post("/analyze", json=basic_request())
 
-        request_data = {"text": "Kaixo mundua", "source_lang": "eu", "target_lang": "en"}
-
-        response = client.post("/analyze", json=request_data)
-
-        assert response.status_code == 500
-        assert "Analysis failed: Translation failed" in response.json()["detail"]
+        assert_error_response(response, 500, "Analysis failed: Translation failed")
 
     def test_analyze_texts_invalid_request(self, client):
-        # Missing required fields
-        request_data = {"text": "Kaixo"}
-
-        response = client.post("/analyze", json=request_data)
+        response = client.post("/analyze", json={"text": "Kaixo"})
 
         assert response.status_code == 422  # Validation error
 
-    @patch.dict(os.environ, {"ITZULI_API_KEY": "test-key"})
-    @patch("itzuli_nlp.alignment_server.server.analyze_both_texts")
-    def test_analyze_texts_with_default_sentence_id(self, mock_analyze, client, mock_analysis_data):
-        mock_analyze.return_value = mock_analysis_data
+    def test_analyze_texts_with_default_sentence_id(self, itzuli_env, mock_analyze, client, mock_analysis_data):
+        setup_analyze_mock(mock_analyze, data=mock_analysis_data)
 
-        request_data = {
-            "text": "Kaixo mundua",
-            "source_lang": "eu",
-            "target_lang": "en",
-            # No sentence_id provided, should default to "default"
-        }
-
-        response = client.post("/analyze", json=request_data)
+        response = client.post("/analyze", json=basic_request())
 
         assert response.status_code == 200
         # The sentence_id is only used in /analyze-and-scaffold, not /analyze
 
 
-
 class TestAnalyzeAndScaffoldEndpoint:
-    @patch.dict(os.environ, {"ITZULI_API_KEY": "test-key", "CLAUDE_API_KEY": "test-claude-key"})
-    @patch("itzuli_nlp.alignment_server.server.cache.get", return_value=None)
-    @patch("itzuli_nlp.alignment_server.server.create_enriched_alignment_data")
-    @patch("itzuli_nlp.alignment_server.server.analyze_both_texts")
-    def test_analyze_and_scaffold_success(
-        self, mock_analyze, mock_create_scaffold, mock_cache, client, mock_analysis_data, mock_alignment_data
-    ):
-        mock_analyze.return_value = mock_analysis_data
-        mock_create_scaffold.return_value = mock_alignment_data
+    def test_analyze_and_scaffold_success(self, scaffold_setup, client, mock_analysis_data, mock_alignment_data):
+        setup_analyze_mock(scaffold_setup["mock_analyze"], data=mock_analysis_data)
+        setup_scaffold_mock(scaffold_setup["mock_scaffold"], data=mock_alignment_data)
 
-        request_data = {"text": "Kaixo mundua", "source_lang": "eu", "target_lang": "en", "sentence_id": "test-001"}
-
-        response = client.post("/analyze-and-scaffold", json=request_data)
+        response = client.post(
+            "/analyze-and-scaffold",
+            json={"text": "Kaixo mundua", "source_lang": "eu", "target_lang": "en", "sentence_id": "test-001"},
+        )
 
         assert response.status_code == 200
         data = response.json()
 
-        # Verify scaffold structure (single SentencePair)
-        assert "id" in data
-        assert "source" in data
-        assert "target" in data
+        assert_scaffold_response_structure(data)
 
         # Verify both functions were called correctly
-        mock_analyze.assert_called_once_with(
-            api_key="test-key", text="Kaixo mundua", source_language="eu", target_language="en"
-        )
-
-        mock_create_scaffold.assert_called_once_with(
-            source_analysis=mock_analysis_data[1],
-            target_analysis=mock_analysis_data[2],
-            source_lang="eu",
-            target_lang="en",
-            source_text="Kaixo mundua",
-            target_text="Hello world",
-            sentence_id="test-001",
-            claude_api_key="test-claude-key"
-        )
+        assert_analyze_called(scaffold_setup["mock_analyze"])
+        assert_scaffold_called(scaffold_setup["mock_scaffold"], mock_analysis_data)
 
     @patch.dict(os.environ, {}, clear=True)
     def test_analyze_and_scaffold_missing_api_key(self, client):
-        request_data = {"text": "Kaixo mundua", "source_lang": "eu", "target_lang": "en"}
+        response = client.post("/analyze-and-scaffold", json=basic_request())
 
-        response = client.post("/analyze-and-scaffold", json=request_data)
+        assert_error_response(response, 500, "ITZULI_API_KEY not configured")
 
-        assert response.status_code == 500
-        assert "ITZULI_API_KEY not configured" in response.json()["detail"]
+    def test_analyze_and_scaffold_analysis_error(self, scaffold_setup, client):
+        setup_analyze_mock(scaffold_setup["mock_analyze"], error="Analysis failed")
 
-    @patch.dict(os.environ, {"ITZULI_API_KEY": "test-key", "CLAUDE_API_KEY": "test-claude-key"})
-    @patch("itzuli_nlp.alignment_server.server.cache.get", return_value=None)
-    @patch("itzuli_nlp.alignment_server.server.analyze_both_texts")
-    def test_analyze_and_scaffold_analysis_error(self, mock_analyze, mock_cache, client):
-        mock_analyze.side_effect = Exception("Analysis failed")
+        response = client.post("/analyze-and-scaffold", json=basic_request())
 
-        request_data = {"text": "Kaixo mundua", "source_lang": "eu", "target_lang": "en"}
+        assert_error_response(response, 500, "Analysis and alignment generation failed: Analysis failed")
 
-        response = client.post("/analyze-and-scaffold", json=request_data)
+    def test_analyze_and_scaffold_scaffold_error(self, scaffold_setup, client, mock_analysis_data):
+        setup_analyze_mock(scaffold_setup["mock_analyze"], data=mock_analysis_data)
+        setup_scaffold_mock(scaffold_setup["mock_scaffold"], error="Scaffold creation failed")
 
-        assert response.status_code == 500
-        assert "Analysis and alignment generation failed: Analysis failed" in response.json()["detail"]
+        response = client.post("/analyze-and-scaffold", json=basic_request())
 
-    @patch.dict(os.environ, {"ITZULI_API_KEY": "test-key", "CLAUDE_API_KEY": "test-claude-key"})
-    @patch("itzuli_nlp.alignment_server.server.cache.get", return_value=None)
-    @patch("itzuli_nlp.alignment_server.server.create_enriched_alignment_data")
-    @patch("itzuli_nlp.alignment_server.server.analyze_both_texts")
-    def test_analyze_and_scaffold_scaffold_error(self, mock_analyze, mock_create_scaffold, mock_cache, client, mock_analysis_data):
-        mock_analyze.return_value = mock_analysis_data
-        mock_create_scaffold.side_effect = Exception("Scaffold creation failed")
-
-        request_data = {"text": "Kaixo mundua", "source_lang": "eu", "target_lang": "en"}
-
-        response = client.post("/analyze-and-scaffold", json=request_data)
-
-        assert response.status_code == 500
-        assert "Analysis and alignment generation failed: Scaffold creation failed" in response.json()["detail"]
+        assert_error_response(response, 500, "Analysis and alignment generation failed: Scaffold creation failed")
 
     def test_analyze_and_scaffold_invalid_request(self, client):
-        # Missing required fields
-        request_data = {"text": "test"}
-
-        response = client.post("/analyze-and-scaffold", json=request_data)
+        response = client.post("/analyze-and-scaffold", json={"text": "test"})
 
         assert response.status_code == 422  # Validation error
 
-    @patch.dict(os.environ, {"ITZULI_API_KEY": "test-key", "CLAUDE_API_KEY": "test-claude-key"})
-    @patch("itzuli_nlp.alignment_server.server.cache.get", return_value=None)
-    @patch("itzuli_nlp.alignment_server.server.create_enriched_alignment_data")
-    @patch("itzuli_nlp.alignment_server.server.analyze_both_texts")
     def test_analyze_and_scaffold_with_default_sentence_id(
-        self, mock_analyze, mock_create_scaffold, mock_cache, client, mock_analysis_data, mock_alignment_data
+        self, scaffold_setup, client, mock_analysis_data, mock_alignment_data
     ):
-        mock_analyze.return_value = mock_analysis_data
-        mock_create_scaffold.return_value = mock_alignment_data
+        setup_analyze_mock(scaffold_setup["mock_analyze"], data=mock_analysis_data)
+        setup_scaffold_mock(scaffold_setup["mock_scaffold"], data=mock_alignment_data)
 
-        request_data = {
-            "text": "Kaixo mundua",
-            "source_lang": "eu",
-            "target_lang": "en",
-            # No sentence_id provided, should default to "default"
-        }
-
-        response = client.post("/analyze-and-scaffold", json=request_data)
+        response = client.post("/analyze-and-scaffold", json=basic_request())
 
         assert response.status_code == 200
 
         # Verify default sentence_id was used
-        call_args = mock_create_scaffold.call_args
+        call_args = scaffold_setup["mock_scaffold"].call_args
         assert call_args.kwargs["sentence_id"] == "default"
 
 
@@ -288,7 +316,6 @@ class TestModelValidation:
         assert response.source_text == "Kaixo"
         assert len(response.source_analysis) == 1
         assert isinstance(response.source_analysis[0], AnalysisRow)
-
 
 
 class TestAppConfiguration:
@@ -355,66 +382,47 @@ class TestMainBlock:
 
 
 class TestErrorHandling:
-    @patch.dict(os.environ, {"ITZULI_API_KEY": "test-key"})
-    @patch("itzuli_nlp.alignment_server.server.analyze_both_texts")
-    def test_analyze_logs_error_on_failure(self, mock_analyze, client):
-        mock_analyze.side_effect = Exception("Test error")
-
-        request_data = {"text": "Kaixo", "source_lang": "eu", "target_lang": "en"}
+    def test_analyze_logs_error_on_failure(self, itzuli_env, mock_analyze, client):
+        setup_analyze_mock(mock_analyze, error="Test error")
 
         with patch("itzuli_nlp.alignment_server.server.logger") as mock_logger:
-            response = client.post("/analyze", json=request_data)
+            response = client.post("/analyze", json=basic_request("Kaixo"))
 
             assert response.status_code == 500
             mock_logger.error.assert_called_once_with("Analysis failed: Test error")
 
-
-    @patch.dict(os.environ, {"ITZULI_API_KEY": "test-key"})
-    @patch("itzuli_nlp.alignment_server.server.create_enriched_alignment_data")
-    @patch("itzuli_nlp.alignment_server.server.analyze_both_texts")
-    def test_analyze_and_scaffold_logs_error_on_failure(self, mock_analyze, mock_create_scaffold, client):
-        mock_analyze.side_effect = Exception("Test error")
-
-        request_data = {"text": "Kaixo", "source_lang": "eu", "target_lang": "en"}
+    def test_analyze_and_scaffold_logs_error_on_failure(self, itzuli_env, mock_analyze, mock_scaffold, client):
+        setup_analyze_mock(mock_analyze, error="Test error")
 
         with patch("itzuli_nlp.alignment_server.server.logger") as mock_logger:
-            response = client.post("/analyze-and-scaffold", json=request_data)
+            response = client.post("/analyze-and-scaffold", json=basic_request("Kaixo"))
 
             assert response.status_code == 500
             mock_logger.error.assert_called_once_with("Analysis and alignment generation failed: Test error")
 
 
 class TestEdgeCases:
-    @patch.dict(os.environ, {"ITZULI_API_KEY": "test-key"})
-    @patch("itzuli_nlp.alignment_server.server.analyze_both_texts")
-    def test_analyze_with_empty_features(self, mock_analyze, client):
+    def test_analyze_with_empty_features(self, itzuli_env, mock_analyze, client):
         # Test with empty features
         source_analysis = [AnalysisRow("test", "test", "NOUN", "")]
         target_analysis = [AnalysisRow("test", "test", "NOUN", "")]
-        mock_analyze.return_value = ("test", source_analysis, target_analysis)
+        setup_analyze_mock(mock_analyze, data=("test", source_analysis, target_analysis))
 
-        request_data = {"text": "test", "source_lang": "eu", "target_lang": "en"}
-
-        response = client.post("/analyze", json=request_data)
+        response = client.post("/analyze", json=basic_request("test"))
 
         assert response.status_code == 200
         data = response.json()
         assert data["source_analysis"][0]["feats"] == ""
 
 
-
 class TestResponseSchemas:
-    @patch.dict(os.environ, {"ITZULI_API_KEY": "test-key"})
-    @patch("itzuli_nlp.alignment_server.server.analyze_both_texts")
-    def test_analysis_response_schema_compatibility(self, mock_analyze, client):
+    def test_analysis_response_schema_compatibility(self, itzuli_env, mock_analyze, client):
         # Test that AnalysisRow objects serialize correctly in FastAPI
         source_analysis = [AnalysisRow("Kaixo", "kaixo", "INTJ", "Animacy=Inan")]
         target_analysis = [AnalysisRow("Hello", "hello", "INTJ", "")]
-        mock_analyze.return_value = ("Hello", source_analysis, target_analysis)
+        setup_analyze_mock(mock_analyze, data=("Hello", source_analysis, target_analysis))
 
-        request_data = {"text": "Kaixo", "source_lang": "eu", "target_lang": "en"}
-
-        response = client.post("/analyze", json=request_data)
+        response = client.post("/analyze", json=basic_request("Kaixo"))
 
         assert response.status_code == 200
         data = response.json()
