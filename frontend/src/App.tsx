@@ -1,29 +1,46 @@
+import { useEffect, useState } from 'react'
+import { AlignmentVisualizer } from './components/AlignmentVisualizer'
+import { LoadingIndicator } from './components/LoadingIndicator'
+import { TranslationInput } from './components/TranslationInput'
+import { config } from './config'
 import { useSelectedSentence } from './hooks/useAlignmentData'
 import { useTranslationRequest } from './hooks/useTranslationRequest'
-import { AlignmentVisualizer } from './components/AlignmentVisualizer'
-import { TranslationInput } from './components/TranslationInput'
-import { LoadingIndicator } from './components/LoadingIndicator'
-import { useEffect, useState } from 'react'
-import { config } from './config'
+import type { LanguageCode } from './types/alignment'
 
 function App() {
   const [mode, setMode] = useState<'input' | 'examples'>('input')
-  
+
   // Hook for loading example sentences (fixture data only)
-  const { selectedSentence, selectedId, setSelectedId, availableSentences, loading: fixtureLoading, error: fixtureError } =
-    useSelectedSentence()
-  
+  const {
+    selectedSentence,
+    selectedId,
+    setSelectedId,
+    availableSentences,
+    loading: fixtureLoading,
+    error: fixtureError,
+  } = useSelectedSentence()
+
   // Hook for submitting new translation requests
-  const { data: translationData, loading: translationLoading, error: translationError, submitRequest, reset } =
-    useTranslationRequest()
+  const {
+    data: translationData,
+    loading: translationLoading,
+    error: translationError,
+    submitRequest,
+    reset,
+  } = useTranslationRequest()
 
   // Determine which data to display
   const currentData = mode === 'input' && translationData ? translationData : null
-  const currentSentence = currentData?.sentences[0] || (mode === 'examples' ? selectedSentence : null)
+  const currentSentence =
+    currentData?.sentences[0] || (mode === 'examples' ? selectedSentence : null)
   const isLoading = mode === 'input' ? translationLoading : fixtureLoading
   const currentError = mode === 'input' ? translationError : fixtureError
 
-  const handleTranslationSubmit = async (text: string, sourceLang: any, targetLang: any) => {
+  const handleTranslationSubmit = async (
+    text: string,
+    sourceLang: LanguageCode,
+    targetLang: LanguageCode
+  ) => {
     setMode('input')
     await submitRequest(text, sourceLang, targetLang)
   }
@@ -105,8 +122,8 @@ function App() {
 
           {/* Translation Input Form */}
           {mode === 'input' && (
-            <TranslationInput 
-              onSubmit={handleTranslationSubmit} 
+            <TranslationInput
+              onSubmit={handleTranslationSubmit}
               loading={translationLoading}
               compact={!!currentSentence}
             />
@@ -116,7 +133,10 @@ function App() {
           {mode === 'examples' && config.useFixtures && (
             <div className="content-card max-w-2xl mx-4 sm:mx-auto p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6">
-                <label htmlFor="sentence-select" className="font-medium text-slate-600 text-xs sm:text-sm uppercase tracking-wider">
+                <label
+                  htmlFor="sentence-select"
+                  className="font-medium text-slate-600 text-xs sm:text-sm uppercase tracking-wider"
+                >
                   Choose Example Sentence
                 </label>
                 <select
@@ -139,15 +159,22 @@ function App() {
 
         {/* Show visualization only when we have data */}
         {currentSentence && (
-          <main className="relative mt-2 animate-on-load" style={{ animationDelay: '200ms' }} role="main" aria-label="Translation alignment visualization">
+          <main
+            className="relative mt-2 animate-on-load"
+            style={{ animationDelay: '200ms' }}
+            role="main"
+            aria-label="Translation alignment visualization"
+          >
             <AlignmentVisualizer sentencePair={currentSentence} />
           </main>
         )}
-        
+
         {/* Show helpful message when no data is available */}
         {!currentSentence && !isLoading && !currentError && (
           <div className="text-center py-12 text-lg text-slate-600">
-            {mode === 'input' ? 'Enter text above to begin analysis' : 'Select an example sentence to view alignment visualization'}
+            {mode === 'input'
+              ? 'Enter text above to begin analysis'
+              : 'Select an example sentence to view alignment visualization'}
           </div>
         )}
       </div>

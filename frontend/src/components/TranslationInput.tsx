@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { LanguageCode } from '../types/alignment'
 
 type TranslationInputProps = {
@@ -9,6 +9,8 @@ type TranslationInputProps = {
 
 const LANGUAGE_OPTIONS = [
   { code: LanguageCode.EN, name: 'English', flag: '🇺🇸' },
+  { code: LanguageCode.ES, name: 'Spanish', flag: '🇪🇸' },
+  { code: LanguageCode.FR, name: 'French', flag: '🇫🇷' },
   { code: LanguageCode.EU, name: 'Basque', flag: '🔴⚪🟢' },
 ] as const
 
@@ -17,10 +19,59 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
   const [sourceLang, setSourceLang] = useState<LanguageCode>(LanguageCode.EN)
   const [targetLang, setTargetLang] = useState<LanguageCode>(LanguageCode.EU)
   const [isExpanded, setIsExpanded] = useState(!compact)
+  const [validationError, setValidationError] = useState<string>('')
+
+  // Check if current language pair is valid (one must be Basque)
+  const isValidLanguagePair = sourceLang === LanguageCode.EU || targetLang === LanguageCode.EU
+  const canSubmit = text.trim() && isValidLanguagePair
+
+  const handleSourceLanguageChange = (newSourceLang: LanguageCode) => {
+    setSourceLang(newSourceLang)
+
+    // If new source is not Basque and target is not Basque, auto-set target to Basque
+    if (newSourceLang !== LanguageCode.EU && targetLang !== LanguageCode.EU) {
+      setTargetLang(LanguageCode.EU)
+      setValidationError('')
+    }
+    // If new source equals target, swap them
+    else if (newSourceLang === targetLang) {
+      setTargetLang(sourceLang)
+    }
+    // Clear any validation errors if pair becomes valid
+    else if (newSourceLang === LanguageCode.EU || targetLang === LanguageCode.EU) {
+      setValidationError('')
+    }
+  }
+
+  const handleTargetLanguageChange = (newTargetLang: LanguageCode) => {
+    setTargetLang(newTargetLang)
+
+    // If new target is not Basque and source is not Basque, auto-set source to Basque
+    if (newTargetLang !== LanguageCode.EU && sourceLang !== LanguageCode.EU) {
+      setSourceLang(LanguageCode.EU)
+      setValidationError('')
+    }
+    // If new target equals source, swap them
+    else if (newTargetLang === sourceLang) {
+      setSourceLang(targetLang)
+    }
+    // Clear any validation errors if pair becomes valid
+    else if (newTargetLang === LanguageCode.EU || sourceLang === LanguageCode.EU) {
+      setValidationError('')
+    }
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!text.trim()) return
+
+    // Validate language pair before submitting
+    if (!isValidLanguagePair) {
+      setValidationError('Either source or target language must be Basque')
+      return
+    }
+
+    setValidationError('')
     onSubmit(text.trim(), sourceLang, targetLang)
   }
 
@@ -65,11 +116,11 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
     return (
       <>
         {/* Backdrop */}
-        <div 
+        <div
           className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 transition-opacity duration-300"
           onClick={() => setIsExpanded(false)}
         />
-        
+
         {/* Drawer */}
         <div className="fixed right-0 top-0 h-full w-96 max-w-[90vw] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-out">
           <div className="h-full flex flex-col">
@@ -82,24 +133,32 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
                 aria-label="Close"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
-            
+
             {/* Form Content */}
             <div className="flex-1 p-4 overflow-y-auto">
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Language Selection */}
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="source-lang" className="block text-sm font-medium text-slate-700 mb-2">
+                    <label
+                      htmlFor="source-lang"
+                      className="block text-sm font-medium text-slate-700 mb-2"
+                    >
                       Source Language
                     </label>
                     <select
                       id="source-lang"
                       value={sourceLang}
-                      onChange={(e) => setSourceLang(e.target.value as LanguageCode)}
+                      onChange={(e) => handleSourceLanguageChange(e.target.value as LanguageCode)}
                       className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white text-sm focus:outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200 transition-all duration-200"
                       disabled={loading}
                     >
@@ -119,20 +178,33 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
                       className="p-2 rounded-full hover:bg-sage-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-sage-400 disabled:opacity-50"
                       aria-label="Swap languages"
                     >
-                      <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m0-4l-4-4" />
+                      <svg
+                        className="w-5 h-5 text-slate-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m0-4l-4-4"
+                        />
                       </svg>
                     </button>
                   </div>
 
                   <div>
-                    <label htmlFor="target-lang" className="block text-sm font-medium text-slate-700 mb-2">
+                    <label
+                      htmlFor="target-lang"
+                      className="block text-sm font-medium text-slate-700 mb-2"
+                    >
                       Target Language
                     </label>
                     <select
                       id="target-lang"
                       value={targetLang}
-                      onChange={(e) => setTargetLang(e.target.value as LanguageCode)}
+                      onChange={(e) => handleTargetLanguageChange(e.target.value as LanguageCode)}
                       className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white text-sm focus:outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200 transition-all duration-200"
                       disabled={loading}
                     >
@@ -147,7 +219,10 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
 
                 {/* Text Input */}
                 <div>
-                  <label htmlFor="input-text" className="block text-sm font-medium text-slate-700 mb-2">
+                  <label
+                    htmlFor="input-text"
+                    className="block text-sm font-medium text-slate-700 mb-2"
+                  >
                     Enter text to translate and analyze
                   </label>
                   <textarea
@@ -164,29 +239,52 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
                     {text.length}/500 characters
                   </div>
                 </div>
+
+                {/* Validation Error Display */}
+                {validationError && (
+                  <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3 text-center">
+                    {validationError}
+                  </div>
+                )}
               </form>
             </div>
-            
+
             {/* Footer with Submit Button */}
             <div className="p-4 border-t border-slate-200 bg-slate-50">
               <button
                 type="submit"
-                disabled={!text.trim() || loading}
+                disabled={!canSubmit || loading}
                 onClick={handleSubmit}
                 className="w-full bg-sage-500 text-white font-medium py-3 px-4 rounded-lg hover:bg-sage-600 focus:outline-none focus:ring-2 focus:ring-sage-400 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
                     <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     Analyzing...
                   </>
                 ) : (
                   <>
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 10V3L4 14h7v7l9-11h-7z"
+                      />
                     </svg>
                     Analyze Translation
                   </>
@@ -212,7 +310,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
             <select
               id="source-lang"
               value={sourceLang}
-              onChange={(e) => setSourceLang(e.target.value as LanguageCode)}
+              onChange={(e) => handleSourceLanguageChange(e.target.value as LanguageCode)}
               className="px-3 py-2 border border-slate-200 rounded-lg bg-white/80 backdrop-blur-sm text-sm focus:outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200 transition-all duration-200"
               disabled={loading}
             >
@@ -231,8 +329,18 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
             className="p-2 rounded-full hover:bg-sage-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-sage-400 focus:ring-offset-1 disabled:opacity-50"
             aria-label="Swap source and target languages"
           >
-            <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m0-4l-4-4" />
+            <svg
+              className="w-5 h-5 text-slate-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m0-4l-4-4"
+              />
             </svg>
           </button>
 
@@ -243,7 +351,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
             <select
               id="target-lang"
               value={targetLang}
-              onChange={(e) => setTargetLang(e.target.value as LanguageCode)}
+              onChange={(e) => handleTargetLanguageChange(e.target.value as LanguageCode)}
               className="px-3 py-2 border border-slate-200 rounded-lg bg-white/80 backdrop-blur-sm text-sm focus:outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200 transition-all duration-200"
               disabled={loading}
             >
@@ -271,30 +379,51 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
             disabled={loading}
             maxLength={500}
           />
-          <div className="text-xs text-slate-500 mt-1 text-right">
-            {text.length}/500 characters
-          </div>
+          <div className="text-xs text-slate-500 mt-1 text-right">{text.length}/500 characters</div>
         </div>
+
+        {/* Validation Error Display */}
+        {validationError && (
+          <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3 text-center">
+            {validationError}
+          </div>
+        )}
 
         {/* Submit Button */}
         <div className="flex justify-center">
           <button
             type="submit"
-            disabled={!text.trim() || loading}
+            disabled={!canSubmit || loading}
             className="px-6 py-3 bg-sage-500 text-white font-medium rounded-lg hover:bg-sage-600 focus:outline-none focus:ring-2 focus:ring-sage-400 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {loading ? (
               <>
                 <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 Analyzing...
               </>
             ) : (
               <>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
                 </svg>
                 Analyze Translation
               </>

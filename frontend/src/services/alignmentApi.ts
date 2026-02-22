@@ -4,7 +4,14 @@
  */
 
 import { config } from '../config'
-import type { AlignmentData, DataSourceConfig, LanguageCode } from '../types/alignment'
+import {
+  type AlignmentData,
+  AlignmentDataSchema,
+  type DataSourceConfig,
+  type LanguageCode,
+  SentencePairSchema,
+  TranslationRequestSchema,
+} from '../schemas/validation'
 
 /**
  * Request model for translation analysis
@@ -32,7 +39,16 @@ async function loadFixtureData(): Promise<AlignmentData> {
   if (!response.ok) {
     throw new Error(`Failed to load fixture data: ${response.statusText}`)
   }
-  return response.json()
+
+  const data = await response.json()
+  const parsed = AlignmentDataSchema.safeParse(data)
+
+  if (!parsed.success) {
+    console.error('Fixture data validation failed:', parsed.error)
+    throw new Error(`Invalid fixture data format: ${parsed.error.message}`)
+  }
+
+  return parsed.data
 }
 
 /**
@@ -52,7 +68,15 @@ async function loadApiData(config: DataSourceConfig): Promise<AlignmentData> {
     throw new Error(`API request failed: ${response.status} ${response.statusText}`)
   }
 
-  return response.json()
+  const data = await response.json()
+  const parsed = AlignmentDataSchema.safeParse(data)
+
+  if (!parsed.success) {
+    console.error('API response validation failed:', parsed.error)
+    throw new Error(`Invalid API response format: ${parsed.error.message}`)
+  }
+
+  return parsed.data
 }
 
 /**
@@ -97,12 +121,24 @@ export function createFixtureConfig(): DataSourceConfig {
  * Submit text for translation analysis and alignment
  */
 export async function submitTranslationRequest(request: AnalysisRequest): Promise<AlignmentData> {
+  // Validate request before sending
+  const validationResult = TranslationRequestSchema.safeParse({
+    text: request.text,
+    source_language: request.source_lang,
+    target_language: request.target_lang,
+  })
+
+  if (!validationResult.success) {
+    const errorMessage = validationResult.error.issues.map((issue) => issue.message).join(', ')
+    throw new Error(`Invalid request: ${errorMessage}`)
+  }
+
   const url = `${config.apiBaseUrl}/analyze-and-scaffold`
-  
+
   const response = await fetch(url, {
     method: 'POST',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -115,17 +151,34 @@ export async function submitTranslationRequest(request: AnalysisRequest): Promis
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}))
-    const errorMessage = errorData.detail || `API request failed: ${response.status} ${response.statusText}`
+    const errorMessage =
+      errorData.detail || `API request failed: ${response.status} ${response.statusText}`
     throw new Error(errorMessage)
   }
 
-  const alignmentData = await response.json()
-  
+  const rawData = await response.json()
+
   // Log the server response for debugging
-  console.log('Server response:', alignmentData)
-  
-  // The backend returns a single SentencePair, but we need AlignmentData format
-  return {
-    sentences: [alignmentData]
+  console.log('Server response:', rawData)
+
+  // Validate the sentence pair response
+  const sentencePairResult = SentencePairSchema.safeParse(rawData)
+  if (!sentencePairResult.success) {
+    console.error('Server response validation failed:', sentencePairResult.error)
+    throw new Error(`Invalid server response format: ${sentencePairResult.error.message}`)
   }
+
+  // The backend returns a single SentencePair, but we need AlignmentData format
+  const alignmentData = {
+    sentences: [sentencePairResult.data],
+  }
+
+  // Final validation of the complete response
+  const finalResult = AlignmentDataSchema.safeParse(alignmentData)
+  if (!finalResult.success) {
+    console.error('Final alignment data validation failed:', finalResult.error)
+    throw new Error(`Invalid alignment data format: ${finalResult.error.message}`)
+  }
+
+  return finalResult.data
 }
