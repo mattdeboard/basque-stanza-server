@@ -51,7 +51,7 @@ export function LoadingIndicator({ mode }: LoadingIndicatorProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-tan-25 via-tan-50 to-tan-100">
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 font-sans">
-        <header className="text-center mb-3 sm:mb-4" role="banner">
+        <header className="text-center mb-3 sm:mb-4">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-light mb-2 text-slate-800 tracking-tight">
             Itzuli <span className="font-medium text-sage-600">Stanza</span>
           </h1>
@@ -85,8 +85,8 @@ export function LoadingIndicator({ mode }: LoadingIndicatorProps) {
 
             {mode === 'input' && (
               <div className="space-y-3">
-                {steps.map((step, index) => (
-                  <div key={index} className="flex items-center space-x-3">
+                {steps.map((step) => (
+                  <div key={step.name} className="flex items-center space-x-3">
                     <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
                       {step.status === 'completed' ? (
                         <svg
@@ -95,6 +95,7 @@ export function LoadingIndicator({ mode }: LoadingIndicatorProps) {
                           stroke="currentColor"
                           viewBox="0 0 24 24"
                         >
+                          <title id="step-completed-icon">Step Completed Icon</title>
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
