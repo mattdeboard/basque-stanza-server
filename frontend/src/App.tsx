@@ -113,6 +113,7 @@ function App() {
             <TranslationInput 
               onSubmit={handleTranslationSubmit} 
               loading={translationLoading}
+              compact={!!currentSentence}
             />
           )}
 
