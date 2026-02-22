@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { getLanguageName, useI18n } from '../i18n'
 import { LanguageCode } from '../types/alignment'
 
 type TranslationInputProps = {
@@ -7,14 +8,15 @@ type TranslationInputProps = {
   compact?: boolean
 }
 
-const LANGUAGE_OPTIONS = [
-  { code: LanguageCode.EN, name: 'English', flag: '🇺🇸' },
-  { code: LanguageCode.ES, name: 'Spanish', flag: '🇪🇸' },
-  { code: LanguageCode.FR, name: 'French', flag: '🇫🇷' },
-  { code: LanguageCode.EU, name: 'Basque', flag: '🔴⚪🟢' },
-] as const
+const LANGUAGE_FLAGS = {
+  [LanguageCode.EN]: '🇺🇸',
+  [LanguageCode.ES]: '🇪🇸',
+  [LanguageCode.FR]: '🇫🇷',
+  [LanguageCode.EU]: '🔴⚪🟢',
+} as const
 
 export function TranslationInput({ onSubmit, loading, compact = false }: TranslationInputProps) {
+  const { t, currentLanguage } = useI18n()
   const [text, setText] = useState('')
   const [sourceLang, setSourceLang] = useState<LanguageCode>(LanguageCode.EN)
   const [targetLang, setTargetLang] = useState<LanguageCode>(LanguageCode.EU)
@@ -67,7 +69,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
 
     // Validate language pair before submitting
     if (!isValidLanguagePair) {
-      setValidationError('Either source or target language must be Basque')
+      setValidationError('Either source or target language must be Basque') // TODO: Add translation key
       return
     }
 
@@ -101,7 +103,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
         <button
           onClick={() => setIsExpanded(true)}
           className="bg-sage-500 hover:bg-sage-600 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-sage-400 focus:ring-offset-2"
-          aria-label="Analyze new text"
+          aria-label={t('mode.analyze_new_text')}
           type="button"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,7 +132,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
           <div className="h-full flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-slate-200">
-              <h3 className="text-lg font-medium text-slate-800">Analyze New Text</h3>
+              <h3 className="text-lg font-medium text-slate-800">{t('mode.analyze_new_text')}</h3>
               <button
                 onClick={() => setIsExpanded(false)}
                 className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors duration-200"
@@ -159,7 +161,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
                       htmlFor="source-lang"
                       className="block text-sm font-medium text-slate-700 mb-2"
                     >
-                      Source Language
+                      {t('input.source_language')}
                     </label>
                     <select
                       id="source-lang"
@@ -168,9 +170,9 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
                       className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white text-sm focus:outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200 transition-all duration-200"
                       disabled={loading}
                     >
-                      {LANGUAGE_OPTIONS.map((lang) => (
-                        <option key={lang.code} value={lang.code}>
-                          {lang.flag} {lang.name}
+                      {Object.values(LanguageCode).map((langCode) => (
+                        <option key={langCode} value={langCode}>
+                          {LANGUAGE_FLAGS[langCode]} {getLanguageName(langCode, currentLanguage)}
                         </option>
                       ))}
                     </select>
@@ -206,7 +208,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
                       htmlFor="target-lang"
                       className="block text-sm font-medium text-slate-700 mb-2"
                     >
-                      Target Language
+                      {t('input.target_language')}
                     </label>
                     <select
                       id="target-lang"
@@ -215,9 +217,9 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
                       className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white text-sm focus:outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200 transition-all duration-200"
                       disabled={loading}
                     >
-                      {LANGUAGE_OPTIONS.map((lang) => (
-                        <option key={lang.code} value={lang.code}>
-                          {lang.flag} {lang.name}
+                      {Object.values(LanguageCode).map((langCode) => (
+                        <option key={langCode} value={langCode}>
+                          {LANGUAGE_FLAGS[langCode]} {getLanguageName(langCode, currentLanguage)}
                         </option>
                       ))}
                     </select>
@@ -282,7 +284,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       ></path>
                     </svg>
-                    Analyzing...
+                    {t('input.analyzing_button')}
                   </>
                 ) : (
                   <>
@@ -295,7 +297,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
                         d="M13 10V3L4 14h7v7l9-11h-7z"
                       />
                     </svg>
-                    Analyze Translation
+                    {t('input.analyze_button')}
                   </>
                 )}
               </button>
@@ -314,7 +316,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
         <div className="flex items-center justify-center gap-4">
           <div className="flex flex-col items-center">
             <label htmlFor="source-lang" className="text-sm font-medium text-slate-600 mb-2">
-              Source Language
+              {t('input.source_language')}
             </label>
             <select
               id="source-lang"
@@ -323,9 +325,9 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
               className="px-3 py-2 border border-slate-200 rounded-lg bg-white/80 backdrop-blur-sm text-sm focus:outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200 transition-all duration-200"
               disabled={loading}
             >
-              {LANGUAGE_OPTIONS.map((lang) => (
-                <option key={lang.code} value={lang.code}>
-                  {lang.flag} {lang.name}
+              {Object.values(LanguageCode).map((langCode) => (
+                <option key={langCode} value={langCode}>
+                  {LANGUAGE_FLAGS[langCode]} {getLanguageName(langCode, currentLanguage)}
                 </option>
               ))}
             </select>
@@ -356,7 +358,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
 
           <div className="flex flex-col items-center">
             <label htmlFor="target-lang" className="text-sm font-medium text-slate-600 mb-2">
-              Target Language
+              {t('input.target_language')}
             </label>
             <select
               id="target-lang"
@@ -365,9 +367,9 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
               className="px-3 py-2 border border-slate-200 rounded-lg bg-white/80 backdrop-blur-sm text-sm focus:outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200 transition-all duration-200"
               disabled={loading}
             >
-              {LANGUAGE_OPTIONS.map((lang) => (
-                <option key={lang.code} value={lang.code}>
-                  {lang.flag} {lang.name}
+              {Object.values(LanguageCode).map((langCode) => (
+                <option key={langCode} value={langCode}>
+                  {LANGUAGE_FLAGS[langCode]} {getLanguageName(langCode, currentLanguage)}
                 </option>
               ))}
             </select>
@@ -424,7 +426,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                Analyzing...
+                {t('input.analyzing_button')}
               </>
             ) : (
               <>
@@ -437,7 +439,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
                     d="M13 10V3L4 14h7v7l9-11h-7z"
                   />
                 </svg>
-                Analyze Translation
+                {t('input.analyze_button')}
               </>
             )}
           </button>
