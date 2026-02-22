@@ -22,13 +22,18 @@ def generate_alignments_for_scaffold(scaffold_data: AlignmentData, claude_api_ke
         AlignmentData with populated alignment layers
     """
     try:
+        logger.info("Creating Claude client for alignment generation")
         claude_client = ClaudeClient(api_key=claude_api_key)
         
         enriched_sentences = []
         for sentence_pair in scaffold_data.sentences:
+            logger.info(f"Processing sentence pair: {sentence_pair.id}")
+            
             # Convert tokens to dict format for Claude
             source_tokens = [token.model_dump() for token in sentence_pair.source.tokens]
             target_tokens = [token.model_dump() for token in sentence_pair.target.tokens]
+            
+            logger.info(f"Source tokens: {len(source_tokens)}, Target tokens: {len(target_tokens)}")
             
             # Generate alignments using Claude
             alignment_layers = claude_client.generate_alignments(
@@ -40,6 +45,10 @@ def generate_alignments_for_scaffold(scaffold_data: AlignmentData, claude_api_ke
                 target_text=sentence_pair.target.text
             )
             
+            logger.info(f"Generated alignments - Lexical: {len(alignment_layers.lexical)}, "
+                       f"Grammatical: {len(alignment_layers.grammatical_relations)}, "
+                       f"Features: {len(alignment_layers.features)}")
+            
             # Create enriched sentence pair
             enriched_pair = SentencePair(
                 id=sentence_pair.id,
@@ -49,7 +58,7 @@ def generate_alignments_for_scaffold(scaffold_data: AlignmentData, claude_api_ke
             )
             
             enriched_sentences.append(enriched_pair)
-            logger.info(f"Generated alignments for sentence: {sentence_pair.id}")
+            logger.info(f"Successfully enriched sentence: {sentence_pair.id}")
         
         return AlignmentData(sentences=enriched_sentences)
         

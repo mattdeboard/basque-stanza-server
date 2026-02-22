@@ -40,8 +40,9 @@ class ClaudeClient:
         )
         
         try:
+            logger.info("Calling Claude API for alignment generation")
             response = self.client.messages.create(
-                model="claude-3-5-sonnet-20241022",
+                model="claude-opus-4-6",
                 max_tokens=4000,
                 temperature=0.1,
                 messages=[{
@@ -51,7 +52,12 @@ class ClaudeClient:
             )
             
             content = response.content[0].text if response.content else ""
+            logger.info(f"Claude response received, length: {len(content)}")
+            
             alignments_data = self._parse_alignment_response(content)
+            logger.info(f"Parsed alignments - Lexical: {len(alignments_data.get('lexical', []))}, "
+                       f"Grammatical: {len(alignments_data.get('grammatical_relations', []))}, "
+                       f"Features: {len(alignments_data.get('features', []))}")
             
             return AlignmentLayers(
                 lexical=alignments_data.get("lexical", []),
@@ -85,31 +91,48 @@ Source tokens:
 Target tokens:  
 {json.dumps(target_tokens, indent=2)}
 
-Generate alignments for three layers:
+Generate alignments for three layers using the same labeling style as these examples:
 
-1. **Lexical**: Core meaning mappings between words/morphemes
-2. **Grammatical Relations**: How grammatical roles (subject, object, etc.) map across languages
-3. **Features**: How morphosyntactic features (tense, number, case, etc.) are expressed
+**Lexical layer examples:**
+- "know → ezagutu (core meaning)"
+- "gave → eman (core meaning)" 
+- "book → liburu (in 'liburua')"
+- "friend → lagun (in 'lagunari')"
+
+**Grammatical Relations layer examples:**
+- "subject (ergative): 'I' → 1st person subject agreement in 'dut'"
+- "direct object (absolutive): 'him' → 3rd person object agreement in 'dut' (no separate pronoun)"
+- "indirect object (dative): 'to my friend' → 'nire lagunari' (dative case)"
+
+**Features layer examples:**
+- "negation: 'don't' → 'ez'"
+- "auxiliary function: 'don't' (do-support) → 'dut' (carries tense/agreement)"
+- "aspect: present habitual 'know' → imperfective '-tzen' in 'ezagutzen'"
+- "person/number agreement: 'I' → 1st person singular in 'dut'"
+- "definiteness: 'the' → '-a' suffix in 'liburua'"
 
 Return ONLY a JSON object with this structure:
 {{
   "lexical": [
-    {{"source": ["s0"], "target": ["t1"], "label": "greeting"}},
-    {{"source": ["s1"], "target": ["t0", "t2"], "label": "world+definiteness"}}
+    {{"source": ["s0"], "target": ["t1"], "label": "word1 → word2 (core meaning)"}},
+    {{"source": ["s1"], "target": ["t0"], "label": "word3 → word4 (in 'inflected_form')"}}
   ],
   "grammatical_relations": [
-    {{"source": ["s1"], "target": ["t0"], "label": "direct_object"}}
+    {{"source": ["s1"], "target": ["t0"], "label": "grammatical_role (case): 'source_phrase' → target_description"}}
   ],
   "features": [
-    {{"source": ["s1"], "target": ["t2"], "label": "definiteness"}}
+    {{"source": ["s1"], "target": ["t2"], "label": "feature_name: 'source_form' → 'target_form' (explanation)"}}
   ]
 }}
 
 Guidelines:
-- Use token IDs from the provided lists (s0, s1, etc. for source; t0, t1, etc. for target)
-- Alignments can be one-to-one, one-to-many, many-to-one, or many-to-many
-- Labels should be descriptive but concise
-- Focus on linguistically meaningful alignments
+- Use token IDs from the provided lists (s0, s1, etc. for source; t0, t1, etc. for target)  
+- Labels must follow the exact style from the examples above
+- For lexical: "source_word → target_word (core meaning)" or "source_word → target_word (in 'inflected_form')"
+- For grammatical relations: "role (case): 'source_phrase' → explanation with target"
+- For features: "feature: 'source' → 'target' (explanation)" or "feature: 'source' → explanation"
+- Be linguistically precise and detailed in explanations
+- Focus on how English structures map to Basque morphology and syntax
 - Empty layers are acceptable if no alignments exist"""
 
     def _parse_alignment_response(self, content: str) -> Dict[str, list[Alignment]]:

@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from ..core.types import AnalysisRow, LanguageCode
 from tools.dual_analysis import analyze_both_texts
 from .scaffold import create_scaffold_from_dual_analysis
-from .types import AlignmentData
+from .types import AlignmentData, SentencePair
 from .cache import AlignmentCache
 from .alignment_generator import create_enriched_alignment_data
 
@@ -123,11 +123,11 @@ async def analyze_and_scaffold(request: AnalysisRequest):
     cached_data = cache.get(request.text, request.source_lang, request.target_lang)
     if cached_data:
         logger.info(f"Cache hit for text: {request.text[:50]}...")
-        return cached_data
+        return cached_data.sentences[0]
 
     try:
         # Perform dual analysis
-        source_analysis, target_analysis, translated_text = analyze_both_texts(
+        translated_text, source_analysis, target_analysis = analyze_both_texts(
             api_key=itzuli_api_key,
             text=request.text,
             source_language=request.source_lang,
@@ -149,7 +149,7 @@ async def analyze_and_scaffold(request: AnalysisRequest):
         # Cache the result
         cache.set(request.text, request.source_lang, request.target_lang, alignment_data)
 
-        return alignment_data
+        return alignment_data.sentences[0]
 
     except Exception as e:
         logger.error(f"Analysis and alignment generation failed: {e}")
