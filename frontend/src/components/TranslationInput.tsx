@@ -9,7 +9,7 @@ type TranslationInputProps = {
 
 const LANGUAGE_OPTIONS = [
   { code: LanguageCode.EN, name: 'English', flag: '🇺🇸' },
-  { code: LanguageCode.EU, name: 'Basque', flag: '🏴' },
+  { code: LanguageCode.EU, name: 'Basque', flag: '🔴⚪🟢' },
 ] as const
 
 export function TranslationInput({ onSubmit, loading, compact = false }: TranslationInputProps) {
