@@ -4,7 +4,14 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { fetchAlignmentData, getDataSourceConfig } from '../services/alignmentApi'
-import type { DataSourceConfig, UseAlignmentDataResult } from '../types/alignment'
+import type { AlignmentData, DataSourceConfig } from '../schemas/validation'
+
+export type UseAlignmentDataResult = {
+  data: AlignmentData | null
+  loading: boolean
+  error: string | null
+  refetch: () => void
+}
 
 /**
  * Hook for loading alignment data with loading states and error handling

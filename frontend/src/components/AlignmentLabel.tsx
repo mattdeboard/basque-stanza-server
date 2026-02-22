@@ -1,4 +1,4 @@
-import { LayerType } from '../types/alignment'
+import type { LayerType } from '../types/alignment'
 import { LAYER_CONFIGS } from './LayerPicker'
 
 type AlignmentLabelProps = {
@@ -8,7 +8,12 @@ type AlignmentLabelProps = {
   visible?: boolean
 }
 
-export function AlignmentLabel({ label, currentLayer, index, visible = false }: AlignmentLabelProps) {
+export function AlignmentLabel({
+  label,
+  currentLayer,
+  index,
+  visible = false,
+}: AlignmentLabelProps) {
   if (!visible) {
     return null
   }
@@ -22,9 +27,7 @@ export function AlignmentLabel({ label, currentLayer, index, visible = false }: 
         className="w-3 h-3 rounded-full flex-shrink-0 mt-0.5"
         style={{ backgroundColor: LAYER_CONFIGS[currentLayer].color }}
       />
-      <div className="text-sm text-gray-700 leading-relaxed">
-        {label}
-      </div>
+      <div className="text-sm text-gray-700 leading-relaxed">{label}</div>
     </div>
   )
 }

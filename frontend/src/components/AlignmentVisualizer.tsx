@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
-import { type SentencePair, type Alignment, LayerType } from '../types/alignment'
-import { LayerPicker, LAYER_CONFIGS } from './LayerPicker'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { type Alignment, LayerType, type SentencePair } from '../types/alignment'
 import { AlignmentLabel } from './AlignmentLabel'
+import { LAYER_CONFIGS, LayerPicker } from './LayerPicker'
 
 type TokenPosition = {
   id: string
@@ -105,13 +105,13 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
     const container = containerRef.current
     if (container) {
       const scrollContainers = container.querySelectorAll('.overflow-x-auto')
-      scrollContainers.forEach(scrollContainer => {
+      scrollContainers.forEach((scrollContainer) => {
         scrollContainer.addEventListener('scroll', handleScroll, { passive: true })
       })
 
       return () => {
         window.removeEventListener('resize', handleResize)
-        scrollContainers.forEach(scrollContainer => {
+        scrollContainers.forEach((scrollContainer) => {
           scrollContainer.removeEventListener('scroll', handleScroll)
         })
         if (scrollTimeout) clearTimeout(scrollTimeout)
@@ -143,9 +143,12 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
 
       // Start staggered animations for all ribbons
       allAlignmentIndices.forEach((alignmentIndex, order) => {
-        setTimeout(() => {
-          setAnimatingRibbons(prev => new Set([...prev, alignmentIndex]))
-        }, order * 150 + 50) // 150ms stagger, 50ms initial delay
+        setTimeout(
+          () => {
+            setAnimatingRibbons((prev) => new Set([...prev, alignmentIndex]))
+          },
+          order * 150 + 50
+        ) // 150ms stagger, 50ms initial delay
       })
 
       // Show all ribbons as highlighted during initial load
@@ -160,7 +163,6 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
     }
   }, [sourcePositions, targetPositions, sentencePair.layers[vizLayer], hasInitiallyLoaded])
 
-
   // Calculate path length for SVG animation
   const calculatePathLength = useCallback((path: string): number => {
     // Create a temporary SVG element to calculate path length
@@ -174,68 +176,81 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
     return length
   }, [])
 
-  const handleTokenHover = useCallback((tokenId: string, isSource: boolean) => {
-    const newHoveredTokens = new Set([tokenId])
-    const newHighlightedAlignments = new Set<number>()
+  const handleTokenHover = useCallback(
+    (tokenId: string, isSource: boolean) => {
+      const newHoveredTokens = new Set([tokenId])
+      const newHighlightedAlignments = new Set<number>()
 
-    const connectedAlignments: number[] = []
-    sentencePair.layers[vizLayer].forEach((alignment, index) => {
-      const isConnected = isSource
-        ? alignment.source.includes(tokenId)
-        : alignment.target.includes(tokenId)
-
-      if (isConnected) {
-        connectedAlignments.push(index)
-        newHighlightedAlignments.add(index)
-        // Add connected tokens
-        alignment.source.forEach(id => newHoveredTokens.add(id))
-        alignment.target.forEach(id => newHoveredTokens.add(id))
-      }
-    })
-
-    // If something is pinned, this becomes a secondary preview
-    if (pinnedTokenId) {
-      // Merge with pinned tokens but keep them visually distinct
-      const pinnedTokens = new Set<string>()
-      const pinnedAlignments = new Set<number>()
-
+      const connectedAlignments: number[] = []
       sentencePair.layers[vizLayer].forEach((alignment, index) => {
-        const isConnectedToPinned = pinnedIsSource
-          ? alignment.source.includes(pinnedTokenId)
-          : alignment.target.includes(pinnedTokenId)
+        const isConnected = isSource
+          ? alignment.source.includes(tokenId)
+          : alignment.target.includes(tokenId)
 
-        if (isConnectedToPinned) {
-          pinnedAlignments.add(index)
-          alignment.source.forEach(id => pinnedTokens.add(id))
-          alignment.target.forEach(id => pinnedTokens.add(id))
+        if (isConnected) {
+          connectedAlignments.push(index)
+          newHighlightedAlignments.add(index)
+          // Add connected tokens
+          alignment.source.forEach((id) => newHoveredTokens.add(id))
+          alignment.target.forEach((id) => newHoveredTokens.add(id))
         }
       })
 
-      // Add pinned tokens to hover set with special identifier
-      pinnedTokens.forEach(id => newHoveredTokens.add(id))
-      pinnedAlignments.forEach(idx => newHighlightedAlignments.add(idx))
-    }
+      // If something is pinned, this becomes a secondary preview
+      if (pinnedTokenId) {
+        // Merge with pinned tokens but keep them visually distinct
+        const pinnedTokens = new Set<string>()
+        const pinnedAlignments = new Set<number>()
 
-    // Start animations for all connected alignments immediately (no stagger for user interactions)
-    setAnimatingRibbons(prev => {
-      const newSet = new Set(prev)
-      connectedAlignments.forEach(idx => {
-        newSet.delete(idx) // Clear existing
-        newSet.add(idx) // Add back immediately
+        sentencePair.layers[vizLayer].forEach((alignment, index) => {
+          const isConnectedToPinned = pinnedIsSource
+            ? alignment.source.includes(pinnedTokenId)
+            : alignment.target.includes(pinnedTokenId)
+
+          if (isConnectedToPinned) {
+            pinnedAlignments.add(index)
+            alignment.source.forEach((id) => pinnedTokens.add(id))
+            alignment.target.forEach((id) => pinnedTokens.add(id))
+          }
+        })
+
+        // Add pinned tokens to hover set with special identifier
+        pinnedTokens.forEach((id) => newHoveredTokens.add(id))
+        pinnedAlignments.forEach((idx) => newHighlightedAlignments.add(idx))
+      }
+
+      // Start animations for all connected alignments immediately (no stagger for user interactions)
+      setAnimatingRibbons((prev) => {
+        const newSet = new Set(prev)
+        connectedAlignments.forEach((idx) => {
+          newSet.delete(idx) // Clear existing
+          newSet.add(idx) // Add back immediately
+        })
+        return newSet
       })
-      return newSet
-    })
 
-    setHoveredTokens(newHoveredTokens)
-    setHighlightedAlignments(newHighlightedAlignments)
-    setShowLabels(true)
+      setHoveredTokens(newHoveredTokens)
+      setHighlightedAlignments(newHighlightedAlignments)
+      setShowLabels(true)
 
-    // Announce connections to screen reader
-    const token = sentencePair[isSource ? 'source' : 'target'].tokens.find(t => t.id === tokenId)
-    if (token && connectedAlignments.length > 0) {
-      setAnnouncement(`${token.form} has ${connectedAlignments.length} alignment connection${connectedAlignments.length === 1 ? '' : 's'}`)
-    }
-  }, [sentencePair.layers[vizLayer], pinnedTokenId, pinnedIsSource, highlightedAlignments, sentencePair])
+      // Announce connections to screen reader
+      const token = sentencePair[isSource ? 'source' : 'target'].tokens.find(
+        (t) => t.id === tokenId
+      )
+      if (token && connectedAlignments.length > 0) {
+        setAnnouncement(
+          `${token.form} has ${connectedAlignments.length} alignment connection${connectedAlignments.length === 1 ? '' : 's'}`
+        )
+      }
+    },
+    [
+      sentencePair.layers[vizLayer],
+      pinnedTokenId,
+      pinnedIsSource,
+      highlightedAlignments,
+      sentencePair,
+    ]
+  )
 
   const handleTokenLeave = useCallback(() => {
     if (pinnedTokenId) {
@@ -250,8 +265,8 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
 
         if (isConnectedToPinned) {
           pinnedAlignments.add(index)
-          alignment.source.forEach(id => pinnedTokens.add(id))
-          alignment.target.forEach(id => pinnedTokens.add(id))
+          alignment.source.forEach((id) => pinnedTokens.add(id))
+          alignment.target.forEach((id) => pinnedTokens.add(id))
         }
       })
 
@@ -267,68 +282,75 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
     }
   }, [pinnedTokenId, pinnedIsSource, sentencePair.layers[vizLayer]])
 
-  const handleTokenClick = useCallback((tokenId: string, isSource: boolean) => {
-    // Toggle pin state
-    if (pinnedTokenId === tokenId) {
-      // Unpin
-      setPinnedTokenId(null)
-      setPinnedIsSource(false)
-      setHoveredTokens(new Set())
-      setHighlightedAlignments(new Set())
-      setAnimatingRibbons(new Set())
-      setShowLabels(false)
-    } else {
-      // Pin this token
-      setPinnedTokenId(tokenId)
-      setPinnedIsSource(isSource)
+  const handleTokenClick = useCallback(
+    (tokenId: string, isSource: boolean) => {
+      // Toggle pin state
+      if (pinnedTokenId === tokenId) {
+        // Unpin
+        setPinnedTokenId(null)
+        setPinnedIsSource(false)
+        setHoveredTokens(new Set())
+        setHighlightedAlignments(new Set())
+        setAnimatingRibbons(new Set())
+        setShowLabels(false)
+      } else {
+        // Pin this token
+        setPinnedTokenId(tokenId)
+        setPinnedIsSource(isSource)
 
-      const newHoveredTokens = new Set([tokenId])
-      const newHighlightedAlignments = new Set<number>()
+        const newHoveredTokens = new Set([tokenId])
+        const newHighlightedAlignments = new Set<number>()
 
-      const connectedAlignments: number[] = []
-      sentencePair.layers[vizLayer].forEach((alignment, index) => {
-        const isConnected = isSource
-          ? alignment.source.includes(tokenId)
-          : alignment.target.includes(tokenId)
+        const connectedAlignments: number[] = []
+        sentencePair.layers[vizLayer].forEach((alignment, index) => {
+          const isConnected = isSource
+            ? alignment.source.includes(tokenId)
+            : alignment.target.includes(tokenId)
 
-        if (isConnected) {
-          connectedAlignments.push(index)
-          newHighlightedAlignments.add(index)
-          alignment.source.forEach(id => newHoveredTokens.add(id))
-          alignment.target.forEach(id => newHoveredTokens.add(id))
-        }
-      })
-
-      // Start animations for pinned state immediately (no stagger for user interactions)
-      setAnimatingRibbons(prev => {
-        const newSet = new Set(prev)
-        connectedAlignments.forEach(idx => {
-          newSet.delete(idx) // Clear existing
-          newSet.add(idx) // Add back immediately
+          if (isConnected) {
+            connectedAlignments.push(index)
+            newHighlightedAlignments.add(index)
+            alignment.source.forEach((id) => newHoveredTokens.add(id))
+            alignment.target.forEach((id) => newHoveredTokens.add(id))
+          }
         })
-        return newSet
-      })
 
-      setHoveredTokens(newHoveredTokens)
-      setHighlightedAlignments(newHighlightedAlignments)
-      setShowLabels(true)
+        // Start animations for pinned state immediately (no stagger for user interactions)
+        setAnimatingRibbons((prev) => {
+          const newSet = new Set(prev)
+          connectedAlignments.forEach((idx) => {
+            newSet.delete(idx) // Clear existing
+            newSet.add(idx) // Add back immediately
+          })
+          return newSet
+        })
 
-      // Announce pin action to screen reader
-      const token = sentencePair[isSource ? 'source' : 'target'].tokens.find(t => t.id === tokenId)
-      if (token) {
-        setAnnouncement(`${token.form} pinned. Showing ${connectedAlignments.length} alignment connection${connectedAlignments.length === 1 ? '' : 's'}`)
+        setHoveredTokens(newHoveredTokens)
+        setHighlightedAlignments(newHighlightedAlignments)
+        setShowLabels(true)
+
+        // Announce pin action to screen reader
+        const token = sentencePair[isSource ? 'source' : 'target'].tokens.find(
+          (t) => t.id === tokenId
+        )
+        if (token) {
+          setAnnouncement(
+            `${token.form} pinned. Showing ${connectedAlignments.length} alignment connection${connectedAlignments.length === 1 ? '' : 's'}`
+          )
+        }
       }
-    }
-  }, [pinnedTokenId, sentencePair.layers[vizLayer], sentencePair])
+    },
+    [pinnedTokenId, sentencePair.layers[vizLayer], sentencePair]
+  )
 
   const createRibbonPath = (alignment: Alignment, index: number) => {
     // Find positions for source and target tokens
     const alignmentSourcePositions = alignment.source
-      .map(id => sourcePositions.find(pos => pos.id === id))
+      .map((id) => sourcePositions.find((pos) => pos.id === id))
       .filter(Boolean) as TokenPosition[]
 
     const alignmentTargetPositions = alignment.target
-      .map(id => targetPositions.find(pos => pos.id === id))
+      .map((id) => targetPositions.find((pos) => pos.id === id))
       .filter(Boolean) as TokenPosition[]
 
     if (alignmentSourcePositions.length === 0 || alignmentTargetPositions.length === 0) {
@@ -347,20 +369,36 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
     const isManyToMany = alignmentSourcePositions.length > 1 || alignmentTargetPositions.length > 1
 
     if (isManyToMany) {
-      return createManyToManyRibbon(alignmentSourcePositions, alignmentTargetPositions, ribbonRect, index)
+      return createManyToManyRibbon(
+        alignmentSourcePositions,
+        alignmentTargetPositions,
+        ribbonRect,
+        index
+      )
     } else {
-      return createSimpleRibbon(alignmentSourcePositions[0], alignmentTargetPositions[0], ribbonRect, index)
+      return createSimpleRibbon(
+        alignmentSourcePositions[0],
+        alignmentTargetPositions[0],
+        ribbonRect,
+        index
+      )
     }
   }
 
-  const createSingleRibbon = (sourcePos: TokenPosition, targetPos: TokenPosition, ribbonRect: DOMRect, index: number, options?: {
-    strokeWidth?: number
-    opacityMultiplier?: number
-    pathKey?: string
-    sourceDotRadius?: number
-    targetDotRadius?: number
-    animationDelay?: number
-  }) => {
+  const createSingleRibbon = (
+    sourcePos: TokenPosition,
+    targetPos: TokenPosition,
+    ribbonRect: DOMRect,
+    index: number,
+    options?: {
+      strokeWidth?: number
+      opacityMultiplier?: number
+      pathKey?: string
+      sourceDotRadius?: number
+      targetDotRadius?: number
+      animationDelay?: number
+    }
+  ) => {
     // Connection points
     const sourceDotX = sourcePos.x
     const sourceDotY = -8
@@ -380,16 +418,21 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
     const isSolidLine = (isHighlighted && showLabels) || !hasInitiallyLoaded
 
     // Determine if this ribbon is part of the pinned set
-    const isPinnedRibbon = pinnedTokenId ? sentencePair.layers[vizLayer][index] &&
-      (pinnedIsSource
-        ? sentencePair.layers[vizLayer][index].source.includes(pinnedTokenId)
-        : sentencePair.layers[vizLayer][index].target.includes(pinnedTokenId)
-      ) : false
+    const isPinnedRibbon = pinnedTokenId
+      ? sentencePair.layers[vizLayer][index] &&
+        (pinnedIsSource
+          ? sentencePair.layers[vizLayer][index].source.includes(pinnedTokenId)
+          : sentencePair.layers[vizLayer][index].target.includes(pinnedTokenId))
+      : false
 
     // Different opacity for pinned vs hovered ribbons
     const baseOpacity = isHighlighted
-      ? (isPinnedRibbon ? 1 : 0.7) // Pinned ribbons at full opacity, hover preview at 70%
-      : (isDimmed ? 0.15 : 0.6)
+      ? isPinnedRibbon
+        ? 1
+        : 0.7 // Pinned ribbons at full opacity, hover preview at 70%
+      : isDimmed
+        ? 0.15
+        : 0.6
 
     const opacity = baseOpacity * (options?.opacityMultiplier || 1)
 
@@ -410,15 +453,21 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
           d={ribbonPath}
           fill="none"
           stroke={LAYER_CONFIGS[vizLayer].color}
-          strokeWidth={options?.strokeWidth || "3"}
+          strokeWidth={options?.strokeWidth || '3'}
           opacity={opacity}
           className="transition-opacity duration-300"
-          strokeDasharray={isSolidLine ? `${pathLength}` : "6 4"}
+          strokeDasharray={isSolidLine ? `${pathLength}` : '6 4'}
           strokeDashoffset={isSolidLine ? (isAnimating ? '0' : `${pathLength}`) : undefined}
-          style={isHighlighted ? {
-            transition: 'stroke-dashoffset 400ms ease-out',
-            transitionDelay: options?.animationDelay ? `${options.animationDelay}ms` : undefined
-          } : undefined}
+          style={
+            isHighlighted
+              ? {
+                  transition: 'stroke-dashoffset 400ms ease-out',
+                  transitionDelay: options?.animationDelay
+                    ? `${options.animationDelay}ms`
+                    : undefined,
+                }
+              : undefined
+          }
         />
       ),
       sourceDot: (
@@ -426,13 +475,19 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
           key={`source-dot-${options?.pathKey || index}`}
           cx={sourceDotX}
           cy={sourceDotY}
-          r={options?.sourceDotRadius || "4"}
+          r={options?.sourceDotRadius || '4'}
           fill={LAYER_CONFIGS[vizLayer].color}
-          opacity={isHighlighted && isAnimating ? opacity : (isHighlighted ? 0 : opacity)}
+          opacity={isHighlighted && isAnimating ? opacity : isHighlighted ? 0 : opacity}
           className="transition-all duration-300"
-          style={isHighlighted ? {
-            transitionDelay: isAnimating ? `${300 + (options?.animationDelay || 0)}ms` : '0ms'
-          } : undefined}
+          style={
+            isHighlighted
+              ? {
+                  transitionDelay: isAnimating
+                    ? `${300 + (options?.animationDelay || 0)}ms`
+                    : '0ms',
+                }
+              : undefined
+          }
         />
       ),
       targetDot: (
@@ -440,19 +495,30 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
           key={`target-dot-${options?.pathKey || index}`}
           cx={targetDotX}
           cy={targetDotY}
-          r={options?.targetDotRadius || "4"}
+          r={options?.targetDotRadius || '4'}
           fill={LAYER_CONFIGS[vizLayer].color}
-          opacity={isHighlighted && isAnimating ? opacity : (isHighlighted ? 0 : opacity)}
+          opacity={isHighlighted && isAnimating ? opacity : isHighlighted ? 0 : opacity}
           className="transition-all duration-300"
-          style={isHighlighted ? {
-            transitionDelay: isAnimating ? `${350 + (options?.animationDelay || 0)}ms` : '0ms'
-          } : undefined}
+          style={
+            isHighlighted
+              ? {
+                  transitionDelay: isAnimating
+                    ? `${350 + (options?.animationDelay || 0)}ms`
+                    : '0ms',
+                }
+              : undefined
+          }
         />
-      )
+      ),
     }
   }
 
-  const createSimpleRibbon = (sourcePos: TokenPosition, targetPos: TokenPosition, ribbonRect: DOMRect, index: number) => {
+  const createSimpleRibbon = (
+    sourcePos: TokenPosition,
+    targetPos: TokenPosition,
+    ribbonRect: DOMRect,
+    index: number
+  ) => {
     const ribbon = createSingleRibbon(sourcePos, targetPos, ribbonRect, index)
 
     return (
@@ -464,7 +530,12 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
     )
   }
 
-  const createManyToManyRibbon = (sourcePositions: TokenPosition[], targetPositions: TokenPosition[], ribbonRect: DOMRect, index: number) => {
+  const createManyToManyRibbon = (
+    sourcePositions: TokenPosition[],
+    targetPositions: TokenPosition[],
+    ribbonRect: DOMRect,
+    index: number
+  ) => {
     const ribbonElements: JSX.Element[] = []
     const sourceDots: JSX.Element[] = []
     const targetDots: JSX.Element[] = []
@@ -481,7 +552,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
           pathKey: ribbonKey,
           sourceDotRadius: 3,
           targetDotRadius: 3,
-          animationDelay
+          animationDelay,
         })
 
         ribbonElements.push(ribbon.path)
@@ -497,7 +568,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
         const ribbon = createSingleRibbon(pos, targetPositions[0], ribbonRect, index, {
           sourceDotRadius: 3,
           animationDelay: i * 50,
-          pathKey: `many-source-${index}-${i}`
+          pathKey: `many-source-${index}-${i}`,
         })
         sourceDots.push(ribbon.sourceDot)
       }
@@ -512,7 +583,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
         const ribbon = createSingleRibbon(sourcePositions[0], pos, ribbonRect, index, {
           targetDotRadius: 3,
           animationDelay: i * 50,
-          pathKey: `many-target-${index}-${i}`
+          pathKey: `many-target-${index}-${i}`,
         })
         targetDots.push(ribbon.targetDot)
       }
@@ -566,7 +637,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
             const isHovered = hoveredTokens.has(token.id)
             const isDimmed = hoveredTokens.size > 0 && !isHovered
             const isPinned = pinnedTokenId === token.id
-            const isConnected = sentencePair.layers[vizLayer].some(alignment =>
+            const isConnected = sentencePair.layers[vizLayer].some((alignment) =>
               alignment.source.includes(token.id)
             )
 
@@ -580,7 +651,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
                 onMouseLeave={handleTokenLeave}
                 onClick={() => isConnected && handleTokenClick(token.id, true)}
                 role="listitem"
-                aria-label={`Source word: ${token.form}${isConnected ? ` - has ${sentencePair.layers[vizLayer].filter(a => a.source.includes(token.id)).length} alignment connections` : ' - no connections in this layer'}${isPinned ? ', currently pinned' : isConnected ? '. Press Enter or Space to pin and explore connections' : ''}`}
+                aria-label={`Source word: ${token.form}${isConnected ? ` - has ${sentencePair.layers[vizLayer].filter((a) => a.source.includes(token.id)).length} alignment connections` : ' - no connections in this layer'}${isPinned ? ', currently pinned' : isConnected ? '. Press Enter or Space to pin and explore connections' : ''}`}
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (isConnected && (e.key === 'Enter' || e.key === ' ')) {
@@ -600,18 +671,18 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       <div
         className="h-24 sm:h-32 lg:h-ribbon-space relative flex items-center justify-center mx-auto ribbon-space animate-on-load"
         style={{
-          background: 'linear-gradient(to bottom, rgba(253, 248, 243, 0.6) 0%, rgba(255, 252, 250, 0.4) 50%, rgba(253, 248, 243, 0.6) 100%)',
-          animationDelay: '600ms'
+          background:
+            'linear-gradient(to bottom, rgba(253, 248, 243, 0.6) 0%, rgba(255, 252, 250, 0.4) 50%, rgba(253, 248, 243, 0.6) 100%)',
+          animationDelay: '600ms',
         }}
       >
         {/* SVG Ribbons */}
-        <svg
-          className="absolute inset-0 w-full h-full pointer-events-none"
-          style={{ zIndex: 1 }}
-        >
-          {sourcePositions.length > 0 && targetPositions.length > 0 && sentencePair.layers[vizLayer].map((alignment, index) =>
-            createRibbonPath(alignment, index)
-          )}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
+          {sourcePositions.length > 0 &&
+            targetPositions.length > 0 &&
+            sentencePair.layers[vizLayer].map((alignment, index) =>
+              createRibbonPath(alignment, index)
+            )}
         </svg>
       </div>
 
@@ -632,7 +703,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
             const isHovered = hoveredTokens.has(token.id)
             const isDimmed = hoveredTokens.size > 0 && !isHovered
             const isPinned = pinnedTokenId === token.id
-            const isConnected = sentencePair.layers[vizLayer].some(alignment =>
+            const isConnected = sentencePair.layers[vizLayer].some((alignment) =>
               alignment.target.includes(token.id)
             )
 
@@ -646,7 +717,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
                 onMouseLeave={handleTokenLeave}
                 onClick={() => isConnected && handleTokenClick(token.id, false)}
                 role="listitem"
-                aria-label={`Target word: ${token.form}${isConnected ? ` - has ${sentencePair.layers[vizLayer].filter(a => a.target.includes(token.id)).length} alignment connections` : ' - no connections in this layer'}${isPinned ? ', currently pinned' : isConnected ? '. Press Enter or Space to pin and explore connections' : ''}`}
+                aria-label={`Target word: ${token.form}${isConnected ? ` - has ${sentencePair.layers[vizLayer].filter((a) => a.target.includes(token.id)).length} alignment connections` : ' - no connections in this layer'}${isPinned ? ', currently pinned' : isConnected ? '. Press Enter or Space to pin and explore connections' : ''}`}
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (isConnected && (e.key === 'Enter' || e.key === ' ')) {
@@ -676,16 +747,13 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
 
       {/* Screen reader instructions */}
       <div className="sr-only">
-        Instructions: Use Tab to navigate between words. Press Enter or Space on any word to pin it and explore its alignment connections. Use arrow keys to navigate between analysis layers above.
+        Instructions: Use Tab to navigate between words. Press Enter or Space on any word to pin it
+        and explore its alignment connections. Use arrow keys to navigate between analysis layers
+        above.
       </div>
 
       {/* Live region for screen reader announcements */}
-      <div
-        className="sr-only"
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-      >
+      <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
         {announcement}
       </div>
 

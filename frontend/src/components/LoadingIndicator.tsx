@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 type LoadingIndicatorProps = {
   mode: 'input' | 'examples'
@@ -13,7 +13,7 @@ export function LoadingIndicator({ mode }: LoadingIndicatorProps) {
   const [steps, setSteps] = useState<ProgressStep[]>([
     { name: 'Translating with Itzuli API', status: 'pending' },
     { name: 'Analyzing with Stanza NLP', status: 'pending' },
-    { name: 'Generating alignments with Claude', status: 'pending' }
+    { name: 'Generating alignments with Claude', status: 'pending' },
   ])
 
   useEffect(() => {
@@ -23,10 +23,12 @@ export function LoadingIndicator({ mode }: LoadingIndicatorProps) {
     const intervals = [1500, 4000] // Transition between steps, but stay in progress
 
     const updateProgress = (stepIndex: number) => {
-      setSteps(prev => prev.map((step, i) => ({
-        ...step,
-        status: i < stepIndex ? 'completed' : i === stepIndex ? 'active' : 'pending'
-      })))
+      setSteps((prev) =>
+        prev.map((step, i) => ({
+          ...step,
+          status: i < stepIndex ? 'completed' : i === stepIndex ? 'active' : 'pending',
+        }))
+      )
     }
 
     // Start first step immediately
@@ -62,7 +64,10 @@ export function LoadingIndicator({ mode }: LoadingIndicatorProps) {
           {/* Progress Spinner */}
           <div className="relative mb-6">
             <div className="w-16 h-16 border-4 border-sage-100 border-t-sage-500 rounded-full animate-spin"></div>
-            <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-sage-300 rounded-full animate-spin animate-reverse" style={{ animationDuration: '1.5s' }}></div>
+            <div
+              className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-sage-300 rounded-full animate-spin animate-reverse"
+              style={{ animationDuration: '1.5s' }}
+            ></div>
           </div>
 
           {/* Progress Steps */}
@@ -84,8 +89,18 @@ export function LoadingIndicator({ mode }: LoadingIndicatorProps) {
                   <div key={index} className="flex items-center space-x-3">
                     <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
                       {step.status === 'completed' ? (
-                        <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        <svg
+                          className="w-4 h-4 text-green-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
                         </svg>
                       ) : step.status === 'active' ? (
                         <div className="w-3 h-3 bg-sage-500 rounded-full animate-pulse"></div>
@@ -93,18 +108,21 @@ export function LoadingIndicator({ mode }: LoadingIndicatorProps) {
                         <div className="w-3 h-3 bg-slate-300 rounded-full"></div>
                       )}
                     </div>
-                    <span className={`text-sm transition-colors duration-300 ${
-                      step.status === 'completed' ? 'text-green-700 font-medium' :
-                      step.status === 'active' ? 'text-slate-700' :
-                      'text-slate-500'
-                    }`}>
+                    <span
+                      className={`text-sm transition-colors duration-300 ${
+                        step.status === 'completed'
+                          ? 'text-green-700 font-medium'
+                          : step.status === 'active'
+                            ? 'text-slate-700'
+                            : 'text-slate-500'
+                      }`}
+                    >
                       {step.name}
                     </span>
                   </div>
                 ))}
               </div>
             )}
-
           </div>
 
           <p className="text-xs text-slate-500 mt-4 max-w-sm text-center">

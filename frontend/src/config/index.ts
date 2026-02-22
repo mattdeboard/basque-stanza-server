@@ -1,6 +1,6 @@
 /**
  * Application configuration loaded from environment variables
- * 
+ *
  * Vite automatically loads VITE_ prefixed environment variables
  * and makes them available via import.meta.env
  */

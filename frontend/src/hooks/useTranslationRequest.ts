@@ -2,9 +2,13 @@
  * Hook for managing translation requests to the backend
  */
 
-import { useState, useCallback } from 'react'
-import { submitTranslationRequest, type AnalysisRequest } from '../services/alignmentApi'
-import type { AlignmentData, LanguageCode } from '../types/alignment'
+import { useCallback, useState } from 'react'
+import {
+  type AlignmentData,
+  type LanguageCode,
+  TranslationRequestSchema,
+} from '../schemas/validation'
+import { type AnalysisRequest, submitTranslationRequest } from '../services/alignmentApi'
 
 export type UseTranslationRequestResult = {
   data: AlignmentData | null
@@ -22,28 +26,45 @@ export function useTranslationRequest(): UseTranslationRequestResult {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const submitRequest = useCallback(async (text: string, sourceLang: LanguageCode, targetLang: LanguageCode) => {
-    try {
-      setLoading(true)
-      setError(null)
-      
-      const request: AnalysisRequest = {
-        text,
-        source_lang: sourceLang,
-        target_lang: targetLang,
-        sentence_id: crypto.randomUUID(),
+  const submitRequest = useCallback(
+    async (text: string, sourceLang: LanguageCode, targetLang: LanguageCode) => {
+      try {
+        setLoading(true)
+        setError(null)
+
+        // Validate request with Zod before proceeding
+        const validationResult = TranslationRequestSchema.safeParse({
+          text,
+          source_language: sourceLang,
+          target_language: targetLang,
+        })
+
+        if (!validationResult.success) {
+          const errorMessage = validationResult.error.issues
+            .map((issue) => issue.message)
+            .join(', ')
+          throw new Error(`Validation failed: ${errorMessage}`)
+        }
+
+        const request: AnalysisRequest = {
+          text,
+          source_lang: sourceLang,
+          target_lang: targetLang,
+          sentence_id: crypto.randomUUID(),
+        }
+
+        const result = await submitTranslationRequest(request)
+        setData(result)
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to analyze translation'
+        setError(errorMessage)
+        console.error('Translation request failed:', err)
+      } finally {
+        setLoading(false)
       }
-      
-      const result = await submitTranslationRequest(request)
-      setData(result)
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to analyze translation'
-      setError(errorMessage)
-      console.error('Translation request failed:', err)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+    },
+    []
+  )
 
   const reset = useCallback(() => {
     setData(null)
