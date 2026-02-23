@@ -168,14 +168,14 @@ CLAUDE.md                  # Garapen gidalerroak
 **Analisi Bikoitza Scripta (`dual_analysis.py`)**
 
 - **Helburua**: Jatorri eta itzulpen testua pipeline bereiziak erabiliz aztertu
-- **Erabilera**: `python -m tools.dual_analysis "testua" --source eu --target en`
+- **Erabilera**: `python -m itzuli_nlp.tools.dual_analysis "testua" --source eu --target en`
 - **Ezaugarriak**: Hizkuntza anitzeko Stanza analisia, JSON/taula irteera
 - **Diseinua**: NLP analisi aurreratuaren tresna independentea
 
 **Scaffold Sortzea Scripta (`generate_scaffold.py`)**
 
 - **Helburua**: Analisi bikoitzaren irteeratik lerrokatze scaffoldak sortu
-- **Erabilera**: `python -m tools.generate_scaffold "testua" --source eu --target en`
+- **Erabilera**: `python -m itzuli_nlp.tools.generate_scaffold "testua" --source eu --target en`
 - **Ezaugarriak**: Testu sarreratik amaiera arte scaffolds sortzea
 - **Diseinua**: Analisi bikoitza scaffold sorrerarkin konbinatzen du
 
@@ -238,7 +238,7 @@ Frontend aplikazioak lerrokatze datuak sortzerakoan:
 
 1. Frontend aplikazioak HTTP POST egiten du `/analyze-and-scaffold`-era
 2. `alignment_server/server.py`-k eskaera jasotzen du testu eta hizkuntza parametroekin
-3. Zerbitzariak `tools.dual_analysis.analyze_both_texts()` deitzen du analisi bikoitzerako
+3. Zerbitzariak `itzuli_nlp.tools.dual_analysis.analyze_both_texts()` deitzen du analisi bikoitzerako
 4. Analisi bikoitzak jatorri eta xede hizkuntzarentzako pipeline bereiziak sortzen ditu
 5. Jatorri eta itzulpen testua pipeline egokien bidez prozesatzen dira
 6. Zerbitzariak `alignment_server.scaffold.create_scaffold_from_dual_analysis()` deitzen du
@@ -256,7 +256,7 @@ MCP ez diren aplikazioetarako:
 4. Aplikazioak formatu hautatzen du: markdown, JSON edo dict lista
 5. Formateatutako irteera behar den bezala erabiltzen da
 
-### Analisi Bikoitza Fluxua (tools/dual_analysis.py)
+### Analisi Bikoitza Fluxua (itzuli_nlp/tools/dual_analysis.py)
 
 1. Scriptak Itzuli API deitzen du itzulpenerako
 2. Jatorri eta xede hizkuntzarentzako Stanza pipeline bereiziak sortzen ditu
@@ -319,7 +319,7 @@ ITZULI_API_KEY=zure-gakoa uv run python -m mcp_server.server
 ### Analisi Bikoitza Scripta**
 
 ```bash
-uv run python -m tools.dual_analysis "Kaixo mundua" --source eu --target en --format table
+uv run python -m itzuli_nlp.tools.dual_analysis "Kaixo mundua" --source eu --target en --format table
 ```
 
 ### Lerrokatze Zerbitzaria

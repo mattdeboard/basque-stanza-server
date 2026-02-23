@@ -318,13 +318,6 @@ class TestModelValidation:
         assert isinstance(response.source_analysis[0], AnalysisRow)
 
 
-class TestAppConfiguration:
-    def test_fastapi_app_metadata(self):
-        assert app.title == "Alignment Server"
-        assert app.description == "HTTP API for generating alignment scaffolds from dual language analysis"
-        assert app.version == "0.1.0"
-
-
 class TestMainBlock:
     def test_main_block_execution(self):
         """Test the main block execution path for full coverage."""

@@ -168,14 +168,14 @@ CLAUDE.md                  # Development guidelines
 **Dual Analysis Script (`dual_analysis.py`)**
 
 - **Purpose**: Analyze both source and translated text using separate pipelines
-- **Usage**: `python -m tools.dual_analysis "text" --source eu --target en`
+- **Usage**: `python -m itzuli_nlp.tools.dual_analysis "text" --source eu --target en`
 - **Features**: Multi-language Stanza analysis, JSON/table output
 - **Design**: Standalone utility for advanced NLP analysis
 
 **Scaffold Generation Script (`generate_scaffold.py`)**
 
 - **Purpose**: Generate alignment scaffolds from dual analysis output
-- **Usage**: `python -m tools.generate_scaffold "text" --source eu --target en`
+- **Usage**: `python -m itzuli_nlp.tools.generate_scaffold "text" --source eu --target en`
 - **Features**: End-to-end scaffold generation from text input
 - **Design**: Combines dual analysis with scaffold generation
 
@@ -238,7 +238,7 @@ For frontend applications generating alignment data:
 
 1. Frontend application makes HTTP POST to `/analyze-and-scaffold`
 2. `alignment_server/server.py` receives request with text and language parameters
-3. Server calls `tools.dual_analysis.analyze_both_texts()` for dual analysis
+3. Server calls `itzuli_nlp.tools.dual_analysis.analyze_both_texts()` for dual analysis
 4. Dual analysis creates separate Stanza pipelines for source and target languages
 5. Both source and translated text processed through appropriate pipelines
 6. Server calls `alignment_server.scaffold.create_scaffold_from_dual_analysis()`
@@ -256,7 +256,7 @@ For applications using the NLP library directly:
 4. Application chooses formatter: markdown, JSON, or dict list
 5. Formatted output used as needed
 
-### Dual Analysis Flow (tools/dual_analysis.py)
+### Dual Analysis Flow (itzuli_nlp/tools/dual_analysis.py)
 
 1. Script calls Itzuli API for translation
 2. Creates separate Stanza pipelines for source and target languages
@@ -319,7 +319,7 @@ ITZULI_API_KEY=your-key uv run python -m mcp_server.server
 ### Dual Analysis Script
 
 ```bash
-uv run python -m tools.dual_analysis "Kaixo mundua" --source eu --target en --format table
+uv run python -m itzuli_nlp.tools.dual_analysis "Kaixo mundua" --source eu --target en --format table
 ```
 
 ### Alignment Server

@@ -31,7 +31,7 @@ Itzulpen eta analisi funtzionalitate nagusia MCP zerbitzariaz haratago berrerabi
   - `format_as_json()` — Itzulpen eta analisi datu guztiak dituen JSON irteera
   - `format_as_dict_list()` — Erabilera programatikorako Python hiztegi zerrenda
 
-- **`tools.dual_analysis`** — Jatorri eta itzulpen testua aztertzen duen tresna scripta, hizkuntza bakoitzerako Stanza pipeline bereiziak erabiliz.
+- **`itzuli_nlp.tools.dual_analysis`** — Jatorri eta itzulpen testua aztertzen duen tresna scripta, hizkuntza bakoitzerako Stanza pipeline bereiziak erabiliz.
 
 - **`alignment_server.scaffold`** — Analisi bikoitzetik lerrokatze scaffold sortzea, egituraturiko lerrokatze datuak behar dituzten frontend aplikazioentzako diseinatuta.
 
@@ -67,10 +67,10 @@ ITZULI_API_KEY=zure-itzuli-gakoa CLAUDE_API_KEY=zure-claude-gakoa uv run python 
 
 ```bash
 # Euskal jatorria eta ingeles itzulpena aztertu
-uv run python -m tools.dual_analysis "Kaixo mundua" --source eu --target en --format table
+uv run python -m itzuli_nlp.tools.dual_analysis "Kaixo mundua" --source eu --target en --format table
 
 # Erabilera programatikorako JSON irteera
-uv run python -m tools.dual_analysis "Hello world" --source en --target eu --format json
+uv run python -m itzuli_nlp.tools.dual_analysis "Hello world" --source en --target eu --format json
 ```
 
 **Lerrokatze Zerbitzaria** — Claude bidezko lerrokatze sortzea duen frontend aplikazioentzako HTTP API:
