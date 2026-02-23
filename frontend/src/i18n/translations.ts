@@ -79,7 +79,7 @@ export const translations: Translations = {
   [LanguageCode.EN]: {
     // App header and navigation
     'app.subtitle': 'Translation Alignment Visualization for Basque',
-    'app.loading.subtitle': 'Translation Alignment Visualization for English-Basque Translations',
+    'app.loading.subtitle': 'Translation Alignment Visualization for Basque',
     // Mode toggle
     'mode.analyze_new_text': 'Analyze New Text',
     'mode.browse_examples': 'Browse Examples',
@@ -130,16 +130,20 @@ export const translations: Translations = {
     'input.characters_counter': '{count}/500 characters',
     'input.validation_error_basque_required': 'Either source or target language must be Basque',
     // Layer tooltips
-    'layer.lexical_tooltip': 'What words mean — dictionary-level correspondences between English words and their direct Basque equivalents, if applicable',
-    'layer.grammatical_relations_tooltip': 'Who does what to whom — how English marks sentence roles through word order while Basque marks them through case suffixes and verb agreement',
-    'layer.features_tooltip': 'Where grammar hides — how tense, negation, definiteness, and agreement that live in one place in English get scattered across Basque words',
+    'layer.lexical_tooltip':
+      'What words mean — dictionary-level correspondences between English words and their direct Basque equivalents, if applicable',
+    'layer.grammatical_relations_tooltip':
+      'Who does what to whom — how English marks sentence roles through word order while Basque marks them through case suffixes and verb agreement',
+    'layer.features_tooltip':
+      'Where grammar hides — how tense, negation, definiteness, and agreement that live in one place in English get scattered across Basque words',
     // UI Controls
     'ui.close': 'Close',
     'ui.close_drawer': 'Close drawer',
     'ui.swap_languages': 'Swap languages',
     'ui.swap_source_target_languages': 'Swap source and target languages',
     // Accessibility
-    'a11y.screen_reader_instructions': 'Instructions: Use Tab to navigate between words. Press Enter or Space on any word to pin it and explore its alignment connections. Use arrow keys to navigate between analysis layers above.',
+    'a11y.screen_reader_instructions':
+      'Instructions: Use Tab to navigate between words. Press Enter or Space on any word to pin it and explore its alignment connections. Use arrow keys to navigate between analysis layers above.',
   },
   [LanguageCode.EU]: {
     // App header and navigation
@@ -193,18 +197,23 @@ export const translations: Translations = {
     'input.text_label': 'Itzultzeko eta aztertzeko testua idatzi',
     'input.text_placeholder': 'Zure esaldia hemen idatzi...',
     'input.characters_counter': '{count}/500 karaktere',
-    'input.validation_error_basque_required': 'Jatorri hizkuntza edo helburu hizkuntza euskera izan behar da',
+    'input.validation_error_basque_required':
+      'Jatorri hizkuntza edo helburu hizkuntza euskera izan behar da',
     // Layer tooltips
-    'layer.lexical_tooltip': 'Hitzek zer esan nahi duten — ingelera hitzen eta haien euskerazko baliokideen arteko hiztegi-mailako korrespondentzia, aplikagarria bada',
-    'layer.grammatical_relations_tooltip': 'Nork zer egiten dion nori — nola markatzen dituen ingelesak esaldiko rolak hitz-ordenaren bidez euskerak kasuaren atzizkien eta aditz-komunztaduraren bidez',
-    'layer.features_tooltip': 'Non ezkutatzen den gramatika — nola denporan, ukazpen, definitutasun eta komunztadura ingelesean leku batean bizi direnak euskerazko hitzen artean barreiatu',
+    'layer.lexical_tooltip':
+      'Hitzek zer esan nahi duten — ingelera hitzen eta haien euskerazko baliokideen arteko hiztegi-mailako korrespondentzia, aplikagarria bada',
+    'layer.grammatical_relations_tooltip':
+      'Nork zer egiten dion nori — nola markatzen dituen ingelesak esaldiko rolak hitz-ordenaren bidez euskerak kasuaren atzizkien eta aditz-komunztaduraren bidez',
+    'layer.features_tooltip':
+      'Non ezkutatzen den gramatika — nola denporan, ukazpen, definitutasun eta komunztadura ingelesean leku batean bizi direnak euskerazko hitzen artean barreiatu',
     // UI Controls
     'ui.close': 'Itxi',
     'ui.close_drawer': 'Tiradera itxi',
     'ui.swap_languages': 'Hizkuntzak trukatu',
     'ui.swap_source_target_languages': 'Jatorri eta helburu hizkuntzak trukatu',
     // Accessibility
-    'a11y.screen_reader_instructions': 'Argibideak: Erabili Tab hitzen artean nabigatzeko. Sakatu Enter edo Zuriunea edozein hitzetan ainguratu eta lerrokatze konexioak esploratzeko. Erabili geziak goiko analisi-geruzen artean nabigatzeko.',
+    'a11y.screen_reader_instructions':
+      'Argibideak: Erabili Tab hitzen artean nabigatzeko. Sakatu Enter edo Zuriunea edozein hitzetan ainguratu eta lerrokatze konexioak esploratzeko. Erabili geziak goiko analisi-geruzen artean nabigatzeko.',
   },
   [LanguageCode.ES]: {
     // App header and navigation
@@ -261,16 +270,20 @@ export const translations: Translations = {
     'input.characters_counter': '{count}/500 caracteres',
     'input.validation_error_basque_required': 'El idioma origen o destino debe ser vasco',
     // Layer tooltips
-    'layer.lexical_tooltip': 'Lo que significan las palabras — correspondencias a nivel de diccionario entre palabras inglesas y sus equivalentes directos en vasco, si aplica',
-    'layer.grammatical_relations_tooltip': 'Quién hace qué a quién — cómo el inglés marca los roles de la oración a través del orden de palabras mientras el vasco los marca a través de sufijos de caso y concordancia verbal',
-    'layer.features_tooltip': 'Dónde se esconde la gramática — cómo el tiempo, negación, definitud y concordancia que viven en un lugar en inglés se dispersan entre las palabras vascas',
+    'layer.lexical_tooltip':
+      'Lo que significan las palabras — correspondencias a nivel de diccionario entre palabras inglesas y sus equivalentes directos en vasco, si aplica',
+    'layer.grammatical_relations_tooltip':
+      'Quién hace qué a quién — cómo el inglés marca los roles de la oración a través del orden de palabras mientras el vasco los marca a través de sufijos de caso y concordancia verbal',
+    'layer.features_tooltip':
+      'Dónde se esconde la gramática — cómo el tiempo, negación, definitud y concordancia que viven en un lugar en inglés se dispersan entre las palabras vascas',
     // UI Controls
     'ui.close': 'Cerrar',
     'ui.close_drawer': 'Cerrar cajón',
     'ui.swap_languages': 'Intercambiar idiomas',
     'ui.swap_source_target_languages': 'Intercambiar idiomas origen y destino',
     // Accessibility
-    'a11y.screen_reader_instructions': 'Instrucciones: Use Tab para navegar entre palabras. Presione Enter o Espacio en cualquier palabra para anclarla y explorar sus conexiones de alineación. Use las flechas para navegar entre las capas de análisis de arriba.',
+    'a11y.screen_reader_instructions':
+      'Instrucciones: Use Tab para navegar entre palabras. Presione Enter o Espacio en cualquier palabra para anclarla y explorar sus conexiones de alineación. Use las flechas para navegar entre las capas de análisis de arriba.',
   },
   [LanguageCode.FR]: {
     // App header and navigation
@@ -327,15 +340,19 @@ export const translations: Translations = {
     'input.characters_counter': '{count}/500 caractères',
     'input.validation_error_basque_required': 'La langue source ou cible doit être le basque',
     // Layer tooltips
-    'layer.lexical_tooltip': 'Ce que les mots signifient — correspondances au niveau dictionnaire entre mots anglais et leurs équivalents basques directs, si applicable',
-    'layer.grammatical_relations_tooltip': "Qui fait quoi à qui — comment l'anglais marque les rôles de phrase par l'ordre des mots tandis que le basque les marque par les suffixes de cas et l'accord verbal",
-    'layer.features_tooltip': "Où se cache la grammaire — comment le temps, négation, définitude et accord qui vivent en un lieu en anglais se dispersent entre les mots basques",
+    'layer.lexical_tooltip':
+      'Ce que les mots signifient — correspondances au niveau dictionnaire entre mots anglais et leurs équivalents basques directs, si applicable',
+    'layer.grammatical_relations_tooltip':
+      "Qui fait quoi à qui — comment l'anglais marque les rôles de phrase par l'ordre des mots tandis que le basque les marque par les suffixes de cas et l'accord verbal",
+    'layer.features_tooltip':
+      'Où se cache la grammaire — comment le temps, négation, définitude et accord qui vivent en un lieu en anglais se dispersent entre les mots basques',
     // UI Controls
     'ui.close': 'Fermer',
     'ui.close_drawer': 'Fermer le tiroir',
     'ui.swap_languages': 'Échanger les langues',
     'ui.swap_source_target_languages': 'Échanger langues source et cible',
     // Accessibility
-    'a11y.screen_reader_instructions': "Instructions: Utilisez Tab pour naviguer entre les mots. Appuyez sur Entrée ou Espace sur n'importe quel mot pour l'épingler et explorer ses connexions d'alignement. Utilisez les flèches pour naviguer entre les couches d'analyse ci-dessus.",
+    'a11y.screen_reader_instructions':
+      "Instructions: Utilisez Tab pour naviguer entre les mots. Appuyez sur Entrée ou Espace sur n'importe quel mot pour l'épingler et explorer ses connexions d'alignement. Utilisez les flèches pour naviguer entre les couches d'analyse ci-dessus.",
   },
 }
