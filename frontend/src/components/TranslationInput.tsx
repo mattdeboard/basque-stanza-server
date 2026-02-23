@@ -69,7 +69,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
 
     // Validate language pair before submitting
     if (!isValidLanguagePair) {
-      setValidationError('Either source or target language must be Basque') // TODO: Add translation key
+      setValidationError(t('input.validation_error_basque_required'))
       return
     }
 
@@ -124,7 +124,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
           type="button"
           className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 transition-opacity duration-300 border-none p-0 cursor-default"
           onClick={() => setIsExpanded(false)}
-          aria-label="Close drawer"
+          aria-label={t('ui.close_drawer')}
         />
 
         {/* Drawer */}
@@ -137,7 +137,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
                 onClick={() => setIsExpanded(false)}
                 className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors duration-200"
                 type="button"
-                aria-label="Close"
+                aria-label={t('ui.close')}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <title id="drawer-close-btn-icon">Drawer Close Button Icon</title>
@@ -184,7 +184,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
                       onClick={swapLanguages}
                       disabled={loading}
                       className="p-2 rounded-full hover:bg-sage-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-sage-400 disabled:opacity-50"
-                      aria-label="Swap languages"
+                      aria-label={t('ui.swap_languages')}
                     >
                       <svg
                         className="w-5 h-5 text-slate-500"
@@ -232,20 +232,20 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
                     htmlFor="input-text"
                     className="block text-sm font-medium text-slate-700 mb-2"
                   >
-                    Enter text to translate and analyze
+                    {t('input.text_label')}
                   </label>
                   <textarea
                     id="input-text"
                     value={text}
                     onChange={(e) => setText(e.target.value)}
-                    placeholder="Type your sentence here..."
+                    placeholder={t('input.text_placeholder')}
                     rows={4}
                     className="w-full px-4 py-3 border border-slate-200 rounded-lg bg-white text-sm resize-none focus:outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200 transition-all duration-200 placeholder:text-slate-400"
                     disabled={loading}
                     maxLength={500}
                   />
                   <div className="text-xs text-slate-500 mt-1 text-right">
-                    {text.length}/500 characters
+                    {t('input.characters_counter', { count: text.length })}
                   </div>
                 </div>
 
@@ -338,7 +338,7 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
             onClick={swapLanguages}
             disabled={loading}
             className="p-2 rounded-full hover:bg-sage-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-sage-400 focus:ring-offset-1 disabled:opacity-50"
-            aria-label="Swap source and target languages"
+            aria-label={t('ui.swap_source_target_languages')}
           >
             <svg
               className="w-5 h-5 text-slate-500"
@@ -379,19 +379,19 @@ export function TranslationInput({ onSubmit, loading, compact = false }: Transla
         {/* Text Input */}
         <div>
           <label htmlFor="input-text" className="block text-sm font-medium text-slate-700 mb-2">
-            Enter text to translate and analyze
+            {t('input.text_label')}
           </label>
           <textarea
             id="input-text"
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Type your sentence here..."
+            placeholder={t('input.text_placeholder')}
             rows={3}
             className="w-full px-4 py-3 border border-slate-200 rounded-lg bg-white/80 backdrop-blur-sm text-base resize-none focus:outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200 transition-all duration-200 placeholder:text-slate-400"
             disabled={loading}
             maxLength={500}
           />
-          <div className="text-xs text-slate-500 mt-1 text-right">{text.length}/500 characters</div>
+          <div className="text-xs text-slate-500 mt-1 text-right">{t('input.characters_counter', { count: text.length })}</div>
         </div>
 
         {/* Validation Error Display */}

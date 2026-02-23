@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useI18n } from '../i18n'
 import type { SentencePair } from '../schemas/validation'
 import { type Alignment, LayerType } from '../types/alignment'
 import { AlignmentLabel } from './AlignmentLabel'
@@ -17,6 +18,7 @@ type AlignmentVisualizerProps = {
 }
 
 export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) {
+  const { t } = useI18n()
   const containerRef = useRef<HTMLDivElement>(null)
   const [sourcePositions, setSourcePositions] = useState<TokenPosition[]>([])
   const [targetPositions, setTargetPositions] = useState<TokenPosition[]>([])
@@ -641,7 +643,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
           id="source-lang-label"
           className="text-xs font-medium text-sage-600 uppercase tracking-widest mb-1 opacity-75 text-center"
         >
-          {sentencePair.source.lang.toUpperCase()} (Source Language)
+          {sentencePair.source.lang.toUpperCase()} ({t('viz.source_language_label')})
         </div>
         <div className="text-lg sm:text-xl lg:text-2xl font-display text-slate-700 mb-2 leading-relaxed font-light italic text-center">
           {sentencePair.source.text}
@@ -757,7 +759,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
           id="target-lang-label"
           className="text-xs font-medium text-sage-600 uppercase tracking-widest mb-1 opacity-75 text-center"
         >
-          {sentencePair.target.lang.toUpperCase()} (Target Language)
+          {sentencePair.target.lang.toUpperCase()} ({t('viz.target_language_label')})
         </div>
         <div className="text-lg sm:text-xl lg:text-2xl font-display text-slate-700 leading-relaxed font-light italic text-center mb-1">
           {sentencePair.target.text}
@@ -766,9 +768,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
 
       {/* Screen reader instructions */}
       <div className="sr-only">
-        Instructions: Use Tab to navigate between words. Press Enter or Space on any word to pin it
-        and explore its alignment connections. Use arrow keys to navigate between analysis layers
-        above.
+        {t('a11y.screen_reader_instructions')}
       </div>
 
       {/* Live region for screen reader announcements */}

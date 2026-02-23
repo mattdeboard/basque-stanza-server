@@ -72,13 +72,13 @@ function App() {
     return (
       <div className="max-w-7xl mx-auto p-8">
         <div className="text-center py-12 text-xl text-red-600 bg-red-50 border border-red-200 rounded-lg">
-          Error: {currentError}
+          {t('error.prefix')} {currentError}
           <div className="mt-4">
             <button
               onClick={() => setMode('input')}
               className="px-4 py-2 bg-sage-500 text-white rounded-lg hover:bg-sage-600 transition-colors"
             >
-              Try Again
+              {t('error.try_again')}
             </button>
           </div>
         </div>
@@ -110,7 +110,7 @@ function App() {
                       : 'text-slate-600 hover:bg-slate-100'
                   }`}
                 >
-                  Analyze New Text
+                  {t('mode.analyze_new_text')}
                 </button>
                 <button
                   onClick={switchToExamples}
@@ -120,7 +120,7 @@ function App() {
                       : 'text-slate-600 hover:bg-slate-100'
                   }`}
                 >
-                  Browse Examples
+                  {t('mode.browse_examples')}
                 </button>
               </div>
             </div>
@@ -143,14 +143,14 @@ function App() {
                   htmlFor="sentence-select"
                   className="font-medium text-slate-600 text-xs sm:text-sm uppercase tracking-wider"
                 >
-                  Choose Example Sentence
+                  {t('examples.choose_sentence')}
                 </label>
                 <select
                   id="sentence-select"
                   value={selectedId || ''}
                   onChange={(e) => setSelectedId(e.target.value)}
                   className="px-3 sm:px-4 py-2 sm:py-3 border border-slate-200 rounded-lg bg-white/80 backdrop-blur-sm text-sm sm:text-base w-full sm:min-w-80 focus:outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200 transition-all duration-200"
-                  aria-label="Select an example sentence pair for translation alignment visualization"
+                  aria-label={t('examples.choose_sentence_aria')}
                 >
                   {availableSentences.map((sentence) => (
                     <option key={sentence.id} value={sentence.id}>
