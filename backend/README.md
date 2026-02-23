@@ -31,7 +31,7 @@ The core translation and analysis functionality has been designed for reusabilit
   - `format_as_json()` — JSON output with full translation and analysis data
   - `format_as_dict_list()` — Python list of dictionaries for programmatic use
 
-- **`tools.dual_analysis`** — Utility script that analyzes both source and translated text using separate Stanza pipelines for each language.
+- **`itzuli_nlp.tools.dual_analysis`** — Utility script that analyzes both source and translated text using separate Stanza pipelines for each language.
 
 - **`alignment_server.scaffold`** — Alignment scaffold generation from dual analysis output, designed for frontend applications that need structured alignment data.
 
@@ -67,10 +67,10 @@ ITZULI_API_KEY=your-itzuli-key CLAUDE_API_KEY=your-claude-key uv run python -m m
 
 ```bash
 # Analyze both Basque source and English translation
-uv run python -m tools.dual_analysis "Kaixo mundua" --source eu --target en --format table
+uv run python -m itzuli_nlp.tools.dual_analysis "Kaixo mundua" --source eu --target en --format table
 
 # JSON output for programmatic use
-uv run python -m tools.dual_analysis "Hello world" --source en --target eu --format json
+uv run python -m itzuli_nlp.tools.dual_analysis "Hello world" --source en --target eu --format json
 ```
 
 **Alignment Server** — HTTP API for frontend applications with Claude-powered alignment generation:
