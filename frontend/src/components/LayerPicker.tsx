@@ -1,37 +1,35 @@
 import { useEffect, useRef } from 'react'
+import { useI18n, type TranslationKey } from '../i18n'
 import { LayerType } from '../types/alignment'
 
 type LayerConfig = {
   name: string
-  displayName: string
+  displayName: TranslationKey
   color: string
 }
 
 export const LAYER_CONFIGS: Record<LayerType, LayerConfig> = {
   [LayerType.LEXICAL]: {
     name: LayerType.LEXICAL,
-    displayName: 'Lexical',
+    displayName: 'layer.lexical',
     color: '#5a9975', // sage-500 (forest green)
   },
   [LayerType.GRAMMATICAL_RELATIONS]: {
     name: LayerType.GRAMMATICAL_RELATIONS,
-    displayName: 'Grammatical Relations',
+    displayName: 'layer.grammatical_relations',
     color: '#8b5fb5', // soft purple/violet
   },
   [LayerType.FEATURES]: {
     name: LayerType.FEATURES,
-    displayName: 'Features',
+    displayName: 'layer.features',
     color: '#c8954d', // tan-600 (warm amber/bronze)
   },
 }
 
-const LAYER_TOOLTIPS: Record<LayerType, string> = {
-  [LayerType.LEXICAL]:
-    'What words mean — dictionary-level correspondences between English words and their direct Basque equivalents, if applicable',
-  [LayerType.GRAMMATICAL_RELATIONS]:
-    'Who does what to whom — how English marks sentence roles through word order while Basque marks them through case suffixes and verb agreement',
-  [LayerType.FEATURES]:
-    'Where grammar hides — how tense, negation, definiteness, and agreement that live in one place in English get scattered across Basque words',
+const LAYER_TOOLTIPS: Record<LayerType, TranslationKey> = {
+  [LayerType.LEXICAL]: 'layer.lexical_tooltip',
+  [LayerType.GRAMMATICAL_RELATIONS]: 'layer.grammatical_relations_tooltip',
+  [LayerType.FEATURES]: 'layer.features_tooltip',
 }
 
 type LayerPickerProps = {
@@ -40,6 +38,7 @@ type LayerPickerProps = {
 }
 
 export function LayerPicker({ currentLayer, setVizLayer }: LayerPickerProps) {
+  const { t } = useI18n()
   const tabListRef = useRef<HTMLDivElement>(null)
 
   // Focus the active tab when currentLayer changes (from external sources)
@@ -110,7 +109,7 @@ export function LayerPicker({ currentLayer, setVizLayer }: LayerPickerProps) {
               role="tab"
               aria-selected={isActive}
               aria-controls="alignment-visualization"
-              aria-label={`${config.displayName} layer: ${LAYER_TOOLTIPS[layerKey as LayerType]}`}
+              aria-label={`${t(config.displayName)} layer: ${t(LAYER_TOOLTIPS[layerKey as LayerType])}`}
               tabIndex={isActive ? 0 : -1}
               type="button"
               onKeyDown={(e) => handleKeyDown(e, layerKey)}
@@ -128,7 +127,7 @@ export function LayerPicker({ currentLayer, setVizLayer }: LayerPickerProps) {
                 className="w-2.5 sm:w-3 h-2.5 sm:h-3 rounded-full flex-shrink-0"
                 style={{ backgroundColor: config.color }}
               />
-              <span className="truncate">{config.displayName}</span>
+              <span className="truncate">{t(config.displayName)}</span>
             </button>
           )
         })}
