@@ -6,7 +6,7 @@
 
 ![Xingolak Demoa](resources/demo.gif)
 
-**Xingolak** (euskeraz "xintak") aplikazio web interaktibo bat da, ingelera eta euskera itzulpenen artean hitzak eta egitura gramatikalak nola lerrokatzen diren bistaratzen duena. Itzulpena analisi linguistiko sakonarekin konektatuz, Xingolak ingelera eta euskerak esanahia adierazteko dituzten desberdintasun harrigarriak azaltzen ditu.
+**Xingolak** aplikazio web interaktibo bat da, ingelera eta euskera itzulpenen artean hitzak eta egitura gramatikalak nola lerrokatzen diren bistaratzen duena. Itzulpena analisi linguistiko sakonarekin konektatuz, Xingolak ingelera eta euskerak esanahia adierazteko dituzten desberdintasun harrigarriak azaltzen ditu.
 
 ## Zer Egiten Du Xingolak-ek
 
@@ -159,4 +159,4 @@ itzuli-stanza-mcp/
 
 ## Izenaren Inguruan
 
-**Xingolak** (ahoskatzen "shin-go-lak") euskeraz "xintak" esan nahi du, hizkuntzetan zehar kontzeptu erlazionatuak konektatzen dituzten xintaren metafora bisuala islatuz. Izenak interfazearen diseinu bisuala eta esanahi-sistema linguistiko desberdinen arteko konexio linguistikoen kontzeptual ideia biak jasotzen ditu.
+**Xingolak** hizkuntzei lotutako kontzeptuak lotzen dituzten zinten metafora bisuala islatzen du. Izenak interfazearen diseinu bisuala eta esanahi-sistema linguistiko desberdinen arteko konexio linguistikoen kontzeptual ideia biak jasotzen ditu.
