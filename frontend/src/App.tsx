@@ -30,8 +30,10 @@ function App() {
     data: translationData,
     loading: translationLoading,
     error: translationError,
+    lastRequest,
     submitRequest,
     reset,
+    clearError,
   } = useTranslationRequest()
 
   // Determine which data to display
@@ -75,7 +77,11 @@ function App() {
           {t('error.prefix')} {currentError}
           <div className="mt-4">
             <button
-              onClick={() => setMode('input')}
+              onClick={() => {
+                setMode('input')
+                // Clear the error to show the input form, but preserve lastRequest for form restoration
+                clearError()
+              }}
               className="px-4 py-2 bg-sage-500 text-white rounded-lg hover:bg-sage-600 transition-colors"
             >
               {t('error.try_again')}
@@ -132,6 +138,9 @@ function App() {
               onSubmit={handleTranslationSubmit}
               loading={translationLoading}
               compact={!!currentSentence}
+              initialText={lastRequest?.text || ''}
+              initialSourceLang={lastRequest?.sourceLang as LanguageCode | undefined}
+              initialTargetLang={lastRequest?.targetLang as LanguageCode | undefined}
             />
           )}
 
