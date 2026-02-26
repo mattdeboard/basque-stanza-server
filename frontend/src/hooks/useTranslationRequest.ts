@@ -10,12 +10,20 @@ import {
 } from '../schemas/validation'
 import { type AnalysisRequest, submitTranslationRequest } from '../services/alignmentApi'
 
+export type LastRequest = {
+  text: string
+  sourceLang: LanguageCode
+  targetLang: LanguageCode
+} | null
+
 export type UseTranslationRequestResult = {
   data: AlignmentData | null
   loading: boolean
   error: string | null
+  lastRequest: LastRequest
   submitRequest: (text: string, sourceLang: LanguageCode, targetLang: LanguageCode) => Promise<void>
   reset: () => void
+  clearError: () => void
 }
 
 /**
@@ -25,9 +33,13 @@ export function useTranslationRequest(): UseTranslationRequestResult {
   const [data, setData] = useState<AlignmentData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [lastRequest, setLastRequest] = useState<LastRequest>(null)
 
   const submitRequest = useCallback(
     async (text: string, sourceLang: LanguageCode, targetLang: LanguageCode) => {
+      // Store the request parameters for potential retry
+      setLastRequest({ text, sourceLang, targetLang })
+      
       try {
         setLoading(true)
         setError(null)
@@ -55,6 +67,9 @@ export function useTranslationRequest(): UseTranslationRequestResult {
 
         const result = await submitTranslationRequest(request)
         setData(result)
+        // Clear error and lastRequest on successful request
+        setError(null)
+        setLastRequest(null)
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to analyze translation'
         setError(errorMessage)
@@ -70,13 +85,20 @@ export function useTranslationRequest(): UseTranslationRequestResult {
     setData(null)
     setError(null)
     setLoading(false)
+    setLastRequest(null)
+  }, [])
+
+  const clearError = useCallback(() => {
+    setError(null)
   }, [])
 
   return {
     data,
     loading,
     error,
+    lastRequest,
     submitRequest,
     reset,
+    clearError,
   }
 }

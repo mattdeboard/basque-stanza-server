@@ -6,6 +6,9 @@ type TranslationInputProps = {
   onSubmit: (text: string, sourceLang: LanguageCode, targetLang: LanguageCode) => void
   loading: boolean
   compact?: boolean
+  initialText?: string
+  initialSourceLang?: LanguageCode
+  initialTargetLang?: LanguageCode
 }
 
 const LANGUAGE_FLAGS = {
@@ -15,17 +18,33 @@ const LANGUAGE_FLAGS = {
   [LanguageCode.EU]: '🔴⚪🟢',
 } as const
 
-export function TranslationInput({ onSubmit, loading, compact = false }: TranslationInputProps) {
+export function TranslationInput({ 
+  onSubmit, 
+  loading, 
+  compact = false, 
+  initialText = '', 
+  initialSourceLang, 
+  initialTargetLang 
+}: TranslationInputProps) {
   const { t, currentLanguage } = useI18n()
-  const [text, setText] = useState('')
-  const [sourceLang, setSourceLang] = useState<LanguageCode>(LanguageCode.EN)
-  const [targetLang, setTargetLang] = useState<LanguageCode>(LanguageCode.EU)
+  const [text, setText] = useState(initialText)
+  const [sourceLang, setSourceLang] = useState<LanguageCode>(initialSourceLang || LanguageCode.EN)
+  const [targetLang, setTargetLang] = useState<LanguageCode>(initialTargetLang || LanguageCode.EU)
   const [isExpanded, setIsExpanded] = useState(!compact)
   const [validationError, setValidationError] = useState<string>('')
 
   // Check if current language pair is valid (one must be Basque)
   const isValidLanguagePair = sourceLang === LanguageCode.EU || targetLang === LanguageCode.EU
   const canSubmit = text.trim() && isValidLanguagePair
+
+  // Update state when initial values change (e.g., when restoring from error state)
+  useEffect(() => {
+    setText(initialText)
+    if (initialSourceLang) setSourceLang(initialSourceLang)
+    if (initialTargetLang) setTargetLang(initialTargetLang)
+    // When restoring from error, expand the form if in compact mode
+    if (initialText && compact) setIsExpanded(true)
+  }, [initialText, initialSourceLang, initialTargetLang, compact])
 
   const handleSourceLanguageChange = (newSourceLang: LanguageCode) => {
     setSourceLang(newSourceLang)
