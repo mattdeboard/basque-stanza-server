@@ -5,6 +5,7 @@ import { AnimatedTitle } from './components/AnimatedTitle'
 import { LanguageSwitcher } from './components/LanguageSwitcher'
 import { LoadingIndicator } from './components/LoadingIndicator'
 import { TranslationInput } from './components/TranslationInput'
+import { TryAgainButton } from './components/TryAgainButton'
 import { config } from './config'
 import { useSelectedSentence } from './hooks/useAlignmentData'
 import { useTranslationRequest } from './hooks/useTranslationRequest'
@@ -76,16 +77,13 @@ function App() {
         <div className="text-center py-12 text-xl text-red-600 bg-red-50 border border-red-200 rounded-lg">
           {t('error.prefix')} {currentError}
           <div className="mt-4">
-            <button
-              onClick={() => {
+            <TryAgainButton
+              onTryAgain={() => {
                 setMode('input')
                 // Clear the error to show the input form, but preserve lastRequest for form restoration
                 clearError()
               }}
-              className="px-4 py-2 bg-sage-500 text-white rounded-lg hover:bg-sage-600 transition-colors"
-            >
-              {t('error.try_again')}
-            </button>
+            />
           </div>
         </div>
       </div>
