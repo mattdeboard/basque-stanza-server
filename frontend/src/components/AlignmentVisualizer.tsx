@@ -102,23 +102,107 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       scrollTimeout = setTimeout(updateTokenPositions, 10)
     }
 
+    // Synchronized scroll handler for ribbon space
+    const handleRibbonScroll = (e: Event) => {
+      const ribbonSpace = e.target as HTMLElement
+      if (!ribbonSpace.classList.contains('ribbon-space')) return
+
+      const container = containerRef.current
+      if (!container) return
+
+      const scrollContainers = container.querySelectorAll('.overflow-x-auto')
+      const deltaX = (e as WheelEvent).deltaX || 0
+      const deltaY = (e as WheelEvent).deltaY || 0
+
+      // Convert vertical scroll to horizontal on ribbon space
+      const scrollAmount = deltaX || deltaY
+
+      if (scrollAmount !== 0) {
+        e.preventDefault()
+        
+        scrollContainers.forEach((scrollContainer) => {
+          const element = scrollContainer as HTMLElement
+          element.scrollLeft += scrollAmount
+        })
+
+        // Update positions after synchronized scroll
+        handleScroll()
+      }
+    }
+
+    // Touch-based synchronized scrolling for mobile
+    let touchStartX = 0
+    let touchStartScrollLeft = [0, 0]
+
+    const handleRibbonTouchStart = (e: Event) => {
+      const touchEvent = e as TouchEvent
+      const ribbonSpace = touchEvent.target as HTMLElement
+      if (!ribbonSpace.classList.contains('ribbon-space')) return
+
+      touchStartX = touchEvent.touches[0].clientX
+      const container = containerRef.current
+      if (!container) return
+
+      const scrollContainers = container.querySelectorAll('.overflow-x-auto')
+      touchStartScrollLeft = Array.from(scrollContainers).map((el) => (el as HTMLElement).scrollLeft)
+    }
+
+    const handleRibbonTouchMove = (e: Event) => {
+      const touchEvent = e as TouchEvent
+      const ribbonSpace = touchEvent.target as HTMLElement
+      if (!ribbonSpace.classList.contains('ribbon-space')) return
+
+      e.preventDefault()
+      
+      const touchX = touchEvent.touches[0].clientX
+      const deltaX = touchStartX - touchX
+      const container = containerRef.current
+      if (!container) return
+
+      const scrollContainers = container.querySelectorAll('.overflow-x-auto')
+      scrollContainers.forEach((scrollContainer, index) => {
+        const element = scrollContainer as HTMLElement
+        element.scrollLeft = touchStartScrollLeft[index] + deltaX
+      })
+
+      handleScroll()
+    }
+
     window.addEventListener('resize', handleResize)
 
-    // Add scroll listeners to token containers
+    // Add scroll listeners to token containers and ribbon space
     const container = containerRef.current
     if (container) {
       const scrollContainers = container.querySelectorAll('.overflow-x-auto')
+      const ribbonSpace = container.querySelector('.ribbon-space')
+
       scrollContainers.forEach((scrollContainer) => {
         scrollContainer.addEventListener('scroll', handleScroll, {
           passive: true,
         })
       })
 
+      if (ribbonSpace) {
+        // Add wheel event for desktop scrolling
+        ribbonSpace.addEventListener('wheel', handleRibbonScroll, { passive: false })
+        
+        // Add touch events for mobile swiping
+        ribbonSpace.addEventListener('touchstart', handleRibbonTouchStart, { passive: true })
+        ribbonSpace.addEventListener('touchmove', handleRibbonTouchMove, { passive: false })
+      }
+
       return () => {
         window.removeEventListener('resize', handleResize)
         scrollContainers.forEach((scrollContainer) => {
           scrollContainer.removeEventListener('scroll', handleScroll)
         })
+        
+        if (ribbonSpace) {
+          ribbonSpace.removeEventListener('wheel', handleRibbonScroll)
+          ribbonSpace.removeEventListener('touchstart', handleRibbonTouchStart)
+          ribbonSpace.removeEventListener('touchmove', handleRibbonTouchMove)
+        }
+        
         if (scrollTimeout) clearTimeout(scrollTimeout)
       }
     }
