@@ -109,9 +109,29 @@ export function LayerPicker({ currentLayer, setVizLayer }: LayerPickerProps) {
               <button
                 key={layerKey}
                 onClick={() => setVizLayer(layerKey as LayerType)}
-                className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 border-2 flex items-center gap-1 sm:gap-2 min-h-10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sage-400 ${
+                className={classNames(
+                  'px-2',
+                  'sm:px-3',
+                  'py-1',
+                  'sm:py-1.5',
+                  'rounded-full',
+                  'text-xs',
+                  'sm:text-sm',
+                  'font-medium',
+                  'flex',
+                  'items-center',
+                  'gap-1',
+                  'sm:gap-2',
+                  'min-h-10',
+                  'transition-all',
+                  'duration-200',
+                  'border-2',
+                  'focus:outline-none',
+                  'focus:ring-2',
+                  'focus:ring-offset-2',
+                  'focus:ring-sage-400',
                   isActive ? 'shadow-md' : 'hover:shadow-sm focus:shadow-sm'
-                }`}
+                )}
                 role="tab"
                 aria-selected={isActive}
                 aria-controls="alignment-visualization"
