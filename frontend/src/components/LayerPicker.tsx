@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import { useEffect, useRef } from 'react'
 import { type TranslationKey, useI18n } from '../i18n'
 import { LayerType } from '../types/alignment'
@@ -136,7 +137,9 @@ export function LayerPicker({ currentLayer, setVizLayer }: LayerPickerProps) {
                   className="w-2.5 sm:w-3 h-2.5 sm:h-3 rounded-full flex-shrink-0"
                   style={{ backgroundColor: isActive ? config.colorLight : config.color }}
                 />
-                <span className="truncate">{t(config.displayName)}</span>
+                <span className={classNames('truncate', isActive && 'font-bold')}>
+                  {t(config.displayName)}
+                </span>
               </button>
             )
           })}
