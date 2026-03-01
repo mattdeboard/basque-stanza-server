@@ -92,14 +92,32 @@ export function LayerPicker({ currentLayer, setVizLayer }: LayerPickerProps) {
   }
   return (
     <nav
-      className="px-4 sm:px-6 lg:px-10 pt-4 sm:pt-6 pb-3 sm:pb-4 mx-auto animate-on-load"
+      className={classNames(
+        'px-4',
+        'sm:px-6',
+        'lg:px-10',
+        'pt-4',
+        'sm:pt-6',
+        'pb-3',
+        'sm:pb-4',
+        'mx-auto',
+        'animate-on-load'
+      )}
       style={{ animationDelay: '200ms' }}
       aria-label="Alignment layer selection"
     >
-      <div className="flex items-center gap-4 sm:gap-6">
+      <div className={classNames('flex', 'items-center', 'gap-4', 'sm:gap-6')}>
         <div
           ref={tabListRef}
-          className="flex-1 flex flex-wrap gap-2 sm:gap-3 justify-center sm:justify-start"
+          className={classNames(
+            'flex-1',
+            'flex',
+            'flex-wrap',
+            'gap-2',
+            'sm:gap-3',
+            'justify-center',
+            'sm:justify-start'
+          )}
           role="tablist"
           aria-label="Choose alignment analysis layer"
         >
@@ -154,7 +172,14 @@ export function LayerPicker({ currentLayer, setVizLayer }: LayerPickerProps) {
                 }
               >
                 <div
-                  className="w-2.5 sm:w-3 h-2.5 sm:h-3 rounded-full flex-shrink-0"
+                  className={classNames(
+                    'w-2.5',
+                    'sm:w-3',
+                    'h-2.5',
+                    'sm:h-3',
+                    'rounded-full',
+                    'flex-shrink-0'
+                  )}
                   style={{ backgroundColor: isActive ? config.colorLight : config.color }}
                 />
                 <span className={classNames('truncate', isActive && 'font-bold')}>
@@ -164,10 +189,12 @@ export function LayerPicker({ currentLayer, setVizLayer }: LayerPickerProps) {
             )
           })}
         </div>
-        <div className="flex-1 hidden sm:flex items-center min-h-[5.25rem]">
+        <div
+          className={classNames('flex-1', 'hidden', 'sm:flex', 'items-center', 'min-h-[5.25rem]')}
+        >
           <p
             key={currentLayer}
-            className="text-lg font-display italic animate-fade-in"
+            className={classNames('text-lg', 'font-display', 'italic', 'animate-fade-in')}
             style={{ color: LAYER_CONFIGS[currentLayer].color }}
             aria-hidden="true"
           >

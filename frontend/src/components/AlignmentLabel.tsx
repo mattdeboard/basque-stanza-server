@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import type { LayerType } from '../types/alignment'
 import { LAYER_CONFIGS } from './LayerPicker'
 
@@ -14,17 +15,26 @@ export function AlignmentLabel({ label, currentLayer, visible = false }: Alignme
 
   return (
     <div
-      className="flex items-start gap-3 p-3 rounded-md border transition-all duration-200"
+      className={classNames(
+        'flex',
+        'items-start',
+        'gap-3',
+        'p-3',
+        'rounded-md',
+        'border',
+        'transition-all',
+        'duration-200'
+      )}
       style={{
         backgroundColor: `${LAYER_CONFIGS[currentLayer].color}10`,
         borderColor: LAYER_CONFIGS[currentLayer].color,
       }}
     >
       <div
-        className="w-3 h-3 rounded-full flex-shrink-0 mt-0.5"
+        className={classNames('w-3', 'h-3', 'rounded-full', 'flex-shrink-0', 'mt-0.5')}
         style={{ backgroundColor: LAYER_CONFIGS[currentLayer].color }}
       />
-      <div className="text-sm text-gray-700 leading-relaxed">{label}</div>
+      <div className={classNames('text-sm', 'text-gray-700', 'leading-relaxed')}>{label}</div>
     </div>
   )
 }

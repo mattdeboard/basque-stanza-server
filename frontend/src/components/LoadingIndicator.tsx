@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import { useEffect, useState } from 'react'
 import { useI18n } from '../i18n'
 
@@ -56,36 +57,100 @@ export function LoadingIndicator({ mode }: LoadingIndicatorProps) {
   }, [mode])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-tan-25 via-tan-50 to-tan-100">
-      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 font-sans">
-        <header className="text-center mb-3 sm:mb-4">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-light mb-2 text-slate-800 tracking-tight">
+    <div
+      className={classNames(
+        'min-h-screen',
+        'bg-gradient-to-br',
+        'from-tan-25',
+        'via-tan-50',
+        'to-tan-100'
+      )}
+    >
+      <div className={classNames('max-w-7xl', 'mx-auto', 'p-4', 'sm:p-6', 'lg:p-8', 'font-sans')}>
+        <header className={classNames('text-center', 'mb-3', 'sm:mb-4')}>
+          <h1
+            className={classNames(
+              'text-3xl',
+              'sm:text-4xl',
+              'lg:text-5xl',
+              'font-display',
+              'font-light',
+              'mb-2',
+              'text-slate-800',
+              'tracking-tight'
+            )}
+          >
             Xingolak
           </h1>
-          <h2 className="text-lg sm:text-xl font-light text-slate-500 mb-6 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
+          <h2
+            className={classNames(
+              'text-lg',
+              'sm:text-xl',
+              'font-light',
+              'text-slate-500',
+              'mb-6',
+              'max-w-2xl',
+              'mx-auto',
+              'leading-relaxed',
+              'px-4',
+              'sm:px-0'
+            )}
+          >
             {t('app.loading.subtitle')}
           </h2>
         </header>
 
-        <div className="flex flex-col items-center justify-center py-12">
+        <div className={classNames('flex', 'flex-col', 'items-center', 'justify-center', 'py-12')}>
           {/* Progress Spinner */}
-          <div className="relative mb-6">
-            <div className="w-16 h-16 border-4 border-teal-100 border-t-teal-700 rounded-full animate-spin"></div>
+          <div className={classNames('relative', 'mb-6')}>
             <div
-              className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-teal-300 rounded-full animate-spin animate-reverse"
+              className={classNames(
+                'w-16',
+                'h-16',
+                'border-4',
+                'border-teal-100',
+                'border-t-teal-700',
+                'rounded-full',
+                'animate-spin'
+              )}
+            ></div>
+            <div
+              className={classNames(
+                'absolute',
+                'inset-0',
+                'w-16',
+                'h-16',
+                'border-4',
+                'border-transparent',
+                'border-r-teal-300',
+                'rounded-full',
+                'animate-spin',
+                'animate-reverse'
+              )}
               style={{ animationDuration: '1.5s' }}
             ></div>
           </div>
 
           {/* Progress Steps */}
-          <div className="bg-white/60 backdrop-blur-sm border border-slate-200/60 rounded-lg p-6 max-w-md mx-auto">
-            <div className="text-center mb-4">
-              <h3 className="text-lg font-medium text-slate-800 mb-2">
+          <div
+            className={classNames(
+              'bg-white/60',
+              'backdrop-blur-sm',
+              'border',
+              'border-slate-200/60',
+              'rounded-lg',
+              'p-6',
+              'max-w-md',
+              'mx-auto'
+            )}
+          >
+            <div className={classNames('text-center', 'mb-4')}>
+              <h3 className={classNames('text-lg', 'font-medium', 'text-slate-800', 'mb-2')}>
                 {mode === 'input'
                   ? t('loading.analyzing_translation')
                   : t('loading.loading_alignment_data')}
               </h3>
-              <p className="text-sm text-slate-600">
+              <p className={classNames('text-sm', 'text-slate-600')}>
                 {mode === 'input' ? t('loading.processing_text') : t('loading.loading_examples')}
               </p>
             </div>
@@ -93,11 +158,20 @@ export function LoadingIndicator({ mode }: LoadingIndicatorProps) {
             {mode === 'input' && (
               <div className="space-y-3">
                 {steps.map((step) => (
-                  <div key={step.name} className="flex items-center space-x-3">
-                    <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
+                  <div key={step.name} className={classNames('flex', 'items-center', 'space-x-3')}>
+                    <div
+                      className={classNames(
+                        'flex-shrink-0',
+                        'w-5',
+                        'h-5',
+                        'flex',
+                        'items-center',
+                        'justify-center'
+                      )}
+                    >
                       {step.status === 'completed' ? (
                         <svg
-                          className="w-4 h-4 text-green-600"
+                          className={classNames('w-4', 'h-4', 'text-green-600')}
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -111,19 +185,32 @@ export function LoadingIndicator({ mode }: LoadingIndicatorProps) {
                           />
                         </svg>
                       ) : step.status === 'active' ? (
-                        <div className="w-3 h-3 bg-teal-700 rounded-full animate-pulse"></div>
+                        <div
+                          className={classNames(
+                            'w-3',
+                            'h-3',
+                            'bg-teal-700',
+                            'rounded-full',
+                            'animate-pulse'
+                          )}
+                        ></div>
                       ) : (
-                        <div className="w-3 h-3 bg-slate-300 rounded-full"></div>
+                        <div
+                          className={classNames('w-3', 'h-3', 'bg-slate-300', 'rounded-full')}
+                        ></div>
                       )}
                     </div>
                     <span
-                      className={`text-sm transition-colors duration-300 ${
+                      className={classNames(
+                        'text-sm',
+                        'transition-colors',
+                        'duration-300',
                         step.status === 'completed'
                           ? 'text-green-700 font-medium'
                           : step.status === 'active'
                             ? 'text-slate-700'
                             : 'text-slate-500'
-                      }`}
+                      )}
                     >
                       {step.name}
                     </span>
@@ -133,7 +220,7 @@ export function LoadingIndicator({ mode }: LoadingIndicatorProps) {
             )}
           </div>
 
-          <p className="text-xs text-slate-500 mt-4 max-w-sm text-center">
+          <p className={classNames('text-xs', 'text-slate-500', 'mt-4', 'max-w-sm', 'text-center')}>
             {t('loading.time_estimate')}
           </p>
         </div>

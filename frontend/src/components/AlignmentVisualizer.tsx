@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useI18n } from '../i18n'
 import type { SentencePair } from '../schemas/validation'
@@ -570,7 +571,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
           stroke={LAYER_CONFIGS[vizLayer].color}
           strokeWidth={options?.strokeWidth || '3'}
           opacity={opacity}
-          className="transition-opacity duration-300"
+          className={classNames('transition-opacity', 'duration-300')}
           strokeDasharray={isSolidLine ? `${pathLength}` : '6 4'}
           strokeDashoffset={isSolidLine ? (isAnimating ? '0' : `${pathLength}`) : undefined}
           style={
@@ -593,7 +594,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
           r={options?.sourceDotRadius || '4'}
           fill={LAYER_CONFIGS[vizLayer].color}
           opacity={isHighlighted && isAnimating ? opacity : isHighlighted ? 0 : opacity}
-          className="transition-all duration-300"
+          className={classNames('transition-all', 'duration-300')}
           style={
             isHighlighted
               ? {
@@ -613,7 +614,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
           r={options?.targetDotRadius || '4'}
           fill={LAYER_CONFIGS[vizLayer].color}
           opacity={isHighlighted && isAnimating ? opacity : isHighlighted ? 0 : opacity}
-          className="transition-all duration-300"
+          className={classNames('transition-all', 'duration-300')}
           style={
             isHighlighted
               ? {
@@ -716,7 +717,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
   return (
     <div
       ref={containerRef}
-      className="relative max-w-5xl mx-auto px-2 sm:px-0"
+      className={classNames('relative', 'max-w-5xl', 'mx-auto', 'px-2', 'sm:px-0')}
       role="application"
       aria-label="Interactive translation alignment visualization"
     >
@@ -731,21 +732,69 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
 
       {/* Source Sentence */}
       <section
-        className="content-card px-4 sm:px-6 lg:px-10 pt-3 sm:pt-4 pb-1 mx-auto mb-0 rounded-b-none animate-on-load"
+        className={classNames(
+          'content-card',
+          'px-4',
+          'sm:px-6',
+          'lg:px-10',
+          'pt-3',
+          'sm:pt-4',
+          'pb-1',
+          'mx-auto',
+          'mb-0',
+          'rounded-b-none',
+          'animate-on-load'
+        )}
         style={{ animationDelay: '400ms' }}
         aria-labelledby="source-lang-label"
       >
         <div
           id="source-lang-label"
-          className="text-xs font-medium text-teal-700 uppercase tracking-widest mb-1 opacity-75 text-center"
+          className={classNames(
+            'text-xs',
+            'font-medium',
+            'text-teal-700',
+            'uppercase',
+            'tracking-widest',
+            'mb-1',
+            'opacity-75',
+            'text-center'
+          )}
         >
           {sentencePair.source.lang.toUpperCase()} ({t('viz.source_language_label')})
         </div>
-        <div className="text-lg sm:text-xl lg:text-2xl font-display text-slate-700 mb-2 leading-relaxed font-light italic text-center">
+        <div
+          className={classNames(
+            'text-lg',
+            'sm:text-xl',
+            'lg:text-2xl',
+            'font-display',
+            'text-slate-700',
+            'mb-2',
+            'leading-relaxed',
+            'font-light',
+            'italic',
+            'text-center'
+          )}
+        >
           {sentencePair.source.text}
         </div>
         <ul
-          className="flex gap-2 sm:gap-3 lg:gap-4 items-center overflow-x-auto pb-1 pt-1 scrollbar-none justify-start px-2 sm:px-0 list-none"
+          className={classNames(
+            'flex',
+            'gap-2',
+            'sm:gap-3',
+            'lg:gap-4',
+            'items-center',
+            'overflow-x-auto',
+            'pb-1',
+            'pt-1',
+            'scrollbar-none',
+            'justify-start',
+            'px-2',
+            'sm:px-0',
+            'list-none'
+          )}
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           aria-label="Source sentence tokens - click to highlight connections"
         >
@@ -761,7 +810,14 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
               <li key={token.id}>
                 <button
                   type="button"
-                  className={`token flex-shrink-0 ${isHovered ? 'token--highlighted' : ''} ${isDimmed ? 'token--dimmed' : ''} ${isConnected ? 'token--connected token--source' : 'token--disconnected'} ${isPinned ? 'token--pinned' : ''}`}
+                  className={classNames(
+                    'token',
+                    'flex-shrink-0',
+                    isHovered ? 'token--highlighted' : '',
+                    isDimmed ? 'token--dimmed' : '',
+                    isConnected ? 'token--connected token--source' : 'token--disconnected',
+                    isPinned ? 'token--pinned' : ''
+                  )}
                   data-token-id={token.id}
                   data-token-type="source"
                   onMouseEnter={() => isConnected && handleTokenHover(token.id, true)}
@@ -786,7 +842,18 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
 
       {/* Ribbon Space */}
       <div
-        className="h-24 sm:h-32 lg:h-ribbon-space relative flex items-center justify-center mx-auto ribbon-space animate-on-load"
+        className={classNames(
+          'h-24',
+          'sm:h-32',
+          'lg:h-ribbon-space',
+          'relative',
+          'flex',
+          'items-center',
+          'justify-center',
+          'mx-auto',
+          'ribbon-space',
+          'animate-on-load'
+        )}
         style={{
           background:
             'linear-gradient(to bottom, rgba(253, 248, 243, 0.6) 0%, rgba(255, 252, 250, 0.4) 50%, rgba(253, 248, 243, 0.6) 100%)',
@@ -795,7 +862,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       >
         {/* SVG Ribbons */}
         <svg
-          className="absolute inset-0 w-full h-full pointer-events-none"
+          className={classNames('absolute', 'inset-0', 'w-full', 'h-full', 'pointer-events-none')}
           style={{ zIndex: 1 }}
           aria-hidden="true"
         >
@@ -809,12 +876,38 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
 
       {/* Target Sentence */}
       <section
-        className="content-card px-4 sm:px-6 lg:px-10 pt-1 pb-3 sm:pb-4 mx-auto mt-0 rounded-t-none animate-on-load"
+        className={classNames(
+          'content-card',
+          'px-4',
+          'sm:px-6',
+          'lg:px-10',
+          'pt-1',
+          'pb-3',
+          'sm:pb-4',
+          'mx-auto',
+          'mt-0',
+          'rounded-t-none',
+          'animate-on-load'
+        )}
         style={{ animationDelay: '800ms' }}
         aria-labelledby="target-lang-label"
       >
         <ul
-          className="flex gap-2 sm:gap-3 lg:gap-4 items-center mb-1 overflow-x-auto pt-1 scrollbar-none justify-start px-2 sm:px-0 list-none"
+          className={classNames(
+            'flex',
+            'gap-2',
+            'sm:gap-3',
+            'lg:gap-4',
+            'items-center',
+            'mb-1',
+            'overflow-x-auto',
+            'pt-1',
+            'scrollbar-none',
+            'justify-start',
+            'px-2',
+            'sm:px-0',
+            'list-none'
+          )}
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           aria-label="Target sentence tokens - click to highlight connections"
         >
@@ -830,7 +923,14 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
               <li key={token.id}>
                 <button
                   type="button"
-                  className={`token flex-shrink-0 ${isHovered ? 'token--highlighted' : ''} ${isDimmed ? 'token--dimmed' : ''} ${isConnected ? 'token--connected token--target' : 'token--disconnected'} ${isPinned ? 'token--pinned' : ''}`}
+                  className={classNames(
+                    'token',
+                    'flex-shrink-0',
+                    isHovered ? 'token--highlighted' : '',
+                    isDimmed ? 'token--dimmed' : '',
+                    isConnected ? 'token--connected token--target' : 'token--disconnected',
+                    isPinned ? 'token--pinned' : ''
+                  )}
                   data-token-id={token.id}
                   data-token-type="target"
                   onMouseEnter={() => isConnected && handleTokenHover(token.id, false)}
@@ -853,11 +953,33 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
         </ul>
         <div
           id="target-lang-label"
-          className="text-xs font-medium text-teal-700 uppercase tracking-widest mb-1 opacity-75 text-center"
+          className={classNames(
+            'text-xs',
+            'font-medium',
+            'text-teal-700',
+            'uppercase',
+            'tracking-widest',
+            'mb-1',
+            'opacity-75',
+            'text-center'
+          )}
         >
           {sentencePair.target.lang.toUpperCase()} ({t('viz.target_language_label')})
         </div>
-        <div className="text-lg sm:text-xl lg:text-2xl font-display text-slate-700 leading-relaxed font-light italic text-center mb-1">
+        <div
+          className={classNames(
+            'text-lg',
+            'sm:text-xl',
+            'lg:text-2xl',
+            'font-display',
+            'text-slate-700',
+            'leading-relaxed',
+            'font-light',
+            'italic',
+            'text-center',
+            'mb-1'
+          )}
+        >
           {sentencePair.target.text}
         </div>
       </section>
@@ -873,11 +995,22 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       {/* Alignment Labels */}
       <section
         id="alignment-visualization"
-        className="px-4 sm:px-6 lg:px-10 pb-1 mx-auto animate-on-load mt-0"
+        className={classNames(
+          'px-4',
+          'sm:px-6',
+          'lg:px-10',
+          'pb-1',
+          'mx-auto',
+          'animate-on-load',
+          'mt-0'
+        )}
         style={{ animationDelay: '1000ms' }}
         aria-label="Alignment analysis results"
       >
-        <ul className="space-y-1 list-none" aria-label="Active alignment connections">
+        <ul
+          className={classNames('space-y-1', 'list-none')}
+          aria-label="Active alignment connections"
+        >
           {sentencePair.layers[vizLayer].map((alignment, index) => (
             <li key={`${vizLayer}-alignment-${alignment.label}-${index}`}>
               <AlignmentLabel

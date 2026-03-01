@@ -39,7 +39,7 @@ export function useTranslationRequest(): UseTranslationRequestResult {
     async (text: string, sourceLang: LanguageCode, targetLang: LanguageCode) => {
       // Store the request parameters for potential retry
       setLastRequest({ text, sourceLang, targetLang })
-      
+
       try {
         setLoading(true)
         setError(null)
