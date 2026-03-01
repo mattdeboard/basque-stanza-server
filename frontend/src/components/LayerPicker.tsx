@@ -164,7 +164,7 @@ export function LayerPicker({ currentLayer, setVizLayer }: LayerPickerProps) {
             )
           })}
         </div>
-        <div className="flex-1 hidden sm:flex items-center">
+        <div className="flex-1 hidden sm:flex items-center min-h-[5.25rem]">
           <p
             key={currentLayer}
             className="text-lg font-display italic animate-fade-in"
