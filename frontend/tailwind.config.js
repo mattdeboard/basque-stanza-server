@@ -89,8 +89,8 @@ export default {
           '100%': { strokeDasharray: '1000', strokeDashoffset: '0', opacity: '0.8' },
         },
         'token-highlight': {
-          '0%': { transform: 'translateY(0px)', boxShadow: '0 0 0 0 rgba(90, 153, 117, 0)' },
-          '100%': { transform: 'translateY(-1px)', boxShadow: '0 2px 8px 0 rgba(90, 153, 117, 0.15)' },
+          '0%': { transform: 'translateY(0px)', boxShadow: '0 0 0 0 rgba(15, 118, 110, 0)' },
+          '100%': { transform: 'translateY(-1px)', boxShadow: '0 2px 8px 0 rgba(15, 118, 110, 0.15)' },
         },
         'fade-in': {
           '0%': { opacity: '0', transform: 'translateY(10px)' },

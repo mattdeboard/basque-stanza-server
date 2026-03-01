@@ -18,13 +18,13 @@ const LANGUAGE_FLAGS = {
   [LanguageCode.EU]: '🔴⚪🟢',
 } as const
 
-export function TranslationInput({ 
-  onSubmit, 
-  loading, 
-  compact = false, 
-  initialText = '', 
-  initialSourceLang, 
-  initialTargetLang 
+export function TranslationInput({
+  onSubmit,
+  loading,
+  compact = false,
+  initialText = '',
+  initialSourceLang,
+  initialTargetLang,
 }: TranslationInputProps) {
   const { t, currentLanguage } = useI18n()
   const [text, setText] = useState(initialText)
@@ -121,7 +121,7 @@ export function TranslationInput({
       <div className="fixed bottom-6 right-6 z-50">
         <button
           onClick={() => setIsExpanded(true)}
-          className="bg-sage-500 hover:bg-sage-600 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-sage-400 focus:ring-offset-2"
+          className="bg-teal-700 hover:bg-teal-800 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
           aria-label={t('mode.analyze_new_text')}
           type="button"
         >
@@ -186,7 +186,7 @@ export function TranslationInput({
                       id="source-lang"
                       value={sourceLang}
                       onChange={(e) => handleSourceLanguageChange(e.target.value as LanguageCode)}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white text-sm focus:outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200 transition-all duration-200"
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white text-sm focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-200"
                       disabled={loading}
                     >
                       {Object.values(LanguageCode).map((langCode) => (
@@ -202,7 +202,7 @@ export function TranslationInput({
                       type="button"
                       onClick={swapLanguages}
                       disabled={loading}
-                      className="p-2 rounded-full hover:bg-sage-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-sage-400 disabled:opacity-50"
+                      className="p-2 rounded-full hover:bg-teal-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50"
                       aria-label={t('ui.swap_languages')}
                     >
                       <svg
@@ -233,7 +233,7 @@ export function TranslationInput({
                       id="target-lang"
                       value={targetLang}
                       onChange={(e) => handleTargetLanguageChange(e.target.value as LanguageCode)}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white text-sm focus:outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200 transition-all duration-200"
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white text-sm focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-200"
                       disabled={loading}
                     >
                       {Object.values(LanguageCode).map((langCode) => (
@@ -259,7 +259,7 @@ export function TranslationInput({
                     onChange={(e) => setText(e.target.value)}
                     placeholder={t('input.text_placeholder')}
                     rows={4}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-lg bg-white text-sm resize-none focus:outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200 transition-all duration-200 placeholder:text-slate-400"
+                    className="w-full px-4 py-3 border border-slate-200 rounded-lg bg-white text-sm resize-none focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-200 placeholder:text-slate-400"
                     disabled={loading}
                     maxLength={500}
                   />
@@ -283,7 +283,7 @@ export function TranslationInput({
                 type="submit"
                 disabled={!canSubmit || loading}
                 onClick={handleSubmit}
-                className="w-full bg-sage-500 text-white font-medium py-3 px-4 rounded-lg hover:bg-sage-600 focus:outline-none focus:ring-2 focus:ring-sage-400 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-teal-700 text-white font-medium py-3 px-4 rounded-lg hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
@@ -341,7 +341,7 @@ export function TranslationInput({
               id="source-lang"
               value={sourceLang}
               onChange={(e) => handleSourceLanguageChange(e.target.value as LanguageCode)}
-              className="px-3 py-2 border border-slate-200 rounded-lg bg-white/80 backdrop-blur-sm text-sm focus:outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200 transition-all duration-200"
+              className="px-3 py-2 border border-slate-200 rounded-lg bg-white/80 backdrop-blur-sm text-sm focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-200"
               disabled={loading}
             >
               {Object.values(LanguageCode).map((langCode) => (
@@ -356,7 +356,7 @@ export function TranslationInput({
             type="button"
             onClick={swapLanguages}
             disabled={loading}
-            className="p-2 rounded-full hover:bg-sage-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-sage-400 focus:ring-offset-1 disabled:opacity-50"
+            className="p-2 rounded-full hover:bg-teal-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-1 disabled:opacity-50"
             aria-label={t('ui.swap_source_target_languages')}
           >
             <svg
@@ -383,7 +383,7 @@ export function TranslationInput({
               id="target-lang"
               value={targetLang}
               onChange={(e) => handleTargetLanguageChange(e.target.value as LanguageCode)}
-              className="px-3 py-2 border border-slate-200 rounded-lg bg-white/80 backdrop-blur-sm text-sm focus:outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200 transition-all duration-200"
+              className="px-3 py-2 border border-slate-200 rounded-lg bg-white/80 backdrop-blur-sm text-sm focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-200"
               disabled={loading}
             >
               {Object.values(LanguageCode).map((langCode) => (
@@ -406,11 +406,13 @@ export function TranslationInput({
             onChange={(e) => setText(e.target.value)}
             placeholder={t('input.text_placeholder')}
             rows={3}
-            className="w-full px-4 py-3 border border-slate-200 rounded-lg bg-white/80 backdrop-blur-sm text-base resize-none focus:outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200 transition-all duration-200 placeholder:text-slate-400"
+            className="w-full px-4 py-3 border border-slate-200 rounded-lg bg-white/80 backdrop-blur-sm text-base resize-none focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-200 placeholder:text-slate-400"
             disabled={loading}
             maxLength={500}
           />
-          <div className="text-xs text-slate-500 mt-1 text-right">{t('input.characters_counter', { count: text.length })}</div>
+          <div className="text-xs text-slate-500 mt-1 text-right">
+            {t('input.characters_counter', { count: text.length })}
+          </div>
         </div>
 
         {/* Validation Error Display */}
@@ -425,7 +427,7 @@ export function TranslationInput({
           <button
             type="submit"
             disabled={!canSubmit || loading}
-            className="px-6 py-3 bg-sage-500 text-white font-medium rounded-lg hover:bg-sage-600 focus:outline-none focus:ring-2 focus:ring-sage-400 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-6 py-3 bg-teal-700 text-white font-medium rounded-lg hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {loading ? (
               <>

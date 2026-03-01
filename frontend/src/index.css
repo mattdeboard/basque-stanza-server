@@ -33,17 +33,17 @@
 
 @layer components {
   .token {
-    @apply px-4 py-2.5 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-lg cursor-pointer font-medium select-none transition-all duration-200 hover:border-sage-400 hover:bg-sage-50/50 hover:shadow-sm relative;
+    @apply px-4 py-2.5 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-lg cursor-pointer font-medium select-none transition-all duration-200 hover:border-teal-500 hover:bg-teal-50/50 hover:shadow-sm relative;
     @apply animate-fade-in;
-    @apply focus:outline-none focus:ring-2 focus:ring-sage-400 focus:ring-offset-1;
+    @apply focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-1;
   }
 
   .token--highlighted {
-    @apply border-sage-500 bg-sage-50 shadow-md ring-1 ring-sage-200;
+    @apply border-teal-700 bg-teal-50 shadow-md ring-1 ring-teal-200;
     transform: translateY(-1px);
     box-shadow:
-      0 2px 8px 0 rgba(90, 153, 117, 0.15),
-      0 0 0 1px rgb(209, 229, 216);
+      0 2px 8px 0 rgba(15, 118, 110, 0.15),
+      0 0 0 1px rgb(153, 234, 228);
   }
 
   .token--dimmed {
@@ -51,7 +51,7 @@
   }
 
   .token--connected::after {
-    @apply content-[''] absolute w-2 h-2 bg-sage-500 rounded-full opacity-75 animate-gentle-pulse;
+    @apply content-[''] absolute w-2 h-2 bg-teal-700 rounded-full opacity-75 animate-gentle-pulse;
   }
 
   .token--connected.token--source::after {
@@ -63,7 +63,7 @@
   }
 
   .token--pinned {
-    @apply ring-2 ring-sage-500/60 bg-sage-100/80 border-sage-600 shadow-lg backdrop-blur-sm;
+    @apply ring-2 ring-teal-700/60 bg-teal-100/80 border-teal-800 shadow-lg backdrop-blur-sm;
   }
 
   .token--disconnected {

@@ -129,7 +129,7 @@ export function LayerPicker({ currentLayer, setVizLayer }: LayerPickerProps) {
                   'focus:outline-none',
                   'focus:ring-2',
                   'focus:ring-offset-2',
-                  'focus:ring-sage-400',
+                  'focus:ring-teal-500',
                   isActive ? 'shadow-md' : 'hover:shadow-sm focus:shadow-sm'
                 )}
                 role="tab"

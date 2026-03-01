@@ -119,7 +119,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
 
       if (scrollAmount !== 0) {
         e.preventDefault()
-        
+
         scrollContainers.forEach((scrollContainer) => {
           const element = scrollContainer as HTMLElement
           element.scrollLeft += scrollAmount
@@ -144,7 +144,9 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       if (!container) return
 
       const scrollContainers = container.querySelectorAll('.overflow-x-auto')
-      touchStartScrollLeft = Array.from(scrollContainers).map((el) => (el as HTMLElement).scrollLeft)
+      touchStartScrollLeft = Array.from(scrollContainers).map(
+        (el) => (el as HTMLElement).scrollLeft
+      )
     }
 
     const handleRibbonTouchMove = (e: Event) => {
@@ -153,7 +155,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       if (!ribbonSpace.classList.contains('ribbon-space')) return
 
       e.preventDefault()
-      
+
       const touchX = touchEvent.touches[0].clientX
       const deltaX = touchStartX - touchX
       const container = containerRef.current
@@ -185,7 +187,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       if (ribbonSpace) {
         // Add wheel event for desktop scrolling
         ribbonSpace.addEventListener('wheel', handleRibbonScroll, { passive: false })
-        
+
         // Add touch events for mobile swiping
         ribbonSpace.addEventListener('touchstart', handleRibbonTouchStart, { passive: true })
         ribbonSpace.addEventListener('touchmove', handleRibbonTouchMove, { passive: false })
@@ -196,13 +198,13 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
         scrollContainers.forEach((scrollContainer) => {
           scrollContainer.removeEventListener('scroll', handleScroll)
         })
-        
+
         if (ribbonSpace) {
           ribbonSpace.removeEventListener('wheel', handleRibbonScroll)
           ribbonSpace.removeEventListener('touchstart', handleRibbonTouchStart)
           ribbonSpace.removeEventListener('touchmove', handleRibbonTouchMove)
         }
-        
+
         if (scrollTimeout) clearTimeout(scrollTimeout)
       }
     }
@@ -725,7 +727,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       >
         <div
           id="source-lang-label"
-          className="text-xs font-medium text-sage-600 uppercase tracking-widest mb-1 opacity-75 text-center"
+          className="text-xs font-medium text-teal-700 uppercase tracking-widest mb-1 opacity-75 text-center"
         >
           {sentencePair.source.lang.toUpperCase()} ({t('viz.source_language_label')})
         </div>
@@ -841,7 +843,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
         </ul>
         <div
           id="target-lang-label"
-          className="text-xs font-medium text-sage-600 uppercase tracking-widest mb-1 opacity-75 text-center"
+          className="text-xs font-medium text-teal-700 uppercase tracking-widest mb-1 opacity-75 text-center"
         >
           {sentencePair.target.lang.toUpperCase()} ({t('viz.target_language_label')})
         </div>
@@ -851,9 +853,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       </section>
 
       {/* Screen reader instructions */}
-      <div className="sr-only">
-        {t('a11y.screen_reader_instructions')}
-      </div>
+      <div className="sr-only">{t('a11y.screen_reader_instructions')}</div>
 
       {/* Live region for screen reader announcements */}
       <output className="sr-only" aria-live="polite" aria-atomic="true">

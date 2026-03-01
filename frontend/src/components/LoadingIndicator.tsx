@@ -70,9 +70,9 @@ export function LoadingIndicator({ mode }: LoadingIndicatorProps) {
         <div className="flex flex-col items-center justify-center py-12">
           {/* Progress Spinner */}
           <div className="relative mb-6">
-            <div className="w-16 h-16 border-4 border-sage-100 border-t-sage-500 rounded-full animate-spin"></div>
+            <div className="w-16 h-16 border-4 border-teal-100 border-t-teal-700 rounded-full animate-spin"></div>
             <div
-              className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-sage-300 rounded-full animate-spin animate-reverse"
+              className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-teal-300 rounded-full animate-spin animate-reverse"
               style={{ animationDuration: '1.5s' }}
             ></div>
           </div>
@@ -111,7 +111,7 @@ export function LoadingIndicator({ mode }: LoadingIndicatorProps) {
                           />
                         </svg>
                       ) : step.status === 'active' ? (
-                        <div className="w-3 h-3 bg-sage-500 rounded-full animate-pulse"></div>
+                        <div className="w-3 h-3 bg-teal-700 rounded-full animate-pulse"></div>
                       ) : (
                         <div className="w-3 h-3 bg-slate-300 rounded-full"></div>
                       )}

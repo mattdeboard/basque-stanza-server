@@ -110,7 +110,7 @@ function App() {
                   onClick={() => setMode('input')}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                     mode === 'input'
-                      ? 'bg-sage-500 text-white shadow-sm'
+                      ? 'bg-teal-700 text-white shadow-sm'
                       : 'text-slate-600 hover:bg-slate-100'
                   }`}
                 >
@@ -120,7 +120,7 @@ function App() {
                   onClick={switchToExamples}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                     mode === 'examples'
-                      ? 'bg-sage-500 text-white shadow-sm'
+                      ? 'bg-teal-700 text-white shadow-sm'
                       : 'text-slate-600 hover:bg-slate-100'
                   }`}
                 >
@@ -156,7 +156,7 @@ function App() {
                   id="sentence-select"
                   value={selectedId || ''}
                   onChange={(e) => setSelectedId(e.target.value)}
-                  className="px-3 sm:px-4 py-2 sm:py-3 border border-slate-200 rounded-lg bg-white/80 backdrop-blur-sm text-sm sm:text-base w-full sm:min-w-80 focus:outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200 transition-all duration-200"
+                  className="px-3 sm:px-4 py-2 sm:py-3 border border-slate-200 rounded-lg bg-white/80 backdrop-blur-sm text-sm sm:text-base w-full sm:min-w-80 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-200"
                   aria-label={t('examples.choose_sentence_aria')}
                 >
                   {availableSentences.map((sentence) => (
