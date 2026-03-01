@@ -355,6 +355,15 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
     [sentencePair.layers[vizLayer], pinnedTokenId, pinnedIsSource, sentencePair, vizLayer]
   )
 
+  const clearInteractionState = useCallback(() => {
+    setPinnedTokenId(null)
+    setPinnedIsSource(false)
+    setHoveredTokens(new Set())
+    setHighlightedAlignments(new Set())
+    setAnimatingRibbons(new Set())
+    setShowLabels(false)
+  }, [])
+
   const handleTokenLeave = useCallback(() => {
     if (pinnedTokenId) {
       // Restore to pinned state only
@@ -394,12 +403,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       // Toggle pin state
       if (pinnedTokenId === tokenId) {
         // Unpin
-        setPinnedTokenId(null)
-        setPinnedIsSource(false)
-        setHoveredTokens(new Set())
-        setHighlightedAlignments(new Set())
-        setAnimatingRibbons(new Set())
-        setShowLabels(false)
+        clearInteractionState()
       } else {
         // Pin this token
         setPinnedTokenId(tokenId)
@@ -451,7 +455,7 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
         }
       }
     },
-    [pinnedTokenId, sentencePair.layers[vizLayer], sentencePair, vizLayer]
+    [clearInteractionState, pinnedTokenId, sentencePair.layers[vizLayer], sentencePair, vizLayer]
   )
 
   const createRibbonPath = (alignment: Alignment, index: number) => {
@@ -717,7 +721,13 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
       aria-label="Interactive translation alignment visualization"
     >
       {/* Layer Toggle Controls */}
-      <LayerPicker currentLayer={vizLayer} setVizLayer={setVizLayer} />
+      <LayerPicker
+        currentLayer={vizLayer}
+        setVizLayer={(layer) => {
+          clearInteractionState()
+          setVizLayer(layer)
+        }}
+      />
 
       {/* Source Sentence */}
       <section
