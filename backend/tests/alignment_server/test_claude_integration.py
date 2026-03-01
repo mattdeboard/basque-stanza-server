@@ -140,7 +140,8 @@ class TestClaudeClient:
         source_tokens = [{"id": "s0", "form": "Hello"}]
         target_tokens = [{"id": "t0", "form": "Kaixo"}]
         
-        prompt = client._build_alignment_prompt(
+        system_message = client._build_system_message()
+        user_message = client._build_user_message(
             source_tokens=source_tokens,
             target_tokens=target_tokens,
             source_lang="en",
@@ -149,10 +150,16 @@ class TestClaudeClient:
             target_text="Kaixo"
         )
         
-        assert "Hello" in prompt
-        assert "Kaixo" in prompt
-        assert "lexical" in prompt
-        assert "grammatical_relations" in prompt
-        assert "features" in prompt
-        assert "s0" in prompt
-        assert "t0" in prompt
+        # Test system message contains static instructions
+        assert "lexical" in system_message
+        assert "grammatical_relations" in system_message
+        assert "features" in system_message
+        assert "Output format" in system_message
+        
+        # Test user message contains dynamic data
+        assert "Hello" in user_message
+        assert "Kaixo" in user_message
+        assert "en" in user_message
+        assert "eu" in user_message
+        assert "s0" in user_message
+        assert "t0" in user_message
