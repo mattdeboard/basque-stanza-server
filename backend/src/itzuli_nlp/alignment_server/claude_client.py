@@ -34,7 +34,8 @@ class ClaudeClient:
     ) -> AlignmentLayers:
         """Generate all three alignment layers using Claude."""
 
-        prompt = self._build_alignment_prompt(
+        system_message = self._build_system_message()
+        user_message = self._build_user_message(
             source_tokens, target_tokens, source_lang, target_lang, source_text, target_text
         )
 
@@ -44,7 +45,8 @@ class ClaudeClient:
                 model="claude-opus-4-6",
                 max_tokens=4000,
                 temperature=0.1,
-                messages=[{"role": "user", "content": prompt}],
+                system=system_message,
+                messages=[{"role": "user", "content": user_message}],
             )
 
             content = response.content[0].text if response.content else ""
@@ -67,32 +69,9 @@ class ClaudeClient:
             logger.error(f"Claude API error: {e}")
             return AlignmentLayers()
 
-    # TODO: Restructure from one gigantic prompt into a system message
-    # and a user message. Everything static should go in the system prompt, and
-    # all the variables belong in the user prompt.
-    def _build_alignment_prompt(
-        self,
-        source_tokens: list[Dict[str, Any]],
-        target_tokens: list[Dict[str, Any]],
-        source_lang: str,
-        target_lang: str,
-        source_text: str,
-        target_text: str,
-    ) -> str:
-        """Build structured prompt for alignment generation."""
-
-        return f"""You are a linguist generating translation alignments between {source_lang} and {target_lang} for an interactive visualization tool.
-
-## Sentence pair
-
-Source ({source_lang}): "{source_text}"
-Target ({target_lang}): "{target_text}"
-
-## Source tokens
-{json.dumps(source_tokens, indent=2)}
-
-## Target tokens
-{json.dumps(target_tokens, indent=2)}
+    def _build_system_message(self) -> str:
+        """Build static system message for alignment generation."""
+        return """You are a linguist generating translation alignments for an interactive visualization tool.
 
 ## What you are producing
 
@@ -181,19 +160,42 @@ WORD ORDER:
 
 Return ONLY a JSON object with this structure, no other text:
 
-{{
+{
   "lexical": [
-    {{"source": ["s0"], "target": ["t1"], "label": "..."}}
+    {"source": ["s0"], "target": ["t1"], "label": "..."}
   ],
   "grammatical_relations": [
-    {{"source": ["s0", "s1"], "target": ["t2"], "label": "..."}}
+    {"source": ["s0", "s1"], "target": ["t2"], "label": "..."}
   ],
   "features": [
-    {{"source": ["s0"], "target": ["t1"], "label": "..."}}
+    {"source": ["s0"], "target": ["t1"], "label": "..."}
   ]
-}}
+}
 
 Use only token IDs from the provided lists. Do not include any text outside the JSON object."""
+
+    def _build_user_message(
+        self,
+        source_tokens: list[Dict[str, Any]],
+        target_tokens: list[Dict[str, Any]],
+        source_lang: str,
+        target_lang: str,
+        source_text: str,
+        target_text: str,
+    ) -> str:
+        """Build dynamic user message with specific sentence data."""
+        return f"""Generate translation alignments between {source_lang} and {target_lang} for this sentence pair:
+
+## Sentence pair
+
+Source ({source_lang}): "{source_text}"
+Target ({target_lang}): "{target_text}"
+
+## Source tokens
+{json.dumps(source_tokens, indent=2)}
+
+## Target tokens
+{json.dumps(target_tokens, indent=2)}"""
 
     def _parse_alignment_response(self, content: str) -> Dict[str, list[Alignment]]:
         """Parse Claude's JSON response into alignment objects."""
