@@ -6,23 +6,27 @@ type LayerConfig = {
   name: string
   displayName: TranslationKey
   color: string
+  colorLight: string // color at ~12% opacity composited over tan-50 (#fdf8f3)
 }
 
 export const LAYER_CONFIGS: Record<LayerType, LayerConfig> = {
   [LayerType.LEXICAL]: {
     name: LayerType.LEXICAL,
     displayName: 'layer.lexical',
-    color: '#477c5d', // sage-600 (forest green, 4.6:1 contrast on tan-50 bg)
+    color: '#3a634b', // sage-700 (forest green, 6.5:1 contrast on tan-50 bg; active text 5.4:1)
+    colorLight: '#e5e5de',
   },
   [LayerType.GRAMMATICAL_RELATIONS]: {
     name: LayerType.GRAMMATICAL_RELATIONS,
     displayName: 'layer.grammatical_relations',
     color: '#7b4fa5', // purple/violet (5.7:1 contrast on tan-50 bg)
+    colorLight: '#ede3e9',
   },
   [LayerType.FEATURES]: {
     name: LayerType.FEATURES,
     displayName: 'layer.features',
     color: '#92400e', // amber-800 (deep amber, ~6:1 contrast on tan-50 bg)
+    colorLight: '#f0e1d6',
   },
 }
 
@@ -105,7 +109,7 @@ export function LayerPicker({ currentLayer, setVizLayer }: LayerPickerProps) {
                 key={layerKey}
                 onClick={() => setVizLayer(layerKey as LayerType)}
                 className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 border-2 flex items-center gap-1 sm:gap-2 min-h-10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sage-400 ${
-                  isActive ? 'text-white shadow-md' : 'hover:shadow-sm focus:shadow-sm'
+                  isActive ? 'shadow-md' : 'hover:shadow-sm focus:shadow-sm'
                 }`}
                 role="tab"
                 aria-selected={isActive}
@@ -116,7 +120,11 @@ export function LayerPicker({ currentLayer, setVizLayer }: LayerPickerProps) {
                 onKeyDown={(e) => handleKeyDown(e, layerKey)}
                 style={
                   isActive
-                    ? { backgroundColor: config.color, borderColor: config.color }
+                    ? {
+                        backgroundColor: config.color,
+                        borderColor: config.color,
+                        color: config.colorLight,
+                      }
                     : {
                         backgroundColor: `${config.color}20`,
                         borderColor: config.color,
@@ -126,7 +134,7 @@ export function LayerPicker({ currentLayer, setVizLayer }: LayerPickerProps) {
               >
                 <div
                   className="w-2.5 sm:w-3 h-2.5 sm:h-3 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: config.color }}
+                  style={{ backgroundColor: isActive ? config.colorLight : config.color }}
                 />
                 <span className="truncate">{t(config.displayName)}</span>
               </button>
