@@ -12,17 +12,17 @@ export const LAYER_CONFIGS: Record<LayerType, LayerConfig> = {
   [LayerType.LEXICAL]: {
     name: LayerType.LEXICAL,
     displayName: 'layer.lexical',
-    color: '#5a9975', // sage-500 (forest green)
+    color: '#477c5d', // sage-600 (forest green, 4.6:1 contrast on tan-50 bg)
   },
   [LayerType.GRAMMATICAL_RELATIONS]: {
     name: LayerType.GRAMMATICAL_RELATIONS,
     displayName: 'layer.grammatical_relations',
-    color: '#8b5fb5', // soft purple/violet
+    color: '#7b4fa5', // purple/violet (5.7:1 contrast on tan-50 bg)
   },
   [LayerType.FEATURES]: {
     name: LayerType.FEATURES,
     displayName: 'layer.features',
-    color: '#c8954d', // tan-600 (warm amber/bronze)
+    color: '#92400e', // amber-800 (deep amber, ~6:1 contrast on tan-50 bg)
   },
 }
 
@@ -137,7 +137,7 @@ export function LayerPicker({ currentLayer, setVizLayer }: LayerPickerProps) {
           <p
             key={currentLayer}
             className="text-lg font-display italic animate-fade-in"
-            style={{ color: `${LAYER_CONFIGS[currentLayer].color}b3` }}
+            style={{ color: LAYER_CONFIGS[currentLayer].color }}
             aria-hidden="true"
           >
             {t(LAYER_TOOLTIPS[currentLayer])}
