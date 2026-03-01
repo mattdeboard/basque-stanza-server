@@ -30,7 +30,7 @@ class ClaudeClient:
         source_lang: str,
         target_lang: str,
         source_text: str,
-        target_text: str
+        target_text: str,
     ) -> AlignmentLayers:
         """Generate all three alignment layers using Claude."""
 
@@ -44,30 +44,32 @@ class ClaudeClient:
                 model="claude-opus-4-6",
                 max_tokens=4000,
                 temperature=0.1,
-                messages=[{
-                    "role": "user",
-                    "content": prompt
-                }]
+                messages=[{"role": "user", "content": prompt}],
             )
 
             content = response.content[0].text if response.content else ""
             logger.info(f"Claude response received, length: {len(content)}")
 
             alignments_data = self._parse_alignment_response(content)
-            logger.info(f"Parsed alignments - Lexical: {len(alignments_data.get('lexical', []))}, "
-                       f"Grammatical: {len(alignments_data.get('grammatical_relations', []))}, "
-                       f"Features: {len(alignments_data.get('features', []))}")
+            logger.info(
+                f"Parsed alignments - Lexical: {len(alignments_data.get('lexical', []))}, "
+                f"Grammatical: {len(alignments_data.get('grammatical_relations', []))}, "
+                f"Features: {len(alignments_data.get('features', []))}"
+            )
 
             return AlignmentLayers(
                 lexical=alignments_data.get("lexical", []),
                 grammatical_relations=alignments_data.get("grammatical_relations", []),
-                features=alignments_data.get("features", [])
+                features=alignments_data.get("features", []),
             )
 
         except Exception as e:
             logger.error(f"Claude API error: {e}")
             return AlignmentLayers()
 
+    # TODO: Restructure from one gigantic prompt into a system message
+    # and a user message. Everything static should go in the system prompt, and
+    # all the variables belong in the user prompt.
     def _build_alignment_prompt(
         self,
         source_tokens: list[Dict[str, Any]],
@@ -75,7 +77,7 @@ class ClaudeClient:
         source_lang: str,
         target_lang: str,
         source_text: str,
-        target_text: str
+        target_text: str,
     ) -> str:
         """Build structured prompt for alignment generation."""
 
@@ -212,11 +214,7 @@ Use only token IDs from the provided lists. Do not include any text outside the 
             for layer_name in ["lexical", "grammatical_relations", "features"]:
                 alignments = []
                 for item in data.get(layer_name, []):
-                    alignments.append(Alignment(
-                        source=item["source"],
-                        target=item["target"],
-                        label=item["label"]
-                    ))
+                    alignments.append(Alignment(source=item["source"], target=item["target"], label=item["label"]))
                 result[layer_name] = alignments
 
             return result
