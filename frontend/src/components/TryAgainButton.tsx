@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import { useI18n } from '../i18n'
 
 type TryAgainButtonProps = {
@@ -11,7 +12,18 @@ export function TryAgainButton({ onTryAgain, className }: TryAgainButtonProps) {
   return (
     <button
       onClick={onTryAgain}
-      className={className || 'px-4 py-2 bg-sage-500 text-white rounded-lg hover:bg-sage-600 transition-colors'}
+      className={
+        className ||
+        classNames(
+          'px-4',
+          'py-2',
+          'bg-teal-700',
+          'text-white',
+          'rounded-lg',
+          'hover:bg-teal-800',
+          'transition-colors'
+        )
+      }
       type="button"
     >
       {t('error.try_again')}
