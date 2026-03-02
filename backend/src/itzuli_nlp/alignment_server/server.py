@@ -5,14 +5,16 @@ import os
 from typing import List
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from ..core.types import AnalysisRow, LanguageCode
 from ..tools.dual_analysis import analyze_both_texts
 from .alignment_generator import create_enriched_alignment_data
 from .cache import AlignmentCache
+from .rate_limiter import check_and_increment
 from .types import SentencePair
 
 load_dotenv()
@@ -101,10 +103,19 @@ async def analyze_texts(request: AnalysisRequest):
 
 
 @app.post("/analyze-and-scaffold", response_model=SentencePair)
-async def analyze_and_scaffold(request: AnalysisRequest):
+async def analyze_and_scaffold(request: AnalysisRequest, req: Request):
     """
     Combined endpoint: analyze both texts, generate scaffold, and enrich with Claude-generated alignments.
     """
+    ip = (req.headers.get("X-Forwarded-For") or req.client.host or "unknown").split(",")[0].strip()
+    allowed, remaining = await check_and_increment(ip)
+    if not allowed:
+        return JSONResponse(
+            status_code=429,
+            content={"error": "rate_limited", "message": "Daily limit reached. Try again tomorrow."},
+        )
+    logger.info(f"Rate limit check passed for {ip}: {remaining} requests remaining today")
+
     itzuli_api_key = os.environ.get("ITZULI_API_KEY")
     if not itzuli_api_key:
         raise HTTPException(status_code=500, detail="ITZULI_API_KEY not configured")
