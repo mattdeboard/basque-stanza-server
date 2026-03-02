@@ -3,9 +3,6 @@
 import json
 import logging
 import os
-import threading
-from concurrent.futures import ThreadPoolExecutor, wait
-from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
@@ -28,30 +25,10 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-PRELOAD_LANGUAGES: list[LanguageCode] = ["eu", "en", "es", "fr"]
-
-_stanza_ready = threading.Event()
-
-
-def _preload_stanza():
-    logger.info("Pre-loading Stanza pipelines in parallel...")
-    with ThreadPoolExecutor(max_workers=len(PRELOAD_LANGUAGES)) as executor:
-        wait([executor.submit(get_cached_pipeline, lang) for lang in PRELOAD_LANGUAGES])
-    logger.info("Stanza pipelines ready.")
-    _stanza_ready.set()
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    threading.Thread(target=_preload_stanza, daemon=True).start()
-    yield
-
-
 app = FastAPI(
     title="Alignment Server",
     description="HTTP API for generating alignment scaffolds from dual language analysis",
     version="1.0.0",
-    lifespan=lifespan,
 )
 
 # Initialize cache
@@ -78,8 +55,6 @@ class AnalysisRequest(BaseModel):
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
-    if not _stanza_ready.is_set():
-        return JSONResponse(status_code=503, content={"status": "loading"})
     return {"status": "healthy"}
 
 
