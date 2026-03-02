@@ -39,6 +39,7 @@ export type TranslationKey =
   // Error messages
   | 'error.prefix'
   | 'error.try_again'
+  | 'error.rate_limited'
   // Helper messages
   | 'help.enter_text'
   | 'help.select_example'
@@ -105,6 +106,7 @@ export const translations: Translations = {
     // Error messages
     'error.prefix': 'Error:',
     'error.try_again': 'Try Again',
+    'error.rate_limited': "You've reached the daily limit of 10 analyses. Try again tomorrow.",
     // Helper messages
     'help.enter_text': 'Enter text above to begin analysis',
     'help.select_example': 'Select an example sentence to view alignment visualization',
@@ -174,6 +176,7 @@ export const translations: Translations = {
     // Error messages
     'error.prefix': 'Errorea:',
     'error.try_again': 'Berriro Saiatu',
+    'error.rate_limited': 'Eguneko 10 analisi mugara iritsi zara. Bihar saiatu berriro.',
     // Helper messages
     'help.enter_text': 'Goiko testua idatzi analisia hasteko',
     'help.select_example': 'Adibide esaldi bat hautatu lerrokatze bistaratzailea ikusteko',
@@ -245,6 +248,8 @@ export const translations: Translations = {
     // Error messages
     'error.prefix': 'Error:',
     'error.try_again': 'Intentar de Nuevo',
+    'error.rate_limited':
+      'Has alcanzado el límite diario de 10 análisis. Inténtalo de nuevo mañana.',
     // Helper messages
     'help.enter_text': 'Introduce texto arriba para comenzar el análisis',
     'help.select_example': 'Selecciona una oración ejemplo para ver la visualización de alineación',
@@ -314,6 +319,8 @@ export const translations: Translations = {
     // Error messages
     'error.prefix': 'Erreur:',
     'error.try_again': 'Réessayer',
+    'error.rate_limited':
+      'Vous avez atteint la limite quotidienne de 10 analyses. Réessayez demain.',
     // Helper messages
     'help.enter_text': "Entrez le texte ci-dessus pour commencer l'analyse",
     'help.select_example':

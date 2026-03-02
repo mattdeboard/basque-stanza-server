@@ -37,6 +37,9 @@ frontend/dist/
 .DS_Store
 Thumbs.db
 
+# Deployment notes (project-specific, not for repo)
+DEPLOY.md
+
 # Logs
 *.log
 node_modules/

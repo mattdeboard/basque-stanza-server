@@ -787,12 +787,10 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
             'lg:gap-4',
             'items-center',
             'overflow-x-auto',
-            'pb-1',
-            'pt-1',
+            'py-2',
+            'px-2',
             'scrollbar-none',
             'justify-start',
-            'px-2',
-            'sm:px-0',
             'list-none'
           )}
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
@@ -899,13 +897,11 @@ export function AlignmentVisualizer({ sentencePair }: AlignmentVisualizerProps) 
             'sm:gap-3',
             'lg:gap-4',
             'items-center',
-            'mb-1',
             'overflow-x-auto',
-            'pt-1',
+            'py-2',
+            'px-2',
             'scrollbar-none',
             'justify-start',
-            'px-2',
-            'sm:px-0',
             'list-none'
           )}
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}

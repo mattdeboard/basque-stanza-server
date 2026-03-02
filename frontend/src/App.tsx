@@ -86,7 +86,8 @@ function App() {
             'rounded-lg'
           )}
         >
-          {t('error.prefix')} {currentError}
+          {t('error.prefix')}{' '}
+          {currentError === 'rate_limited' ? t('error.rate_limited') : currentError}
           <div className="mt-4">
             <TryAgainButton
               onTryAgain={() => {
