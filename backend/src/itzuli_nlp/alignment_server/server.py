@@ -4,7 +4,6 @@ import json
 import logging
 import os
 from contextlib import asynccontextmanager
-from typing import List
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
@@ -14,12 +13,13 @@ from Itzuli import Itzuli
 from pydantic import BaseModel
 
 from ..core.nlp import process_raw_analysis
-from ..core.types import AnalysisRow, LanguageCode
+from ..core.types import LanguageCode
 from ..tools.dual_analysis import get_cached_pipeline
 from .alignment_generator import create_enriched_alignment_data
 from .cache import AlignmentCache
 from .rate_limiter import check_and_increment
-from .types import SentencePair
+from .types import AlignmentData
+from .types import SentencePair as SentencePairModel
 
 load_dotenv()
 
@@ -66,17 +66,6 @@ class AnalysisRequest(BaseModel):
     sentence_id: str = "default"
 
 
-class AnalysisResponse(BaseModel):
-    """Response model for dual analysis."""
-
-    source_text: str
-    target_text: str
-    source_lang: str
-    target_lang: str
-    source_analysis: List[AnalysisRow]
-    target_analysis: List[AnalysisRow]
-
-
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
@@ -87,36 +76,6 @@ async def health_check():
 async def options_analyze_and_scaffold():
     """Handle preflight OPTIONS request for analyze-and-scaffold endpoint."""
     return {"message": "OK"}
-
-
-@app.post("/analyze", response_model=AnalysisResponse)
-async def analyze_texts(request: AnalysisRequest):
-    """
-    Perform dual analysis on source text and its translation.
-
-    Returns analysis data for both source and target languages.
-    """
-    api_key = os.environ.get("ITZULI_API_KEY")
-    if not api_key:
-        raise HTTPException(status_code=500, detail="ITZULI_API_KEY not configured")
-
-    try:
-        translated_text, source_analysis, target_analysis = analyze_both_texts(
-            api_key=api_key, text=request.text, source_language=request.source_lang, target_language=request.target_lang
-        )
-
-        return AnalysisResponse(
-            source_text=request.text,
-            target_text=translated_text,
-            source_lang=request.source_lang,
-            target_lang=request.target_lang,
-            source_analysis=source_analysis,
-            target_analysis=target_analysis,
-        )
-
-    except Exception as e:
-        logger.error(f"Analysis failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
 
 @app.post("/analyze-and-scaffold")
@@ -185,8 +144,14 @@ async def analyze_and_scaffold(request: AnalysisRequest, req: Request):
                 sentence_id=request.sentence_id,
                 claude_api_key=claude_api_key,
             )
-            cache.set(request.text, request.source_lang, request.target_lang, alignment_data)
             result = alignment_data.sentences[0].model_dump()
+            # Strip degenerate alignments Claude occasionally produces (empty source or target)
+            for layer in ("lexical", "grammatical_relations", "features"):
+                result["layers"][layer] = [
+                    a for a in result["layers"][layer] if a["source"] and a["target"]
+                ]
+            clean_data = AlignmentData(sentences=[SentencePairModel.model_validate(result)])
+            cache.set(request.text, request.source_lang, request.target_lang, clean_data)
             yield f"data: {json.dumps({'event': 'done', 'result': result})}\n\n"
 
         except Exception as e:
