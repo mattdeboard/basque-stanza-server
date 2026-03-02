@@ -96,14 +96,7 @@ export function FullHeader({
       {/* Example Sentence Selector */}
       {mode === 'examples' && config.useFixtures && (
         <div
-          className={classNames(
-            'content-card',
-            'max-w-2xl',
-            'mx-4',
-            'sm:mx-auto',
-            'p-4',
-            'sm:p-6'
-          )}
+          className={classNames('content-card', 'max-w-2xl', 'mx-4', 'sm:mx-auto', 'p-4', 'sm:p-6')}
         >
           <div
             className={classNames(
