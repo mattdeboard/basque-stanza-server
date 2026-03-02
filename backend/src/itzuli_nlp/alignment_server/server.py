@@ -2,6 +2,7 @@
 
 import logging
 import os
+from contextlib import asynccontextmanager
 from typing import List
 
 from dotenv import load_dotenv
@@ -11,7 +12,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from ..core.types import AnalysisRow, LanguageCode
-from ..tools.dual_analysis import analyze_both_texts
+from ..tools.dual_analysis import analyze_both_texts, get_cached_pipeline
 from .alignment_generator import create_enriched_alignment_data
 from .cache import AlignmentCache
 from .rate_limiter import check_and_increment
@@ -22,10 +23,23 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+PRELOAD_LANGUAGES: list[LanguageCode] = ["eu", "en", "es", "fr"]
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Pre-loading Stanza pipelines...")
+    for lang in PRELOAD_LANGUAGES:
+        get_cached_pipeline(lang)
+    logger.info("Stanza pipelines ready.")
+    yield
+
+
 app = FastAPI(
     title="Alignment Server",
     description="HTTP API for generating alignment scaffolds from dual language analysis",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 # Initialize cache
