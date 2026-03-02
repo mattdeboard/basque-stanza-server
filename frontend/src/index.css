@@ -147,6 +147,26 @@
 }
 
 @layer utilities {
+  /* Opacity-only fade for containers with position:fixed descendants.
+     Using transform in a parent animation breaks fixed positioning. */
+  @keyframes fade-in-opacity {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .animate-fade-in-opacity {
+    animation: fade-in-opacity 0.5s ease-out both;
+  }
+
+  /* Prevent elements from flashing at full opacity before their entry animation begins.
+     Without this, delayed animations show the element styled for the delay window, then
+     disappear and animate in — the classic FOUC pattern. */
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-on-load {
+    animation-fill-mode: backwards;
+  }
+
   /* Loading indicator animations */
   .animate-progress {
     width: 60%;

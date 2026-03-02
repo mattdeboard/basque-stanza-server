@@ -1,6 +1,6 @@
 /** biome-ignore-all lint/a11y/useButtonType: Temp disable */
 import classNames from 'classnames'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { AlignmentVisualizer } from './components/AlignmentVisualizer'
 import { AnimatedTitle } from './components/AnimatedTitle'
 import { LanguageSwitcher } from './components/LanguageSwitcher'
@@ -16,6 +16,7 @@ import type { LanguageCode } from './types/alignment'
 function App() {
   const { t } = useI18n()
   const [mode, setMode] = useState<'input' | 'examples'>('input')
+  const [, startTransition] = useTransition()
 
   // Hook for loading example sentences (fixture data only)
   const {
@@ -55,8 +56,10 @@ function App() {
   }
 
   const switchToExamples = () => {
-    setMode('examples')
-    reset()
+    startTransition(() => {
+      setMode('examples')
+      reset()
+    })
   }
 
   // Update page title for screen readers
@@ -120,10 +123,10 @@ function App() {
           'sm:p-6',
           'lg:p-8',
           'font-sans',
-          'animate-fade-in'
+          'animate-fade-in-opacity'
         )}
       >
-        <header className={classNames('text-center', 'mb-3', 'sm:mb-4', 'animate-on-load')}>
+        <header className={classNames('text-center', 'mb-3', 'sm:mb-4', 'animate-fade-in-opacity')}>
           <div className={classNames('flex', 'justify-end', 'mb-4')}>
             <LanguageSwitcher compact />
           </div>
