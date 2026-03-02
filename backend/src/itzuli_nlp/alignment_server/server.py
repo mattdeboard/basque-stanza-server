@@ -3,6 +3,7 @@
 import json
 import logging
 import os
+import threading
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
@@ -28,13 +29,20 @@ logger = logging.getLogger(__name__)
 
 PRELOAD_LANGUAGES: list[LanguageCode] = ["eu", "en", "es", "fr"]
 
+_stanza_ready = threading.Event()
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
+
+def _preload_stanza():
     logger.info("Pre-loading Stanza pipelines...")
     for lang in PRELOAD_LANGUAGES:
         get_cached_pipeline(lang)
     logger.info("Stanza pipelines ready.")
+    _stanza_ready.set()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    threading.Thread(target=_preload_stanza, daemon=True).start()
     yield
 
 
@@ -69,6 +77,8 @@ class AnalysisRequest(BaseModel):
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
+    if not _stanza_ready.is_set():
+        return JSONResponse(status_code=503, content={"status": "loading"})
     return {"status": "healthy"}
 
 
