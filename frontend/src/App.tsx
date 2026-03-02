@@ -1,13 +1,12 @@
-/** biome-ignore-all lint/a11y/useButtonType: Temp disable */
 import classNames from 'classnames'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState, useTransition } from 'react'
 import { AlignmentVisualizer } from './components/AlignmentVisualizer'
-import { AnimatedTitle } from './components/AnimatedTitle'
-import { LanguageSwitcher } from './components/LanguageSwitcher'
+import { CompactHeader } from './components/CompactHeader'
+import { FullHeader } from './components/FullHeader'
 import { LoadingIndicator } from './components/LoadingIndicator'
 import { TranslationInput } from './components/TranslationInput'
 import { TryAgainButton } from './components/TryAgainButton'
-import { config } from './config'
 import { useSelectedSentence } from './hooks/useAlignmentData'
 import { useTranslationRequest } from './hooks/useTranslationRequest'
 import { useI18n } from './i18n'
@@ -18,7 +17,6 @@ function App() {
   const [mode, setMode] = useState<'input' | 'examples'>('input')
   const [, startTransition] = useTransition()
 
-  // Hook for loading example sentences (fixture data only)
   const {
     selectedSentence,
     selectedId,
@@ -28,7 +26,6 @@ function App() {
     error: fixtureError,
   } = useSelectedSentence()
 
-  // Hook for submitting new translation requests
   const {
     data: translationData,
     loading: translationLoading,
@@ -39,12 +36,12 @@ function App() {
     clearError,
   } = useTranslationRequest()
 
-  // Determine which data to display
   const currentData = mode === 'input' && translationData ? translationData : null
   const currentSentence =
     currentData?.sentences[0] || (mode === 'examples' ? selectedSentence : null)
   const isLoading = mode === 'input' ? translationLoading : fixtureLoading
   const currentError = mode === 'input' ? translationError : fixtureError
+  const isCompact = !!currentSentence
 
   const handleTranslationSubmit = async (
     text: string,
@@ -62,7 +59,6 @@ function App() {
     })
   }
 
-  // Update page title for screen readers
   useEffect(() => {
     if (currentSentence) {
       document.title = `Xingolak - Analyzing: ${currentSentence.source.text.substring(0, 50)}${currentSentence.source.text.length > 50 ? '...' : ''}`
@@ -95,7 +91,6 @@ function App() {
             <TryAgainButton
               onTryAgain={() => {
                 setMode('input')
-                // Clear the error to show the input form, but preserve lastRequest for form restoration
                 clearError()
               }}
             />
@@ -119,186 +114,73 @@ function App() {
         className={classNames(
           'max-w-7xl',
           'mx-auto',
-          'p-4',
-          'sm:p-6',
-          'lg:p-8',
+          'px-4',
+          'sm:px-6',
+          'lg:px-8',
+          'pb-4',
+          'sm:pb-6',
+          'lg:pb-8',
           'font-sans',
-          'animate-fade-in-opacity'
+          'animate-fade-in-opacity',
+          isCompact ? 'pt-0' : 'pt-4 sm:pt-6 lg:pt-8'
         )}
       >
-        <header className={classNames('text-center', 'mb-3', 'sm:mb-4', 'animate-fade-in-opacity')}>
-          <div className={classNames('flex', 'justify-end', 'mb-4')}>
-            <LanguageSwitcher compact />
-          </div>
-          <AnimatedTitle
-            className={classNames(
-              'text-3xl',
-              'sm:text-4xl',
-              'lg:text-5xl',
-              'font-display',
-              'font-light',
-              'mb-2',
-              'text-slate-800',
-              'tracking-tight'
-            )}
-          />
-          <h2
-            className={classNames(
-              'text-lg',
-              'sm:text-xl',
-              'font-light',
-              'text-slate-500',
-              'mb-3',
-              'max-w-2xl',
-              'mx-auto',
-              'leading-relaxed',
-              'px-4',
-              'sm:px-0'
-            )}
-          >
-            {t('app.subtitle')}
-          </h2>
-
-          {/* Mode Toggle - only show if fixtures are available */}
-          {config.useFixtures && (
-            <div className={classNames('flex', 'justify-center', 'mb-4')}>
-              <div
-                className={classNames(
-                  'bg-white/60',
-                  'backdrop-blur-sm',
-                  'border',
-                  'border-slate-200/60',
-                  'rounded-lg',
-                  'p-1',
-                  'flex',
-                  'gap-1'
-                )}
-              >
-                <button
-                  onClick={() => setMode('input')}
-                  className={classNames(
-                    'px-4',
-                    'py-2',
-                    'rounded-md',
-                    'text-sm',
-                    'font-medium',
-                    'transition-all',
-                    'duration-200',
-                    mode === 'input'
-                      ? 'bg-teal-700 text-white shadow-sm'
-                      : 'text-slate-600 hover:bg-slate-100'
-                  )}
-                >
-                  {t('mode.analyze_new_text')}
-                </button>
-                <button
-                  onClick={switchToExamples}
-                  className={classNames(
-                    'px-4',
-                    'py-2',
-                    'rounded-md',
-                    'text-sm',
-                    'font-medium',
-                    'transition-all',
-                    'duration-200',
-                    mode === 'examples'
-                      ? 'bg-teal-700 text-white shadow-sm'
-                      : 'text-slate-600 hover:bg-slate-100'
-                  )}
-                >
-                  {t('mode.browse_examples')}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Translation Input Form */}
-          {mode === 'input' && (
-            <TranslationInput
-              onSubmit={handleTranslationSubmit}
-              loading={translationLoading}
-              compact={!!currentSentence}
-              initialText={lastRequest?.text || ''}
-              initialSourceLang={lastRequest?.sourceLang as LanguageCode | undefined}
-              initialTargetLang={lastRequest?.targetLang as LanguageCode | undefined}
-            />
-          )}
-
-          {/* Example Sentence Selector */}
-          {mode === 'examples' && config.useFixtures && (
-            <div
-              className={classNames(
-                'content-card',
-                'max-w-2xl',
-                'mx-4',
-                'sm:mx-auto',
-                'p-4',
-                'sm:p-6'
-              )}
+        <AnimatePresence initial={false}>
+          {isCompact ? (
+            <motion.div
+              key="compact-header"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
             >
-              <div
-                className={classNames(
-                  'flex',
-                  'flex-col',
-                  'sm:flex-row',
-                  'items-center',
-                  'justify-center',
-                  'gap-3',
-                  'sm:gap-6'
-                )}
-              >
-                <label
-                  htmlFor="sentence-select"
-                  className={classNames(
-                    'font-medium',
-                    'text-slate-600',
-                    'text-xs',
-                    'sm:text-sm',
-                    'uppercase',
-                    'tracking-wider'
-                  )}
-                >
-                  {t('examples.choose_sentence')}
-                </label>
-                <select
-                  id="sentence-select"
-                  value={selectedId || ''}
-                  onChange={(e) => setSelectedId(e.target.value)}
-                  className={classNames(
-                    'px-3',
-                    'sm:px-4',
-                    'py-2',
-                    'sm:py-3',
-                    'border',
-                    'border-slate-200',
-                    'rounded-lg',
-                    'bg-white/80',
-                    'backdrop-blur-sm',
-                    'text-sm',
-                    'sm:text-base',
-                    'w-full',
-                    'sm:min-w-80',
-                    'focus:outline-none',
-                    'focus:border-teal-500',
-                    'focus:ring-2',
-                    'focus:ring-teal-200',
-                    'transition-all',
-                    'duration-200'
-                  )}
-                  aria-label={t('examples.choose_sentence_aria')}
-                >
-                  {availableSentences.map((sentence) => (
-                    <option key={sentence.id} value={sentence.id}>
-                      {sentence.id}: {sentence.source.text}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+              <CompactHeader
+                mode={mode}
+                onSwitchToInput={() => setMode('input')}
+                onSwitchToExamples={switchToExamples}
+                selectedId={selectedId}
+                availableSentences={availableSentences}
+                onSelectSentence={setSelectedId}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="full-header"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <FullHeader
+                mode={mode}
+                onSwitchToInput={() => setMode('input')}
+                onSwitchToExamples={switchToExamples}
+                translationLoading={translationLoading}
+                onSubmit={handleTranslationSubmit}
+                initialText={lastRequest?.text || ''}
+                initialSourceLang={lastRequest?.sourceLang as LanguageCode | undefined}
+                initialTargetLang={lastRequest?.targetLang as LanguageCode | undefined}
+                selectedId={selectedId}
+                availableSentences={availableSentences}
+                onSelectSentence={setSelectedId}
+              />
+            </motion.div>
           )}
-        </header>
+        </AnimatePresence>
 
-        {/* Show visualization only when we have data */}
+        {/* FAB: rendered outside the header swap so it persists independently.
+            No wrapper div — fixed-position children must not be inside a stacking context. */}
+        {isCompact && mode === 'input' && (
+          <TranslationInput
+            onSubmit={handleTranslationSubmit}
+            loading={translationLoading}
+            compact={true}
+            initialText={lastRequest?.text || ''}
+            initialSourceLang={lastRequest?.sourceLang as LanguageCode | undefined}
+            initialTargetLang={lastRequest?.targetLang as LanguageCode | undefined}
+          />
+        )}
+
         {currentSentence && (
           <main
             className={classNames('relative', 'mt-2', 'animate-on-load')}
@@ -309,7 +191,6 @@ function App() {
           </main>
         )}
 
-        {/* Show helpful message when no data is available */}
         {!currentSentence && !isLoading && !currentError && (
           <div className={classNames('text-center', 'py-12', 'text-lg', 'text-slate-600')}>
             {mode === 'input' ? null : t('help.select_example')}
