@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import threading
+from concurrent.futures import ThreadPoolExecutor, wait
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
@@ -33,9 +34,9 @@ _stanza_ready = threading.Event()
 
 
 def _preload_stanza():
-    logger.info("Pre-loading Stanza pipelines...")
-    for lang in PRELOAD_LANGUAGES:
-        get_cached_pipeline(lang)
+    logger.info("Pre-loading Stanza pipelines in parallel...")
+    with ThreadPoolExecutor(max_workers=len(PRELOAD_LANGUAGES)) as executor:
+        wait([executor.submit(get_cached_pipeline, lang) for lang in PRELOAD_LANGUAGES])
     logger.info("Stanza pipelines ready.")
     _stanza_ready.set()
 
