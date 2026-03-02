@@ -150,6 +150,9 @@ export async function submitTranslationRequest(request: AnalysisRequest): Promis
   })
 
   if (!response.ok) {
+    if (response.status === 429) {
+      throw new Error('rate_limited')
+    }
     const errorData = await response.json().catch(() => ({}))
     const errorMessage =
       errorData.detail || `API request failed: ${response.status} ${response.statusText}`

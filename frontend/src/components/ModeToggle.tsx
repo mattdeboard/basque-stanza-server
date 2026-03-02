@@ -41,7 +41,9 @@ export function ModeToggle({
           'transition-all',
           'duration-200',
           compact ? ['px-3', 'py-1.5', 'text-xs'] : ['px-4', 'py-2', 'text-sm'],
-          mode === 'input' ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+          mode === 'input'
+            ? 'bg-teal-700 text-white shadow-sm'
+            : 'text-slate-600 hover:bg-slate-100'
         )}
       >
         {t('mode.analyze_new_text')}
